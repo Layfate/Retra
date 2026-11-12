@@ -12,7 +12,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab as TabItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -97,7 +100,9 @@ private enum class Tab(val label: String, @DrawableRes val icon: Int, @DrawableR
 @Composable
 fun RetraApp(resumeTick: Int) {
     var tab by rememberSaveable { mutableStateOf(Tab.ROM) }
-    BackHandler(enabled = tab != Tab.ROM) { tab = Tab.ROM }
+    var page by rememberSaveable { mutableStateOf<Page?>(null) }
+    BackHandler(enabled = tab != Tab.ROM || page != null) { if (page != null) page = null else tab = Tab.ROM }
+    page?.let { return PageScreen(it) { page = null } }
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -118,7 +123,7 @@ fun RetraApp(resumeTick: Int) {
                 Tab.ROM -> RomScreen(resumeTick)
                 Tab.HISTORY -> HistoryScreen(resumeTick)
                 Tab.BROWSE -> BrowseScreen()
-                Tab.MORE -> MoreScreen()
+                Tab.MORE -> MoreScreen { page = it }
             }
         }
     }
@@ -138,6 +143,13 @@ fun RomScreen(resumeTick: Int) {
     var importing by remember { mutableStateOf(false) }
     var addMenu by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf<String?>(null) } // null = not searching
+    var categoryTick by remember { mutableIntStateOf(0) }
+    val categories = remember(resumeTick, categoryTick) { Categories.all(context) }
+    val assigned = remember(games, categories) { games.associateWith { Categories.of(context, it) } }
+    var categoryTab by rememberSaveable { mutableIntStateOf(0) }
+    val selectedTab = categoryTab.coerceAtMost(categories.size) // 0 = Default (games in no category)
+    var categorizing by remember { mutableStateOf<File?>(null) }
+    categorizing?.let { SetCategoriesDialog(it, { categorizing = null }) { categorizing = null; categoryTick++ } }
 
     // copies can be hundreds of MB for RPG Maker games, so run them off the main thread
     fun import(failMessage: String, block: () -> File?) {
@@ -158,7 +170,13 @@ fun RomScreen(resumeTick: Int) {
     }
     val addFile = { if (!importing) filePicker.launch(arrayOf("*/*")) }
     val addFolder = { if (!importing) folderPicker.launch(null) }
-    val shown = games.filter { it.name.contains(query.orEmpty(), ignoreCase = true) }
+    val validIds = categories.map { it.id }.toSet()
+    val inTab = when {
+        categories.isEmpty() -> games
+        selectedTab == 0 -> games.filter { (assigned[it].orEmpty() intersect validIds).isEmpty() }
+        else -> games.filter { categories[selectedTab - 1].id in assigned[it].orEmpty() }
+    }
+    val shown = inTab.filter { it.name.contains(query.orEmpty(), ignoreCase = true) }
 
     Scaffold(
         topBar = {
@@ -174,6 +192,11 @@ fun RomScreen(resumeTick: Int) {
                             }
                         }
                 }
+                if (categories.isNotEmpty()) PrimaryScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 0.dp) {
+                    (listOf("Default") + categories.map { it.name }).forEachIndexed { i, name ->
+                        TabItem(selected = selectedTab == i, onClick = { categoryTab = i }, text = { Text(name) })
+                    }
+                }
                 if (importing) LinearProgressIndicator(Modifier.fillMaxWidth())
             }
         },
@@ -183,6 +206,7 @@ fun RomScreen(resumeTick: Int) {
                 TextButton(onClick = addFile) { Text("Add a GBA ROM or RPG Maker .zip") }
                 TextButton(onClick = addFolder) { Text("Add an RPG Maker game folder") }
             }
+            shown.isEmpty() && query.isNullOrEmpty() -> EmptyState("(・_・)", "This category is empty.\nLong-press a game to add it.", Modifier.padding(padding))
             shown.isEmpty() -> EmptyState("(・_・)", "No games match “${query.orEmpty()}”", Modifier.padding(padding))
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(110.dp),
@@ -190,7 +214,7 @@ fun RomScreen(resumeTick: Int) {
                 modifier = Modifier.padding(padding),
             ) {
                 items(shown, key = { it.name }) { game ->
-                    GameCard(game, onSaves = { saveGamePath = game.absolutePath }) { launchGame(context, game) }
+                    GameCard(game, onSaves = { saveGamePath = game.absolutePath }, onLongClick = { categorizing = game }) { launchGame(context, game) }
                 }
             }
         }
@@ -255,9 +279,10 @@ fun GameCover(game: File, modifier: Modifier = Modifier) {
 
 fun gameTitle(game: File): String = if (game.isDirectory) game.name else game.nameWithoutExtension
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GameCard(game: File, onSaves: () -> Unit, onClick: () -> Unit) {
-    Column(Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).clickable(onClick = onClick)) {
+private fun GameCard(game: File, onSaves: () -> Unit, onLongClick: () -> Unit, onClick: () -> Unit) {
+    Column(Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).combinedClickable(onLongClick = onLongClick, onClick = onClick)) {
         GameCover(game, Modifier.fillMaxWidth())
         Text(
             gameTitle(game),

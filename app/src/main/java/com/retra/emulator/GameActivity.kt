@@ -2,6 +2,7 @@ package com.retra.emulator
 
 import android.os.Bundle
 import android.os.PowerManager
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.Toast
@@ -44,7 +45,6 @@ import androidx.lifecycle.lifecycleScope
 import com.swordfish.libretrodroid.GLRetroView
 import com.swordfish.libretrodroid.GLRetroViewData
 import com.swordfish.libretrodroid.ShaderConfig
-import com.swordfish.libretrodroid.Variable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -55,12 +55,8 @@ class GameActivity : ComponentActivity() {
     companion object {
         const val EXTRA_ROM = "rom"
         private val SPEEDS = listOf(1, 2, 4)
-        private val FILTERS = listOf(
-            "Sharp" to ShaderConfig.Sharp, // crisp pixels, no shimmer at odd scales
-            "Smooth" to ShaderConfig.CUT2(), // edge-aware upscaler
-            "LCD" to ShaderConfig.LCD,
-            "CRT" to ShaderConfig.CRT,
-        )
+        // same order as Settings.SCREEN_FILTER: Sharp (crisp, no shimmer), Smooth (edge-aware upscaler), LCD, CRT
+        private val SHADERS = listOf(ShaderConfig.Sharp, ShaderConfig.CUT2(), ShaderConfig.LCD, ShaderConfig.CRT)
     }
 
     private lateinit var retroView: GLRetroView
@@ -71,6 +67,7 @@ class GameActivity : ComponentActivity() {
     private val dpad = mutableSetOf<Int>()
     private var speed by mutableIntStateOf(1)
     private var filter by mutableIntStateOf(0)
+    private var resumedAt = 0L // elapsedRealtime when the game screen came to the foreground, 0 when not counting
     @Volatile private var running = false // true once the core has loaded the game and drawn a frame
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +90,7 @@ class GameActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         // steady clocks instead of boost-then-throttle, so long sessions keep a stable frame rate
         if (getSystemService(PowerManager::class.java).isSustainedPerformanceModeSupported) window.setSustainedPerformanceMode(true)
-        filter = getPreferences(MODE_PRIVATE).getInt("filter", 0).coerceIn(FILTERS.indices)
+        filter = Settings.get(this, Settings.SCREEN_FILTER).toInt()
         WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.systemBars())
 
         retroView = GLRetroView(this, GLRetroViewData(this).apply {
@@ -102,18 +99,9 @@ class GameActivity : ComponentActivity() {
             systemDirectory = Library.systemDir(this@GameActivity).absolutePath // mkxp-z reads RTP/fonts from here
             savesDirectory = saves.absolutePath // mkxp-z keeps RPG Maker saves under mkxp-z/Saves/ here
             saveRAMState = sramFile.takeIf { it.exists() }?.readBytes()
-            shader = FILTERS[filter].second
+            shader = SHADERS[filter]
             rumbleEventsEnabled = false // nothing consumes rumble events
-            variables = when (coreFor(rom)) {
-                // mkxp-z states are fixed-size buffers (default 100 MiB); 64 is its minimum and plenty for XP games
-                Core.MKXPZ -> arrayOf(Variable("mkxp-z_saveStateSize", "64"))
-                Core.MGBA -> arrayOf(
-                    Variable("mgba_idle_optimization", "Remove Known"), // skip games' busy-wait loops: big CPU saving
-                    Variable("mgba_color_correction", "Auto"), // real GBA/GBC LCD colours
-                    Variable("mgba_interframe_blending", "mix_smart"), // fixes flicker-based transparency only where games use it
-                    Variable("mgba_frameskip", "disabled"),
-                )
-            }
+            variables = Settings.coreVariables(this@GameActivity, coreFor(rom)) // More → Settings
         })
         lifecycle.addObserver(retroView)
         lifecycleScope.launch {
@@ -127,7 +115,7 @@ class GameActivity : ComponentActivity() {
                 Gamepad(
                     rpgButtons = coreFor(rom) == Core.MKXPZ,
                     speedLabel = "⏩ ${speed}x",
-                    filterLabel = FILTERS[filter].first,
+                    filterLabel = Settings.SCREEN_FILTER.choices[filter].label,
                     onKey = ::key, onDpad = ::dpad, onSaveState = ::saveState, onLoadState = ::loadState, onSlot = ::chooseSlot,
                     onSpeed = ::cycleSpeed, onFilter = ::cycleFilter,
                 )
@@ -135,8 +123,15 @@ class GameActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        resumedAt = SystemClock.elapsedRealtime()
+    }
+
     override fun onPause() {
         super.onPause()
+        if (resumedAt > 0) Playtime.add(this, romFile, SystemClock.elapsedRealtime() - resumedAt)
+        resumedAt = 0
         if (!running) return
         // ON_PAUSE already reached retroView before this method runs, so emulation is paused and we can read SRAM directly
         runCatching { retroView.serializeSRAM(useEmulationThread = false) }.getOrNull()
@@ -165,9 +160,9 @@ class GameActivity : ComponentActivity() {
     }
 
     private fun cycleFilter() {
-        filter = (filter + 1) % FILTERS.size
-        retroView.shader = FILTERS[filter].second
-        getPreferences(MODE_PRIVATE).edit().putInt("filter", filter).apply()
+        filter = (filter + 1) % SHADERS.size
+        retroView.shader = SHADERS[filter]
+        Settings.set(this, Settings.SCREEN_FILTER, filter.toString())
     }
 
     private fun key(code: Int, down: Boolean) =
