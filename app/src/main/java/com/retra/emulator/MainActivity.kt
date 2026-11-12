@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -44,6 +45,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +56,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -133,8 +137,7 @@ fun RomScreen(resumeTick: Int) {
     saveGamePath?.let { SaveFileDialog(File(it)) { saveGamePath = null } }
     var importing by remember { mutableStateOf(false) }
     var addMenu by remember { mutableStateOf(false) }
-    var searching by rememberSaveable { mutableStateOf(false) }
-    var query by rememberSaveable { mutableStateOf("") }
+    var query by rememberSaveable { mutableStateOf<String?>(null) } // null = not searching
 
     // copies can be hundreds of MB for RPG Maker games, so run them off the main thread
     fun import(failMessage: String, block: () -> File?) {
@@ -155,29 +158,12 @@ fun RomScreen(resumeTick: Int) {
     }
     val addFile = { if (!importing) filePicker.launch(arrayOf("*/*")) }
     val addFolder = { if (!importing) folderPicker.launch(null) }
-    val shown = if (query.isBlank()) games else games.filter { it.name.contains(query, ignoreCase = true) }
+    val shown = games.filter { it.name.contains(query.orEmpty(), ignoreCase = true) }
 
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(
-                    title = {
-                        if (searching) TextField(
-                            value = query,
-                            onValueChange = { query = it },
-                            placeholder = { Text("Search…") },
-                            singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) else Text("Rom")
-                    },
-                    actions = {
-                        IconButton(onClick = { searching = !searching; if (!searching) query = "" }) {
-                            Icon(painterResource(if (searching) R.drawable.ic_close else R.drawable.ic_search), contentDescription = if (searching) "Close search" else "Search")
-                        }
+                SearchTopBar("Rom", query, { query = it }) {
                         Box {
                             IconButton(onClick = { addMenu = true }, enabled = !importing) {
                                 Icon(painterResource(R.drawable.ic_add), contentDescription = "Add game")
@@ -187,8 +173,7 @@ fun RomScreen(resumeTick: Int) {
                                 DropdownMenuItem(text = { Text("RPG Maker game folder") }, onClick = { addMenu = false; addFolder() })
                             }
                         }
-                    },
-                )
+                }
                 if (importing) LinearProgressIndicator(Modifier.fillMaxWidth())
             }
         },
@@ -198,7 +183,7 @@ fun RomScreen(resumeTick: Int) {
                 TextButton(onClick = addFile) { Text("Add a GBA ROM or RPG Maker .zip") }
                 TextButton(onClick = addFolder) { Text("Add an RPG Maker game folder") }
             }
-            shown.isEmpty() -> EmptyState("(・_・)", "No games match “$query”", Modifier.padding(padding))
+            shown.isEmpty() -> EmptyState("(・_・)", "No games match “${query.orEmpty()}”", Modifier.padding(padding))
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(110.dp),
                 contentPadding = PaddingValues(8.dp),
@@ -210,6 +195,35 @@ fun RomScreen(resumeTick: Int) {
             }
         }
     }
+}
+
+/** Mihon-style top bar whose title turns into a search field. [query] is null while not searching. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchTopBar(title: String, query: String?, onQueryChange: (String?) -> Unit, actions: @Composable RowScope.() -> Unit = {}) {
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(query != null) { if (query != null) focus.requestFocus() }
+    TopAppBar(
+        title = {
+            if (query != null) TextField(
+                value = query,
+                onValueChange = onQueryChange,
+                placeholder = { Text("Search…") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent),
+                modifier = Modifier.fillMaxWidth().focusRequester(focus),
+            ) else Text(title)
+        },
+        actions = {
+            IconButton(onClick = { onQueryChange(if (query == null) "" else null) }) {
+                Icon(
+                    painterResource(if (query != null) R.drawable.ic_close else R.drawable.ic_search),
+                    contentDescription = if (query != null) "Close search" else "Search",
+                )
+            }
+            actions()
+        },
+    )
 }
 
 /** Mihon's empty screen: a big kaomoji, a line of text, then optional actions. */
