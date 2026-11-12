@@ -1,6 +1,7 @@
 package com.retra.emulator
 
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.Toast
@@ -25,6 +26,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +43,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.swordfish.libretrodroid.GLRetroView
 import com.swordfish.libretrodroid.GLRetroViewData
+import com.swordfish.libretrodroid.ShaderConfig
 import com.swordfish.libretrodroid.Variable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -49,6 +54,13 @@ import java.io.File
 class GameActivity : ComponentActivity() {
     companion object {
         const val EXTRA_ROM = "rom"
+        private val SPEEDS = listOf(1, 2, 4)
+        private val FILTERS = listOf(
+            "Sharp" to ShaderConfig.Sharp, // crisp pixels, no shimmer at odd scales
+            "Smooth" to ShaderConfig.CUT2(), // edge-aware upscaler
+            "LCD" to ShaderConfig.LCD,
+            "CRT" to ShaderConfig.CRT,
+        )
     }
 
     private lateinit var retroView: GLRetroView
@@ -57,6 +69,8 @@ class GameActivity : ComponentActivity() {
     private var stateExtension = "state"
     private val stateFile: File get() = SaveFiles.file(Library.savesDir(this), romFile, stateExtension)
     private val dpad = mutableSetOf<Int>()
+    private var speed by mutableIntStateOf(1)
+    private var filter by mutableIntStateOf(0)
     @Volatile private var running = false // true once the core has loaded the game and drawn a frame
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +79,7 @@ class GameActivity : ComponentActivity() {
         val content = contentPath(rom) ?: return finish()
         val core = File(applicationInfo.nativeLibraryDir, coreFor(rom).libName)
         if (!core.exists()) {
-            // the mkxp-z core is built by .github/workflows/mkxp-z-core.yml and isn't checked in until then
+            // cores live in jniLibs (mkxp-z comes from .github/workflows/mkxp-z-core.yml); fail gracefully if one is missing
             Toast.makeText(this, "The ${coreFor(rom).name} core isn't in this build yet", Toast.LENGTH_LONG).show()
             return finish()
         }
@@ -76,6 +90,9 @@ class GameActivity : ComponentActivity() {
         stateExtension = savedInstanceState?.getString("stateExtension") ?: "state"
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // steady clocks instead of boost-then-throttle, so long sessions keep a stable frame rate
+        if (getSystemService(PowerManager::class.java).isSustainedPerformanceModeSupported) window.setSustainedPerformanceMode(true)
+        filter = getPreferences(MODE_PRIVATE).getInt("filter", 0).coerceIn(FILTERS.indices)
         WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.systemBars())
 
         retroView = GLRetroView(this, GLRetroViewData(this).apply {
@@ -84,8 +101,18 @@ class GameActivity : ComponentActivity() {
             systemDirectory = Library.systemDir(this@GameActivity).absolutePath // mkxp-z reads RTP/fonts from here
             savesDirectory = saves.absolutePath // mkxp-z keeps RPG Maker saves under mkxp-z/Saves/ here
             saveRAMState = sramFile.takeIf { it.exists() }?.readBytes()
-            // mkxp-z states are fixed-size buffers (default 100 MiB); 64 is its minimum and plenty for XP games
-            if (coreFor(rom) == Core.MKXPZ) variables = arrayOf(Variable("mkxp-z_saveStateSize", "64"))
+            shader = FILTERS[filter].second
+            rumbleEventsEnabled = false // nothing consumes rumble events
+            variables = when (coreFor(rom)) {
+                // mkxp-z states are fixed-size buffers (default 100 MiB); 64 is its minimum and plenty for XP games
+                Core.MKXPZ -> arrayOf(Variable("mkxp-z_saveStateSize", "64"))
+                Core.MGBA -> arrayOf(
+                    Variable("mgba_idle_optimization", "Remove Known"), // skip games' busy-wait loops: big CPU saving
+                    Variable("mgba_color_correction", "Auto"), // real GBA/GBC LCD colours
+                    Variable("mgba_interframe_blending", "mix_smart"), // fixes flicker-based transparency only where games use it
+                    Variable("mgba_frameskip", "disabled"),
+                )
+            }
         })
         lifecycle.addObserver(retroView)
         lifecycleScope.launch {
@@ -96,7 +123,13 @@ class GameActivity : ComponentActivity() {
         setContent {
             Box(Modifier.fillMaxSize().background(Color.Black)) {
                 AndroidView(factory = { retroView }, modifier = Modifier.fillMaxSize())
-                Gamepad(rpgButtons = coreFor(rom) == Core.MKXPZ, onKey = ::key, onDpad = ::dpad, onSaveState = ::saveState, onLoadState = ::loadState, onSlot = ::chooseSlot)
+                Gamepad(
+                    rpgButtons = coreFor(rom) == Core.MKXPZ,
+                    speedLabel = "⏩ ${speed}x",
+                    filterLabel = FILTERS[filter].first,
+                    onKey = ::key, onDpad = ::dpad, onSaveState = ::saveState, onLoadState = ::loadState, onSlot = ::chooseSlot,
+                    onSpeed = ::cycleSpeed, onFilter = ::cycleFilter,
+                )
             }
         }
     }
@@ -123,6 +156,17 @@ class GameActivity : ComponentActivity() {
                 stateExtension = slots[index]
                 dialog.dismiss()
             }.show()
+    }
+
+    private fun cycleSpeed() {
+        speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.size]
+        retroView.frameSpeed = speed
+    }
+
+    private fun cycleFilter() {
+        filter = (filter + 1) % FILTERS.size
+        retroView.shader = FILTERS[filter].second
+        getPreferences(MODE_PRIVATE).edit().putInt("filter", filter).apply()
     }
 
     private fun key(code: Int, down: Boolean) =
@@ -153,19 +197,31 @@ class GameActivity : ComponentActivity() {
 @Composable
 private fun Gamepad(
     rpgButtons: Boolean,
+    speedLabel: String,
+    filterLabel: String,
     onKey: (Int, Boolean) -> Unit,
     onDpad: (Int, Boolean) -> Unit,
     onSaveState: () -> Unit,
     onLoadState: () -> Unit,
     onSlot: () -> Unit,
+    onSpeed: () -> Unit,
+    onFilter: () -> Unit,
 ) {
     Column(Modifier.fillMaxSize().safeDrawingPadding().padding(12.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             PadButton("L", RoundedCornerShape(8.dp), 72.dp, 40.dp) { onKey(KeyEvent.KEYCODE_BUTTON_L1, it) }
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = onSlot) { Text("Slot", color = Color.White) }
-            TextButton(onClick = onSaveState) { Text("Save", color = Color.White) }
-            TextButton(onClick = onLoadState) { Text("Load", color = Color.White) }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row {
+                    TextButton(onClick = onSlot) { Text("Slot", color = Color.White) }
+                    TextButton(onClick = onSaveState) { Text("Save", color = Color.White) }
+                    TextButton(onClick = onLoadState) { Text("Load", color = Color.White) }
+                }
+                Row {
+                    TextButton(onClick = onSpeed) { Text(speedLabel, color = Color.White) }
+                    TextButton(onClick = onFilter) { Text(filterLabel, color = Color.White) }
+                }
+            }
             Spacer(Modifier.weight(1f))
             PadButton("R", RoundedCornerShape(8.dp), 72.dp, 40.dp) { onKey(KeyEvent.KEYCODE_BUTTON_R1, it) }
         }
