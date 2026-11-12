@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +29,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 
@@ -36,39 +41,45 @@ import java.util.Date
 @Composable
 fun HistoryScreen(resumeTick: Int) {
     val context = LocalContext.current
-    var entries by remember(resumeTick) { mutableStateOf(History.entries(context)) }
-    val playtime = remember(resumeTick) { Playtime.all(context).toMap() }
+    var entries by remember { mutableStateOf<List<Pair<File, Long>>?>(null) } // null until loaded
+    var playtime by remember { mutableStateOf<Map<File, Long>>(emptyMap()) }
+    LaunchedEffect(resumeTick) { // off the main thread: checks every entry's file still exists
+        playtime = withContext(Dispatchers.IO) { Playtime.all(context).toMap() }
+        entries = withContext(Dispatchers.IO) { History.entries(context) }
+    }
     var query by rememberSaveable { mutableStateOf<String?>(null) } // null = not searching
-    val shown = entries.filter { gameTitle(it.first).contains(query.orEmpty(), ignoreCase = true) }
+    val shown = entries.orEmpty().filter { gameTitle(it.first).contains(query.orEmpty(), ignoreCase = true) }
     val days = shown.groupBy { Instant.ofEpochMilli(it.second).atZone(ZoneId.systemDefault()).toLocalDate() }
     val dateFormat = remember { DateFormat.getDateFormat(context) }
     val timeFormat = remember { DateFormat.getTimeFormat(context) }
+    val today = LocalDate.now()
 
     Scaffold(
         topBar = {
             SearchTopBar("History", query, { query = it }) {
-                if (entries.isNotEmpty()) IconButton(onClick = { History.clear(context); entries = emptyList() }) {
+                if (!entries.isNullOrEmpty()) IconButton(onClick = { History.clear(context); entries = emptyList() }) {
                     Icon(painterResource(R.drawable.ic_delete_sweep), contentDescription = "Clear history")
                 }
             }
         },
-    ) { padding ->
+    ) { padding -> ReadableWidth {
         when {
-            entries.isEmpty() -> EmptyState("(｡•́︿•̀｡)", "Nothing played yet", Modifier.padding(padding))
+            entries == null -> Unit
+            entries.isNullOrEmpty() -> EmptyState("(｡•́︿•̀｡)", "Nothing played yet", Modifier.padding(padding))
             shown.isEmpty() -> EmptyState("(・_・)", "No history matches “${query.orEmpty()}”", Modifier.padding(padding))
             else -> LazyColumn(Modifier.padding(padding)) {
                 days.forEach { (day, games) ->
-                    item(key = "day:$day") {
+                    item(key = "day:$day", contentType = "day") {
                         Text(
-                            dateFormat.format(Date(games.first().second)),
+                            dayLabel(day, today) ?: dateFormat.format(Date(games.first().second)),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                            modifier = Modifier.animateItem().padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
                         )
                     }
-                    items(games, key = { it.first.absolutePath }) { (game, time) ->
+                    items(games, key = { it.first.absolutePath }, contentType = { "game" }) { (game, time) ->
                         Row(
-                            Modifier.fillMaxWidth().clickable { launchGame(context, game) }.padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+                            Modifier.animateItem().fillMaxWidth().clickable { launchGame(context, game) }.padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             GameCover(game, Modifier.width(56.dp))
@@ -88,5 +99,12 @@ fun HistoryScreen(resumeTick: Int) {
                 }
             }
         }
-    }
+    } }
+}
+
+/** "Today" / "Yesterday" like Mihon, or null to show the date. */
+fun dayLabel(day: LocalDate, today: LocalDate): String? = when (day) {
+    today -> "Today"
+    today.minusDays(1) -> "Yesterday"
+    else -> null
 }

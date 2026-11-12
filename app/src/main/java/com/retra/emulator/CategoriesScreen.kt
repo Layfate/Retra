@@ -54,7 +54,7 @@ fun CategoriesPage(onBack: () -> Unit) {
         } else {
             LazyColumn(Modifier.padding(padding), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(list, key = { it.id }) { category ->
-                    Card(Modifier.fillMaxWidth()) {
+                    Card(Modifier.animateItem().fillMaxWidth()) {
                         Row(Modifier.padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(painterResource(R.drawable.ic_label), contentDescription = null)
                             Text(category.name, Modifier.weight(1f).padding(horizontal = 16.dp))

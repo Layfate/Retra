@@ -14,6 +14,17 @@ class MoreTest {
     }
 
     @Test
+    fun titlesAndDayLabels() {
+        assertEquals("Emerald", gameTitle(java.io.File("roms/Emerald.gba")))
+        assertEquals("My RPG", gameTitle(java.io.File("roms/My RPG.rpglink")))
+        assertEquals("Fan Game v1.2", gameTitle(java.io.File("roms/Fan Game v1.2"))) // copied folder keeps its full name
+        val today = java.time.LocalDate.of(2026, 11, 12)
+        assertEquals("Today", dayLabel(today, today))
+        assertEquals("Yesterday", dayLabel(today.minusDays(1), today))
+        assertEquals(null, dayLabel(today.minusDays(2), today))
+    }
+
+    @Test
     fun categoriesRoundTrip() {
         val list = listOf(Category("a", "Favorites"), Category("b", "Pokémon \"hacks\""))
         assertEquals(list, decodeCategories(encodeCategories(list)))

@@ -79,7 +79,7 @@ fun BrowseScreen() {
                 if (loading || downloading) LinearProgressIndicator(Modifier.fillMaxWidth())
             }
         },
-    ) { padding ->
+    ) { padding -> ReadableWidth {
         LazyColumn(Modifier.padding(padding)) {
             item {
                 OutlinedTextField(
@@ -105,6 +105,7 @@ fun BrowseScreen() {
                     headlineContent = { Text(repo.name) },
                     supportingContent = { Text("${repo.games.size} games · ${repo.url}", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     trailingContent = { TextButton(onClick = { Repos.remove(context, repo.url); urls = Repos.urls(context) }) { Text("Remove") } },
+                    modifier = Modifier.animateItem(),
                 )
             }
             items(failed, key = { "failed:$it" }) { url ->
@@ -121,10 +122,11 @@ fun BrowseScreen() {
                         Text(listOf(game.fileName, game.description).filter { it.isNotBlank() }.joinToString(" · "), maxLines = 2, overflow = TextOverflow.Ellipsis)
                     },
                     trailingContent = { TextButton(enabled = !downloading, onClick = { download(game) }) { Text("Get") } },
+                    modifier = Modifier.animateItem(),
                 )
             }
         }
-    }
+    } }
 
     if (adding) {
         var text by remember { mutableStateOf("") }

@@ -42,6 +42,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.retra.emulator.ui.theme.RetraTheme
 import com.swordfish.libretrodroid.GLRetroView
 import com.swordfish.libretrodroid.GLRetroViewData
 import com.swordfish.libretrodroid.ShaderConfig
@@ -115,7 +116,7 @@ class GameActivity : ComponentActivity() {
             running = true
         }
 
-        setContent {
+        setContent { RetraTheme {
             Box(Modifier.fillMaxSize().background(Color.Black)) {
                 AndroidView(factory = { retroView }, modifier = Modifier.fillMaxSize())
                 Gamepad(
@@ -126,7 +127,7 @@ class GameActivity : ComponentActivity() {
                     onSpeed = ::cycleSpeed, onFilter = ::cycleFilter,
                 )
             }
-        }
+        } }
     }
 
     override fun onResume() {

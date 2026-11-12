@@ -23,9 +23,12 @@ android {
 
     buildTypes {
         release {
+            // R8 shrinking/optimisation: a much smoother app than debug builds (see keepRules/rules.keep)
             optimization {
-                enable = false
+                enable = true
             }
+            // signed with the debug key so the fast build runs straight from Android Studio; use your own key to publish
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

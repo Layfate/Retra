@@ -16,12 +16,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -44,6 +54,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab as TabItem
@@ -68,6 +81,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -102,38 +116,70 @@ private enum class Tab(val label: String, @DrawableRes val icon: Int, @DrawableR
     MORE("More", R.drawable.ic_more_horiz, R.drawable.ic_more_horiz),
 }
 
-/** Mihon-style shell: bottom tabs, filled icon on the selected one, Back returns to the first tab. */
+/** Mihon-style shell: tabs with a filled icon on the selected one; Back closes a page, then returns to the first tab. */
 @Composable
 fun RetraApp(resumeTick: Int) {
     var tab by rememberSaveable { mutableStateOf(Tab.ROM) }
     var page by rememberSaveable { mutableStateOf<Page?>(null) }
     BackHandler(enabled = tab != Tab.ROM || page != null) { if (page != null) page = null else tab = Tab.ROM }
-    page?.let { return PageScreen(it) { page = null } }
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                Tab.entries.forEach {
-                    NavigationBarItem(
-                        selected = tab == it,
-                        onClick = { tab = it },
-                        icon = { Icon(painterResource(if (tab == it) it.selectedIcon else it.icon), contentDescription = null) },
-                        label = { Text(it.label) },
-                    )
-                }
-            }
+    // pages slide in from the right and back out to it, like a navigation push
+    AnimatedContent(
+        targetState = page,
+        transitionSpec = {
+            val opening = targetState != null
+            (slideInHorizontally(tween(280)) { w -> if (opening) w / 3 else -w / 3 } + fadeIn(tween(280))) togetherWith
+                (slideOutHorizontally(tween(280)) { w -> if (opening) -w / 3 else w / 3 } + fadeOut(tween(200)))
         },
-    ) { padding ->
-        // consume the insets the outer Scaffold already handled so each tab's own Scaffold doesn't pad twice
-        Box(Modifier.padding(padding).consumeWindowInsets(padding)) {
-            when (tab) {
+        label = "page",
+    ) { shown ->
+        if (shown != null) PageScreen(shown) { page = null } else Tabs(tab, { tab = it }, resumeTick) { page = it }
+    }
+}
+
+@Composable
+private fun Tabs(tab: Tab, onTab: (Tab) -> Unit, resumeTick: Int, onOpen: (Page) -> Unit) {
+    val content = @Composable {
+        Crossfade(tab, animationSpec = tween(180), label = "tab") {
+            when (it) {
                 Tab.ROM -> RomScreen(resumeTick)
                 Tab.HISTORY -> HistoryScreen(resumeTick)
                 Tab.BROWSE -> BrowseScreen()
-                Tab.MORE -> MoreScreen { page = it }
+                Tab.MORE -> MoreScreen(onOpen)
             }
         }
     }
+    val icon = @Composable { t: Tab -> Icon(painterResource(if (tab == t) t.selectedIcon else t.icon), contentDescription = null) }
+
+    // tablets and phones in landscape get a side rail instead of a bottom bar, like Mihon
+    if (LocalConfiguration.current.screenWidthDp >= 600) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            Row(Modifier.fillMaxSize()) {
+                NavigationRail {
+                    Spacer(Modifier.weight(1f))
+                    Tab.entries.forEach { NavigationRailItem(selected = tab == it, onClick = { onTab(it) }, icon = { icon(it) }, label = { Text(it.label) }) }
+                    Spacer(Modifier.weight(1f))
+                }
+                Box(Modifier.weight(1f)) { content() }
+            }
+        }
+    } else {
+        Scaffold(
+            bottomBar = {
+                NavigationBar {
+                    Tab.entries.forEach { NavigationBarItem(selected = tab == it, onClick = { onTab(it) }, icon = { icon(it) }, label = { Text(it.label) }) }
+                }
+            },
+        ) { padding ->
+            // consume the insets the outer Scaffold already handled so each tab's own Scaffold doesn't pad twice
+            Box(Modifier.padding(padding).consumeWindowInsets(padding)) { content() }
+        }
+    }
 }
+
+/** Keeps lists at a readable width on tablets and in landscape; full width on phones. */
+@Composable
+fun ReadableWidth(content: @Composable () -> Unit) =
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) { Box(Modifier.widthIn(max = 720.dp).fillMaxSize()) { content() } }
 
 fun launchGame(context: Context, game: File) =
     context.startActivity(Intent(context, GameActivity::class.java).putExtra(GameActivity.EXTRA_ROM, game.absolutePath))
@@ -143,19 +189,27 @@ fun launchGame(context: Context, game: File) =
 fun RomScreen(resumeTick: Int) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var games by remember(resumeTick) { mutableStateOf(Library.games(context)) }
+    var games by remember { mutableStateOf<List<File>?>(null) } // null until the first load finishes
+    var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
+    var assigned by remember { mutableStateOf<Map<File, Set<String>>>(emptyMap()) }
+    var reload by remember { mutableIntStateOf(0) }
+    // storage reads happen off the main thread so opening the tab and scrolling never wait on the disk
+    LaunchedEffect(resumeTick, reload) {
+        val g = withContext(Dispatchers.IO) { Library.games(context) }
+        val c = withContext(Dispatchers.IO) { Categories.all(context) }
+        assigned = withContext(Dispatchers.IO) { g.associateWith { Categories.of(context, it) } }
+        categories = c
+        games = g
+    }
     var saveGamePath by rememberSaveable { mutableStateOf<String?>(null) }
     saveGamePath?.let { SaveFileDialog(File(it)) { saveGamePath = null } }
     var importing by remember { mutableStateOf(false) }
     var addMenu by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf<String?>(null) } // null = not searching
-    var categoryTick by remember { mutableIntStateOf(0) }
-    val categories = remember(resumeTick, categoryTick) { Categories.all(context) }
-    val assigned = remember(games, categories) { games.associateWith { Categories.of(context, it) } }
     var categoryTab by rememberSaveable { mutableIntStateOf(0) }
     val selectedTab = categoryTab.coerceAtMost(categories.size) // 0 = Default (games in no category)
     var categorizing by remember { mutableStateOf<File?>(null) }
-    categorizing?.let { SetCategoriesDialog(it, { categorizing = null }) { categorizing = null; categoryTick++ } }
+    categorizing?.let { SetCategoriesDialog(it, { categorizing = null }) { categorizing = null; reload++ } }
 
     // copies can be hundreds of MB for RPG Maker games, so run them off the main thread
     fun import(failMessage: String, block: () -> File?) {
@@ -164,7 +218,7 @@ fun RomScreen(resumeTick: Int) {
             val result = withContext(Dispatchers.IO) { runCatching(block).getOrNull() }
             importing = false
             if (result == null) Toast.makeText(context, failMessage, Toast.LENGTH_LONG).show()
-            games = Library.games(context)
+            reload++
         }
     }
 
@@ -201,10 +255,11 @@ fun RomScreen(resumeTick: Int) {
         dismissButton = { TextButton(onClick = { askAccess = false }) { Text("Cancel") } },
     )
     val validIds = categories.map { it.id }.toSet()
+    val all = games.orEmpty()
     val inTab = when {
-        categories.isEmpty() -> games
-        selectedTab == 0 -> games.filter { (assigned[it].orEmpty() intersect validIds).isEmpty() }
-        else -> games.filter { categories[selectedTab - 1].id in assigned[it].orEmpty() }
+        categories.isEmpty() -> all
+        selectedTab == 0 -> all.filter { (assigned[it].orEmpty() intersect validIds).isEmpty() }
+        else -> all.filter { categories[selectedTab - 1].id in assigned[it].orEmpty() }
     }
     val shown = inTab.filter { it.name.contains(query.orEmpty(), ignoreCase = true) }
 
@@ -233,7 +288,8 @@ fun RomScreen(resumeTick: Int) {
         },
     ) { padding ->
         when {
-            games.isEmpty() -> EmptyState("ಥ_ಥ", "Your library is empty", Modifier.padding(padding)) {
+            games == null -> Box(Modifier.fillMaxSize()) // first load: a blank frame instead of flashing the empty state
+            all.isEmpty() -> EmptyState("ಥ_ಥ", "Your library is empty", Modifier.padding(padding)) {
                 TextButton(onClick = addFile) { Text("Add a GBA ROM or RPG Maker .zip") }
                 TextButton(onClick = addExe) { Text("Add an RPG Maker game (pick Game.exe)") }
             }
@@ -244,8 +300,8 @@ fun RomScreen(resumeTick: Int) {
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.padding(padding),
             ) {
-                items(shown, key = { it.name }) { game ->
-                    GameCard(game, onSaves = { saveGamePath = game.absolutePath }, onLongClick = { categorizing = game }) { launchGame(context, game) }
+                items(shown, key = { it.name }, contentType = { "game" }) { game ->
+                    GameCard(game, Modifier.animateItem(), onSaves = { saveGamePath = game.absolutePath }, onLongClick = { categorizing = game }) { launchGame(context, game) }
                 }
             }
         }
@@ -259,8 +315,6 @@ fun SearchTopBar(title: String, query: String?, onQueryChange: (String?) -> Unit
     val focus = remember { FocusRequester() }
     LaunchedEffect(query != null) { if (query != null) focus.requestFocus() }
     TopAppBar(
-        colors = if (query != null) TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
-            else TopAppBarDefaults.topAppBarColors(),
         navigationIcon = {
             if (query != null) IconButton(onClick = { onQueryChange(null) }) {
                 Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Close search")
@@ -317,12 +371,10 @@ fun GameCover(game: File, modifier: Modifier = Modifier) {
     }
 }
 
-fun gameTitle(game: File): String = if (game.isDirectory) game.name else game.nameWithoutExtension
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GameCard(game: File, onSaves: () -> Unit, onLongClick: () -> Unit, onClick: () -> Unit) {
-    Column(Modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).combinedClickable(onLongClick = onLongClick, onClick = onClick)) {
+private fun GameCard(game: File, modifier: Modifier, onSaves: () -> Unit, onLongClick: () -> Unit, onClick: () -> Unit) {
+    Column(modifier.padding(4.dp).clip(RoundedCornerShape(8.dp)).combinedClickable(onLongClick = onLongClick, onClick = onClick)) {
         GameCover(game, Modifier.fillMaxWidth())
         Text(
             gameTitle(game),

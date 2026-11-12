@@ -31,6 +31,10 @@ fun romFileName(displayName: String?): String? {
     return name.takeIf { ext in GBA_EXTENSIONS || ext in RGSS_ARCHIVE_EXTENSIONS }
 }
 
+/** Display name. Decided from the name alone (no disk access), so lists can call it every frame. */
+fun gameTitle(game: File): String =
+    if (game.extension.lowercase() in GBA_EXTENSIONS + RGSS_ARCHIVE_EXTENSIONS + LINK_EXTENSION) game.nameWithoutExtension else game.name
+
 /** A game in the library is either a ROM/archive file or an RPG Maker game folder. */
 fun coreFor(game: File): Core =
     if (game.extension.lowercase() in GBA_EXTENSIONS) Core.MGBA else Core.MKXPZ

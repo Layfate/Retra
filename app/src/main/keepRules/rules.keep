@@ -1,4 +1,7 @@
 # Add project specific R8 rules here.
+
+# LibretroDroid ships no keep rules, and its native code calls back into these classes by name
+-keep class com.swordfish.libretrodroid.** { *; }
 # AGP will combine all keep rule files in src/main/keepRules to pass to R8
 #
 # For more details, see

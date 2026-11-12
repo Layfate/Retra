@@ -124,7 +124,7 @@ fun SubPage(title: String, onBack: () -> Unit, fab: @Composable () -> Unit = {},
             )
         },
         floatingActionButton = fab,
-        content = content,
+        content = { padding -> ReadableWidth { content(padding) } },
     )
 }
 
@@ -296,7 +296,7 @@ private fun AboutPage(onBack: () -> Unit) {
             MoreItem(R.drawable.ic_info, "License", "GNU General Public License v3.0") { openUrl(context, "https://www.gnu.org/licenses/gpl-3.0.html") }
             MoreItem(
                 R.drawable.ic_label, "Open-source libraries",
-                "LibretroDroid (GPL-3.0)\nmGBA (MPL-2.0)\nmkxp-z (GPL)\nJetpack Compose & AndroidX (Apache-2.0)\nMaterial Symbols (Apache-2.0)",
+                "LibretroDroid (GPL-3.0)\nmGBA (MPL-2.0)\nmkxp-z (GPL)\nJetpack Compose & AndroidX (Apache-2.0)\nMaterial Symbols (Apache-2.0)\nInter font (SIL OFL 1.1)",
             )
         }
     }
