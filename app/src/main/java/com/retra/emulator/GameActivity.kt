@@ -73,7 +73,13 @@ class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val rom = File(intent.getStringExtra(EXTRA_ROM) ?: return finish())
-        val content = contentPath(rom) ?: return finish()
+        val content = contentPath(rom)
+        if (content == null || !content.canRead()) {
+            val why = if (rom.extension == LINK_EXTENSION && !hasStorageAccess(this)) "Retra needs “All files access” to open this game"
+                else "Game files not found. Was the folder moved or deleted?"
+            Toast.makeText(this, why, Toast.LENGTH_LONG).show()
+            return finish()
+        }
         val core = File(applicationInfo.nativeLibraryDir, coreFor(rom).libName)
         if (!core.exists()) {
             // cores live in jniLibs (mkxp-z comes from .github/workflows/mkxp-z-core.yml); fail gracefully if one is missing

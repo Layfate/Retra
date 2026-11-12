@@ -304,7 +304,7 @@ private fun AboutPage(onBack: () -> Unit) {
 
 private val HELP = listOf(
     "How do I add a GBA game?" to "In the Rom tab tap +, then “ROM or game file”, and pick a .gba, .gb or .gbc file.",
-    "How do I add an RPG Maker XP game?" to "Tap +, then “RPG Maker game folder”, and pick the game's main folder (the one with Game.ini). A .zip or .mkxpz of the game works with “ROM or game file” too.",
+    "How do I add an RPG Maker XP game?" to "Tap +, then “RPG Maker game (pick Game.exe)”, and tap Game.exe in the game's folder. It plays from where it is, nothing is copied, so it's instant. The first time, allow “All files access”. Prefer not to? “Copy RPG Maker folder into Retra” copies the game instead, and a .zip or .mkxpz works with “ROM or game file”.",
     "An RPG Maker game has missing graphics or won't start" to "Many XP games need the RTP. Download it free from rpgmakerweb.com, then go to More → Data and storage → RPG Maker XP RTP. If text or the map is invisible, try More → Settings → Subimage fix.",
     "What do the buttons do?" to "GBA: the buttons match the console. RPG Maker: A confirms, B cancels and opens the menu, X is RPG Maker's A key (dash in many games), Y is RPG Maker's X key.",
     "Save states, fast forward and filters" to "In a game, Slot picks a save-state slot, Save and Load use it. ⏩ cycles 1×, 2× and 4× speed. The filter button switches between Sharp, Smooth, LCD and CRT.",

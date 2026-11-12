@@ -24,6 +24,30 @@ class RomFileNameTest {
     }
 
     @Test
+    fun resolvesPickerDocumentIds() {
+        val primary = java.io.File("/storage/emulated/0")
+        assertEquals(java.io.File("/storage/emulated/0/Games/My RPG/Game.exe"), documentIdToFile("primary:Games/My RPG/Game.exe", primary))
+        assertEquals(java.io.File("/storage/1A2B-3C4D/RPG/Game.exe"), documentIdToFile("1A2B-3C4D:RPG/Game.exe", primary))
+        assertEquals(java.io.File("/storage/emulated/0/Download/Game.exe"), documentIdToFile("raw:/storage/emulated/0/Download/Game.exe", primary))
+        assertNull(documentIdToFile("12345", primary))
+    }
+
+    @Test
+    fun followsGameLinks() {
+        val dir = Files.createTempDirectory("link").toFile()
+        try {
+            val game = dir.resolve("Far Away RPG").apply { mkdirs(); resolve("Game.ini").writeText("[Game]") }
+            val link = dir.resolve("Far Away RPG.$LINK_EXTENSION").apply { writeText(game.absolutePath) }
+            assertEquals(Core.MKXPZ, coreFor(link))
+            assertEquals(game.resolve("Game.ini"), contentPath(link))
+            game.deleteRecursively()
+            assertNull(contentPath(link)) // folder moved or deleted
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
     fun picksCoreAndContentPath() {
         val dir = Files.createTempDirectory("rpg").toFile()
         try {

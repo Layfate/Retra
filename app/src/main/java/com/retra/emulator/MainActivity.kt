@@ -1,7 +1,11 @@
 package com.retra.emulator
 
 import android.content.Context
+import android.Manifest
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings as AndroidSettings
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -30,6 +34,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +52,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -168,8 +174,32 @@ fun RomScreen(resumeTick: Int) {
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         uri?.let { import("That folder has no Game.ini. Pick the RPG Maker game's main folder.") { Library.importGameFolder(context, it) } }
     }
+    val exePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let {
+            import("Pick Game.exe inside the game's folder, browsing your phone's storage (not Recent or Drive)") { Library.linkGame(context, it) }
+        }
+    }
+    val legacyPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) exePicker.launch(arrayOf("*/*"))
+    }
+    var askAccess by remember { mutableStateOf(false) }
     val addFile = { if (!importing) filePicker.launch(arrayOf("*/*")) }
     val addFolder = { if (!importing) folderPicker.launch(null) }
+    val addExe = { if (!importing) { if (hasStorageAccess(context)) exePicker.launch(arrayOf("*/*")) else askAccess = true } }
+    if (askAccess) AlertDialog(
+        onDismissRequest = { askAccess = false },
+        title = { Text("Allow file access") },
+        text = { Text("To play RPG Maker games straight from their folder (no copying, like JoiPlay), Retra needs “All files access”. Turn it on for Retra, come back, and tap + again.") },
+        confirmButton = {
+            TextButton(onClick = {
+                askAccess = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    context.startActivity(Intent(AndroidSettings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + context.packageName)))
+                } else legacyPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }) { Text("Allow") }
+        },
+        dismissButton = { TextButton(onClick = { askAccess = false }) { Text("Cancel") } },
+    )
     val validIds = categories.map { it.id }.toSet()
     val inTab = when {
         categories.isEmpty() -> games
@@ -188,7 +218,8 @@ fun RomScreen(resumeTick: Int) {
                             }
                             DropdownMenu(expanded = addMenu, onDismissRequest = { addMenu = false }) {
                                 DropdownMenuItem(text = { Text("ROM or game file") }, onClick = { addMenu = false; addFile() })
-                                DropdownMenuItem(text = { Text("RPG Maker game folder") }, onClick = { addMenu = false; addFolder() })
+                                DropdownMenuItem(text = { Text("RPG Maker game (pick Game.exe)") }, onClick = { addMenu = false; addExe() })
+                                DropdownMenuItem(text = { Text("Copy RPG Maker folder into Retra") }, onClick = { addMenu = false; addFolder() })
                             }
                         }
                 }
@@ -204,7 +235,7 @@ fun RomScreen(resumeTick: Int) {
         when {
             games.isEmpty() -> EmptyState("ಥ_ಥ", "Your library is empty", Modifier.padding(padding)) {
                 TextButton(onClick = addFile) { Text("Add a GBA ROM or RPG Maker .zip") }
-                TextButton(onClick = addFolder) { Text("Add an RPG Maker game folder") }
+                TextButton(onClick = addExe) { Text("Add an RPG Maker game (pick Game.exe)") }
             }
             shown.isEmpty() && query.isNullOrEmpty() -> EmptyState("(・_・)", "This category is empty.\nLong-press a game to add it.", Modifier.padding(padding))
             shown.isEmpty() -> EmptyState("(・_・)", "No games match “${query.orEmpty()}”", Modifier.padding(padding))
@@ -228,22 +259,31 @@ fun SearchTopBar(title: String, query: String?, onQueryChange: (String?) -> Unit
     val focus = remember { FocusRequester() }
     LaunchedEffect(query != null) { if (query != null) focus.requestFocus() }
     TopAppBar(
+        colors = if (query != null) TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+            else TopAppBarDefaults.topAppBarColors(),
+        navigationIcon = {
+            if (query != null) IconButton(onClick = { onQueryChange(null) }) {
+                Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = "Close search")
+            }
+        },
         title = {
             if (query != null) TextField(
                 value = query,
                 onValueChange = onQueryChange,
                 placeholder = { Text("Search…") },
                 singleLine = true,
-                colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
                 modifier = Modifier.fillMaxWidth().focusRequester(focus),
             ) else Text(title)
         },
         actions = {
-            IconButton(onClick = { onQueryChange(if (query == null) "" else null) }) {
-                Icon(
-                    painterResource(if (query != null) R.drawable.ic_close else R.drawable.ic_search),
-                    contentDescription = if (query != null) "Close search" else "Search",
-                )
+            if (query == null) IconButton(onClick = { onQueryChange("") }) {
+                Icon(painterResource(R.drawable.ic_search), contentDescription = "Search")
             }
             actions()
         },

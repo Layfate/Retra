@@ -1,7 +1,11 @@
 package com.retra.emulator
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.provider.OpenableColumns
@@ -31,13 +35,36 @@ fun romFileName(displayName: String?): String? {
 fun coreFor(game: File): Core =
     if (game.extension.lowercase() in GBA_EXTENSIONS) Core.MGBA else Core.MKXPZ
 
-/** What we hand the core: the file itself, or the Game.ini / mkxp.json inside a game folder. */
+// a linked RPG Maker game: a tiny file in the library holding the path of the game folder, which stays where it is
+const val LINK_EXTENSION = "rpglink"
+
+/** The game folder a link points to. */
+fun linkTarget(link: File): File? = runCatching { File(link.readText().trim()) }.getOrNull()
+
+/** What we hand the core: the file itself, the Game.ini / mkxp.json inside a game folder, or the same for a linked folder. */
 fun contentPath(game: File): File? =
-    if (!game.isDirectory) game
+    if (game.extension == LINK_EXTENSION) linkTarget(game)?.takeIf { it.isDirectory }?.let(::contentPath)
+    else if (!game.isDirectory) game
     else game.listFiles().orEmpty().let { files ->
         files.firstOrNull { it.name.equals("Game.ini", ignoreCase = true) }
             ?: files.firstOrNull { it.name.equals("mkxp.json", ignoreCase = true) }
     }
+
+/**
+ * Real path of a file picked through the system file picker, for files on the phone's storage or an SD card.
+ * [documentId] is the picker's document ID, e.g. "primary:Games/MyRPG/Game.exe" or "1A2B-3C4D:MyRPG/Game.exe".
+ */
+fun documentIdToFile(documentId: String, primaryRoot: File): File? {
+    if (documentId.startsWith("raw:")) return File(documentId.removePrefix("raw:")) // Downloads provider
+    val volume = documentId.substringBefore(':', "").ifEmpty { return null }
+    val relative = documentId.substringAfter(':')
+    return File(if (volume.equals("primary", ignoreCase = true)) primaryRoot else File("/storage/$volume"), relative)
+}
+
+/** "All files access" (Android 11+) or storage read permission (older), needed to play linked games in place. */
+fun hasStorageAccess(context: Context): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Environment.isExternalStorageManager()
+    else context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
 // shortcut: games are just files/folders in app storage, move to a database when we need covers/metadata/extensions
 object Library {
@@ -73,6 +100,19 @@ object Library {
             DigestInputStream(it, digest).use { d -> tmp.outputStream().use { out -> d.copyTo(out) } }
             sha256 == null || digest.digest().joinToString("") { b -> "%02x".format(b) }.equals(sha256, ignoreCase = true)
         }
+    }
+
+    /**
+     * Adds an RPG Maker game without copying it: [uri] is any file in the game folder (usually Game.exe).
+     * Returns null if the file isn't on local storage or its folder isn't an RPG Maker game.
+     */
+    fun linkGame(context: Context, uri: Uri): File? {
+        // only these providers' document IDs encode a real path; Drive, "Recent", etc. don't
+        if (uri.authority != "com.android.externalstorage.documents" && uri.authority != "com.android.providers.downloads.documents") return null
+        val picked = runCatching { documentIdToFile(DocumentsContract.getDocumentId(uri), Environment.getExternalStorageDirectory()) }.getOrNull()
+        val folder = picked?.parentFile?.takeIf { contentPath(it) != null } ?: return null
+        val link = File(romsDir(context), File(folder.name).name + "." + LINK_EXTENSION)
+        return installAtomically(link) { tmp -> tmp.writeText(folder.absolutePath); true }
     }
 
     /** Copies a picked RPG Maker game folder (the one with Game.ini) into the library, like JoiPlay. */
