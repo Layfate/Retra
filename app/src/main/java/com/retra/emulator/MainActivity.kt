@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,14 +26,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,7 +55,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { RetraTheme { LibraryScreen() } }
+        setContent { RetraTheme { RetraApp() } }
+    }
+}
+
+/** Mihon-style shell: bottom tabs for the Library and for Browse (game sources). */
+@Composable
+fun RetraApp() {
+    var tab by androidx.compose.runtime.saveable.rememberSaveable { mutableIntStateOf(0) }
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(selected = tab == 0, onClick = { tab = 0 }, icon = { Text("📚") }, label = { Text("Library") })
+                NavigationBarItem(selected = tab == 1, onClick = { tab = 1 }, icon = { Text("🧭") }, label = { Text("Browse") })
+            }
+        },
+    ) { padding ->
+        // consume the insets the outer Scaffold already handled so each tab's own Scaffold doesn't pad twice
+        Box(Modifier.padding(padding).consumeWindowInsets(padding)) {
+            if (tab == 0) LibraryScreen() else BrowseScreen()
+        }
     }
 }
 
@@ -144,5 +165,6 @@ private fun GameCard(game: File, onSaves: () -> Unit, onClick: () -> Unit) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(4.dp),
         )
+        if (coreFor(game) == Core.MGBA) TextButton(onClick = onSaves) { Text("Saves") }
     }
 }

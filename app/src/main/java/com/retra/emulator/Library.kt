@@ -6,6 +6,9 @@ import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import android.provider.OpenableColumns
 import java.io.File
+import java.io.InputStream
+import java.security.DigestInputStream
+import java.security.MessageDigest
 
 // mGBA plays GBA plus original GB/GBC
 private val GBA_EXTENSIONS = setOf("gba", "gb", "gbc")
@@ -59,6 +62,16 @@ object Library {
         val name = romFileName(displayName) ?: return null
         return installAtomically(File(romsDir(context), name)) { tmp ->
             context.contentResolver.openInputStream(uri)?.use { input -> tmp.outputStream().use { input.copyTo(it) } } != null
+        }
+    }
+
+    /** Saves a downloaded game into the library. When the repo gives a [sha256] (hex), a mismatch discards the file. */
+    fun importStream(context: Context, fileName: String, input: InputStream, sha256: String?): File? = input.use {
+        val name = romFileName(fileName) ?: return null
+        installAtomically(File(romsDir(context), name)) { tmp ->
+            val digest = MessageDigest.getInstance("SHA-256")
+            DigestInputStream(it, digest).use { d -> tmp.outputStream().use { out -> d.copyTo(out) } }
+            sha256 == null || digest.digest().joinToString("") { b -> "%02x".format(b) }.equals(sha256, ignoreCase = true)
         }
     }
 
