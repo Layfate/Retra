@@ -39,6 +39,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.swordfish.libretrodroid.GLRetroView
 import com.swordfish.libretrodroid.GLRetroViewData
+import com.swordfish.libretrodroid.Variable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -83,6 +84,8 @@ class GameActivity : ComponentActivity() {
             systemDirectory = Library.systemDir(this@GameActivity).absolutePath // mkxp-z reads RTP/fonts from here
             savesDirectory = saves.absolutePath // mkxp-z keeps RPG Maker saves under mkxp-z/Saves/ here
             saveRAMState = sramFile.takeIf { it.exists() }?.readBytes()
+            // mkxp-z states are fixed-size buffers (default 100 MiB); 64 is its minimum and plenty for XP games
+            if (coreFor(rom) == Core.MKXPZ) variables = arrayOf(Variable("mkxp-z_saveStateSize", "64"))
         })
         lifecycle.addObserver(retroView)
         lifecycleScope.launch {
@@ -93,7 +96,7 @@ class GameActivity : ComponentActivity() {
         setContent {
             Box(Modifier.fillMaxSize().background(Color.Black)) {
                 AndroidView(factory = { retroView }, modifier = Modifier.fillMaxSize())
-                Gamepad(onKey = ::key, onDpad = ::dpad, onSaveState = ::saveState, onLoadState = ::loadState, onSlot = ::chooseSlot)
+                Gamepad(rpgButtons = coreFor(rom) == Core.MKXPZ, onKey = ::key, onDpad = ::dpad, onSaveState = ::saveState, onLoadState = ::loadState, onSlot = ::chooseSlot)
             }
         }
     }
@@ -149,6 +152,7 @@ class GameActivity : ComponentActivity() {
 
 @Composable
 private fun Gamepad(
+    rpgButtons: Boolean,
     onKey: (Int, Boolean) -> Unit,
     onDpad: (Int, Boolean) -> Unit,
     onSaveState: () -> Unit,
@@ -181,11 +185,18 @@ private fun Gamepad(
                 PadButton("START", RoundedCornerShape(50), 64.dp, 28.dp) { onKey(KeyEvent.KEYCODE_BUTTON_START, it) }
             }
             Spacer(Modifier.weight(1f))
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                PadButton("B", CircleShape, 60.dp, 60.dp) { onKey(KeyEvent.KEYCODE_BUTTON_B, it) }
-                Column {
-                    PadButton("A", CircleShape, 60.dp, 60.dp) { onKey(KeyEvent.KEYCODE_BUTTON_A, it) }
-                    Spacer(Modifier.size(40.dp))
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // mkxp-z maps RetroPad A→C (confirm), B→B (cancel), X→A (dash in many games), Y→X
+                if (rpgButtons) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    PadButton("Y", CircleShape, 48.dp, 48.dp) { onKey(KeyEvent.KEYCODE_BUTTON_Y, it) }
+                    PadButton("X", CircleShape, 48.dp, 48.dp) { onKey(KeyEvent.KEYCODE_BUTTON_X, it) }
+                }
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    PadButton("B", CircleShape, 60.dp, 60.dp) { onKey(KeyEvent.KEYCODE_BUTTON_B, it) }
+                    Column {
+                        PadButton("A", CircleShape, 60.dp, 60.dp) { onKey(KeyEvent.KEYCODE_BUTTON_A, it) }
+                        Spacer(Modifier.size(40.dp))
+                    }
                 }
             }
         }
