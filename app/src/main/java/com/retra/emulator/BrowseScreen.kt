@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +75,7 @@ fun BrowseScreen() {
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(title = { Text("Browse") }, actions = { TextButton(onClick = { adding = true }) { Text("Add repo") } })
+                TopAppBar(title = { Text("Browse") }, actions = { IconButton(onClick = { adding = true }) { Icon(painterResource(R.drawable.ic_add), contentDescription = "Add repo") } })
                 if (loading || downloading) LinearProgressIndicator(Modifier.fillMaxWidth())
             }
         },
@@ -90,7 +93,7 @@ fun BrowseScreen() {
             if (urls.isEmpty()) {
                 item {
                     Text(
-                        "Retra doesn't include any game sources. Tap “Add repo” and paste the https link to a repo index you trust, " +
+                        "Retra doesn't include any game sources. Tap + and paste the https link to a repo index you trust, " +
                             "e.g. one for homebrew, ROM hacks you're allowed to share, or fan games.",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(16.dp),

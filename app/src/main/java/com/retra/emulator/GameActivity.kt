@@ -83,6 +83,7 @@ class GameActivity : ComponentActivity() {
             Toast.makeText(this, "The ${coreFor(rom).name} core isn't in this build yet", Toast.LENGTH_LONG).show()
             return finish()
         }
+        History.record(this, rom)
         val saves = Library.savesDir(this)
         romFile = rom
         SaveFiles.migrate(saves, rom)
