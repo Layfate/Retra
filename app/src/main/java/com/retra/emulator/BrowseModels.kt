@@ -42,6 +42,8 @@ object BrowseProtocol {
     const val PAGE_SIZE = 30
     val filterKeys = listOf("platform", "genre", "year", "region", "language", "gameType", "availability")
     private val identifier = Regex("[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
+    private val accents = Regex("\\p{M}+")
+    private fun searchText(value: String) = java.text.Normalizer.normalize(value, java.text.Normalizer.Form.NFD).replace(accents, "")
     fun id(value: String): String = value.also { require(identifier.matches(it)) { "Invalid identifier" } }
     fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256").digest(bytes)
         .joinToString("") { "%02x".format(it) }
@@ -63,6 +65,11 @@ object BrowseProtocol {
             url = "https://raw.githubusercontent.com/" + uri.path.removePrefix("/").replaceFirst("/blob/", "/")
         }
         return if (URI(url).path.endsWith("/")) url + "index.json" else url
+    }
+    fun websiteSearch(template: String, query: String): String {
+        val remaining = template.replaceFirst("{query}", "")
+        require(template.contains("{query}") && !remaining.contains('{') && !remaining.contains('}')) { "Invalid website search URL" }
+        return https(template.replace("{query}", java.net.URLEncoder.encode(query.take(200), "UTF-8")))
     }
     fun extensions(index: JSONObject): List<ExtensionMetadata> {
         require(index.getInt("schemaVersion") == API) { "Unsupported repository schema" }
@@ -107,6 +114,8 @@ object BrowseProtocol {
             val supported = platforms(source.getJSONArray("platforms"))
             require(platforms(metadata.json.getJSONArray("platforms")).containsAll(supported))
             https(source.getString("catalogUrl")); optionalImage(source, "icon")
+            optionalImage(source, "website")
+            if (source.optString("searchUrl").isNotBlank()) websiteSearch(source.getString("searchUrl"), "game")
         }
         return json
     }
@@ -152,9 +161,10 @@ object BrowseProtocol {
 
     fun page(games: List<GameMetadata>, query: String, filters: GameFilters, mode: String, page: Int): GamePage {
         require(page in 1..10000)
+        val needle = searchText(query)
         val filtered = games.filter { game ->
             val row = game.json
-            row.getString("title").contains(query, ignoreCase = true) && filters.values.all { (key, value) ->
+            searchText(row.getString("title")).contains(needle, ignoreCase = true) && filters.values.all { (key, value) ->
                 require(key in filterKeys)
                 val field = if (key == "availability") {
                     if (authorized(row.optJSONObject("download"))) "download" else "catalog"

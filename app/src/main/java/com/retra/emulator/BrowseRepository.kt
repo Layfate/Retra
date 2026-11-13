@@ -16,7 +16,7 @@ import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.coroutineContext
 
 /** Bounded HTTPS transport shared by repository indexes, data packages and ROM downloads. */
-open class BrowseHttp {
+open class BrowseHttp(private val headers: (String) -> Map<String, String> = { emptyMap() }) {
     open fun open(url: String, offset: Long = 0): HttpURLConnection {
         var target = BrowseProtocol.https(url)
         repeat(6) {
@@ -32,6 +32,7 @@ open class BrowseHttp {
             connection.instanceFollowRedirects = false
             connection.setRequestProperty("Accept-Encoding", "identity")
             connection.setRequestProperty("User-Agent", "Retra-Catalog/1")
+            headers(target).forEach { (name, value) -> connection.setRequestProperty(name, value) }
             if (offset > 0) connection.setRequestProperty("Range", "bytes=$offset-")
             val status = connection.responseCode
             if (status in setOf(301, 302, 303, 307, 308)) {

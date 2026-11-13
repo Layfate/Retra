@@ -1,6 +1,7 @@
 package com.retra.emulator
 
 import android.net.Uri
+import android.content.Intent
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -87,7 +88,15 @@ class BrowseController(private val activity: MainActivity) {
                 return JSONObject().put("games", JSONArray(page.games.map { it.json })).put("page", page.page)
                     .put("hasNext", page.hasNext).put("offline", source.offline)
             }
-            "details", "addLibrary", "import", "download" -> {
+            "openSourceWebsite" -> {
+                val source = repository.source(args.getString("source"))
+                val query = args.optString("query").trim()
+                val url = if (query.isNotEmpty() && source.optString("searchUrl").isNotBlank())
+                    BrowseProtocol.websiteSearch(source.getString("searchUrl"), query) else BrowseProtocol.https(source.getString("website"))
+                store.put("pending", "import", JSONObject().put("source", source.getString("key")))
+                openWebsite(url, source)
+            }
+            "details", "addLibrary", "import", "download", "website" -> {
                 val source = args.getString("source")
                 val gameId = args.getString("gameId")
                 val key = repository.downloadKey(source, gameId)
@@ -103,6 +112,11 @@ class BrowseController(private val activity: MainActivity) {
                     "import" -> {
                         store.put("pending", "import", JSONObject().put("source", source).put("gameId", gameId).put("game", game.json))
                         activity.runOnUiThread { activity.browseRomPicker.launch(arrayOf("*/*")) }
+                    }
+                    "website" -> {
+                        val url = BrowseProtocol.https(game.json.getString("website"))
+                        store.put("pending", "import", JSONObject().put("source", source).put("gameId", gameId).put("game", game.json))
+                        openWebsite(url, definition)
                     }
                     "download" -> {
                         require(definition != null) { "Reinstall the source to download" }
@@ -162,38 +176,50 @@ class BrowseController(private val activity: MainActivity) {
         return row
     }
     private fun libraryChanged() = emit("retraBrowseLibraryChanged", JSONObject())
-    fun importResult(uri: Uri?) {
+    private fun openWebsite(url: String, source: JSONObject?) {
+        activity.runOnUiThread {
+            activity.browseWebsite.launch(Intent(activity, SourceBrowserActivity::class.java).putExtra("url", url)
+                .putExtra("name", source?.optString("name") ?: "Website").putExtra("searchUrl", source?.optString("searchUrl")))
+        }
+    }
+    fun websiteResult(data: Intent?) {
+        val path = data?.getStringExtra("path")
+        if (path == null) { importResult(null); return }
+        val file = File(path).canonicalFile
+        if (file.parentFile != File(activity.cacheDir, "website-downloads").canonicalFile || !file.isFile) {
+            emit("retraBrowseImportError", JSONObject().put("error", "Downloaded file unavailable. Please retry."))
+            return
+        }
+        importResult(Uri.fromFile(file), deleteAfter = true, fileName = data.getStringExtra("fileName"))
+    }
+    fun importResult(uri: Uri?, deleteAfter: Boolean = false, fileName: String? = null) {
         scope.launch {
-            val pending = store.get("pending", "import") ?: return@launch
+            val pending = store.get("pending", "import")
             store.delete("pending", "import")
             if (uri == null) return@launch
-            try { associate(pending.getString("source"), GameMetadata(pending.getJSONObject("game")), uri) }
+            try {
+                if (pending?.has("game") == true) associate(pending.getString("source"), GameMetadata(pending.getJSONObject("game")), uri)
+                else {
+                    val item = activity.importUri(uri, forcedTitle = fileName?.substringBeforeLast('.'))
+                    activity.persistNativeItem(item)
+                    activity.runOnUiThread { activity.notifyWebImported(item) }
+                }
+                libraryChanged()
+            }
             catch (error: Exception) { emit("retraBrowseImportError", JSONObject().put("error", error.message ?: "Import failed")) }
+            finally { if (deleteAfter) File(uri.path.orEmpty()).delete() }
         }
     }
     internal suspend fun associate(source: String, game: GameMetadata, uri: Uri) = mutations.withLock {
         val extension = activity.fileOps.queryDisplayName(uri)?.substringAfterLast('.')?.uppercase()
-        require(extension == game.platform.name) { "Select a ${game.platform.name} ROM file" }
+        val archive = extension in setOf("ZIP", "MGBA")
+        val patch = extension in setOf("IPS", "UPS", "BPS")
+        require(extension == game.platform.name || archive || patch) { "Select a ${game.platform.name} ROM, ZIP or patch file" }
         val expected = game.json.optString("romSha256").ifBlank { game.json.optJSONObject("download")?.optString("sha256").orEmpty() }
-        if (expected.isNotBlank()) {
-            BrowseProtocol.hash(expected)
-            val digest = java.security.MessageDigest.getInstance("SHA-256")
-            activity.contentResolver.openInputStream(uri)?.use { input ->
-                val buffer = ByteArray(32768)
-                var total = 0L
-                while (true) {
-                    val read = input.read(buffer)
-                    if (read < 0) break
-                    total += read
-                    require(total <= MainActivity.MAX_ROM_BYTES) { "ROM too large" }
-                    digest.update(buffer, 0, read)
-                }
-            } ?: error("Cannot read ROM")
-            require(digest.digest().joinToString("") { "%02x".format(it) } == expected.lowercase()) { "ROM does not match this catalog game" }
-        }
+        if (expected.isNotBlank()) BrowseProtocol.hash(expected)
         val key = repository.downloadKey(source, game.id)
         val previous = store.get("library", key)
-        val item = activity.importUri(uri)
+        val item = activity.importUri(uri, forcedTitle = game.json.getString("title"), expectedPlatform = game.platform.name, expectedHash = expected)
         activity.persistNativeItem(item)
         val row = previous ?: JSONObject().put("sourceId", source).put("sourceName", source.substringAfter('/'))
             .put("gameId", game.id).put("game", game.json)

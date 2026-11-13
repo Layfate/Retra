@@ -178,7 +178,9 @@ internal fun MainActivity.recoverInterruptedImports() {
 internal fun MainActivity.importUri(
     uri: Uri,
     forcedId: String? = null,
-    forcedTitle: String? = null
+    forcedTitle: String? = null,
+    expectedPlatform: String? = null,
+    expectedHash: String? = null
 ): NativeLibraryItem {
     val fileInfo = fileOps.queryFileInfo(uri)
     val displayName = fileInfo.first ?: "game.gba"
@@ -253,6 +255,12 @@ internal fun MainActivity.importUri(
             legacyBundleIdentityHash(stagedLaunch, stagedPatch)
         } else null
         val contentHash = cachedRecord?.contentHash ?: contentIdentityHash(stagedLaunch, stagedPatch)
+        require(expectedPlatform == null || system == expectedPlatform || (system == "PATCH" && expectedHash.isNullOrBlank())) {
+            "Selected file is not a $expectedPlatform ROM"
+        }
+        require(expectedHash.isNullOrBlank() || contentHash.equals(expectedHash, ignoreCase = true)) {
+            "ROM does not match this catalog game"
+        }
         val existingByHash = cachedRecord ?: romIdentityStore.findByHash(system, contentHash)
             ?: legacyIdentityHash?.let { romIdentityStore.findByHash(system, it) }
         val forcedRecord = forcedId?.let { romIdentityStore.getById(it) }

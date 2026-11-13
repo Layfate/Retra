@@ -6,8 +6,9 @@
   const allowedLicense = value => typeof value === 'string' && value.length <= 200 && value.split(' AND ').every(part => licensePattern.test(part));
 
   // ---------- Pure helpers (unit tested in tests/browse-system.test.cjs) ----------
+  const searchText = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   function filterSources(sources, query, platform, sort){
-    return sources.filter(source => source.name.toLowerCase().includes(query.toLowerCase()) && (!platform || source.platforms.includes(platform)))
+    return sources.filter(source => searchText(source.name).includes(searchText(query)) && (!platform || source.platforms.includes(platform)))
       .sort((a,b) => sort === 'platform' ? a.platforms.join().localeCompare(b.platforms.join()) || a.name.localeCompare(b.name) :
         (sort === 'reverse' ? -1 : 1) * a.name.localeCompare(b.name));
   }
@@ -49,9 +50,9 @@
   }
   /** Mihon-style Extensions list: Updates pending, Installed, then available grouped by repository. */
   function extensionSections(rows, query = ''){
-    const needle = query.trim().toLowerCase();
-    const visible = rows.filter(row => !needle || row.meta.name.toLowerCase().includes(needle) ||
-      String(row.meta.publisher || '').toLowerCase().includes(needle));
+    const needle = searchText(query.trim());
+    const visible = rows.filter(row => !needle || searchText(row.meta.name).includes(needle) ||
+      searchText(String(row.meta.publisher || '')).includes(needle));
     const byName = (a,b) => a.meta.name.localeCompare(b.meta.name);
     const sections = [];
     const updates = visible.filter(row => row.status === 'Update available').sort(byName);
@@ -66,8 +67,11 @@
   }
   function pendingUpdates(rows){ return rows.filter(row => row.status === 'Update available').length; }
   function isAuthorizedDownload(download){ return Boolean(download?.authorized && allowedLicense(download.license)); }
+  function gameDownloadAction(game){
+    return isAuthorizedDownload(game.download) ? 'direct' : /^https:\/\//i.test(game.website || '') ? 'website' : '';
+  }
 
-  const helpers = {filterSources, extensionStatus, sourceSections, extensionRows, extensionSections, pendingUpdates, isAuthorizedDownload};
+  const helpers = {filterSources, extensionStatus, sourceSections, extensionRows, extensionSections, pendingUpdates, isAuthorizedDownload, gameDownloadAction};
   if (typeof module === 'object' && module.exports) { module.exports = helpers; return; }
 
   // ---------- Bridge ----------
@@ -531,6 +535,7 @@
     source = row; rememberSource(row.key);
     $('catalogTitle').textContent = row.name;
     $('catalogLatest').hidden = !row.latest;
+    $('catalogWebsite').hidden = !row.website;
     $('catalogQuery').value = query; $('catalogSearchForm').classList.toggle('open', Boolean(query));
     suppressFilterReset = true; $('catalogFilters').reset(); suppressFilterReset = false;
     syncCatalogColumns();
@@ -658,11 +663,12 @@
       } else { await request('addLibrary', detailArgs()); await updateDetail(); showToast('Added to Library'); }
     }, Boolean(library?.inLibrary)));
     actions.append(tile('Import ROM', strokeIcons.importRom, () => request('import', detailArgs())));
-    const downloadTile = tile('Download', strokeIcons.download, () => openConfirmModal('Download this game?',
+    const action = gameDownloadAction(game);
+    const downloadTile = tile(action === 'website' ? 'Download on website' : 'Download', strokeIcons.download, () => action === 'website' ? request('website', detailArgs()) : openConfirmModal('Download this game?',
       `${download.fileName}\nLicense: ${download.license}\nRights: ${download.rightsUrl}\nSize: ${Math.ceil(download.size / 1024)} KiB\n\nThe source states this file may be distributed. Continue only if that is true for you.`,
       () => run(async () => { const result = await request('download', detailArgs()); detail.downloadId = result.id; renderProgress(); })));
-    downloadTile.disabled = !authorized;
-    if (!authorized) downloadTile.setAttribute('aria-label', 'Download unavailable: no authorized file from this source');
+    downloadTile.disabled = !action;
+    if (!action) downloadTile.setAttribute('aria-label', 'Download unavailable: no file or website');
     actions.append(downloadTile);
     const play = tile('Play', strokeIcons.play, () => launchNativeRom({dataset:{romId:library.romId, title:game.title, fileName:library.fileName, system:game.platform}}));
     play.disabled = !installed; actions.append(play);
@@ -691,12 +697,13 @@
     const info = element('div', 'detail-list');
     [['Source', sourceName], ['Source game ID', game.id], ['Developer', game.developer], ['Publisher', game.publisher],
       ['Release year', game.year], ['Platform', game.platform],
-      ['File', authorized ? `Authorized download • ${download.license}` : 'Catalog only. Get the file from the developer, then use Import ROM.'],
+      ['File', authorized ? `Authorized download • ${download.license}` : action === 'website' ? 'Open the website inside Retra and choose a supported ROM, ZIP or patch download.' : 'Catalog only. Get the file from the developer, then use Import ROM.'],
       ['Local ROM', installed ? library.fileName : 'Not installed']].forEach(([label, value]) => info.append(detailRow(label, value)));
-    // Developer page opens in the browser (the WebView hands external HTTPS links to Android).
+    // External pages use an isolated browser with supported downloads back into Library.
     if (/^https:\/\//i.test(game.website || '')) {
       const link = element('a', 'detail-row tappable browse-link');
       link.href = game.website; link.rel = 'noopener noreferrer';
+      link.addEventListener('click', event => { event.preventDefault(); run(() => request('website', detailArgs())); });
       const copy = element('div'); copy.append(element('strong', '', 'Website'), element('span', '', game.website));
       link.append(copy); link.insertAdjacentHTML('beforeend', '<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>');
       info.append(link);
@@ -852,6 +859,10 @@
   $('catalogMore').addEventListener('click', () => run(() => loadCatalog(), $('catalogMore')));
   $('catalogMoreBtn').addEventListener('click', event => { event.stopPropagation(); $('catalogOverflowMenu').classList.toggle('open'); });
   $('catalogRefresh').addEventListener('click', () => { $('catalogOverflowMenu').classList.remove('open'); run(() => loadCatalog(true, true)); });
+  $('catalogWebsite').addEventListener('click', () => {
+    $('catalogOverflowMenu').classList.remove('open');
+    run(() => request('openSourceWebsite', {source:source.key, query:$('catalogQuery').value.trim()}));
+  });
   $('catalogSourceInfo').addEventListener('click', () => {
     $('catalogOverflowMenu').classList.remove('open');
     if (source) openConfirmModal(source.name, `Source ID: ${source.key}\nPlatforms: ${source.platforms.join(', ')}\nCatalog: ${source.catalogUrl}`, () => {});

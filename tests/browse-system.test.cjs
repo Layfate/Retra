@@ -116,38 +116,6 @@ test('repository builder maps Homebrew Hub entries and only authorizes declared 
   assert.equal(toGame({...entry,files:[{filename:'game.nes',playable:true}]}),null);
 });
 
-test('Romhack Plaza index is catalog-only: GB/GBC/GBA hacks and translations from sitemap addresses, no downloads', () => {
-  const {plazaGame} = require('../tools/extension-repo/build-repo.cjs');
-  const hack = plazaGame('https://romhackplaza.org/romhacks/pokemon-legends-x-v2-7-game-boy-advance','2026-07-01T13:16:18+00:00');
-  assert.equal(hack.title,'Pokemon Legends X v2.7'); assert.equal(hack.platform,'GBA'); assert.equal(hack.genre,'Pokémon');
-  assert.equal(hack.gameType,'romhack'); assert.equal(hack.updatedAt,Date.parse('2026-07-01T13:16:18Z'));
-  assert.equal(hack.website,'https://romhackplaza.org/romhacks/pokemon-legends-x-v2-7-game-boy-advance');
-  assert.equal(hack.download,undefined); assert.equal(hack.cover,undefined);
-  const translation = plazaGame('https://romhackplaza.org/translations/pokemon-crystal-vietnamese-translation-gbc');
-  assert.equal(translation.platform,'GBC'); assert.equal(translation.language,'Vietnamese'); assert.equal(translation.gameType,'translation');
-  assert.equal(plazaGame('https://romhackplaza.org/romhacks/mole-mania-big-mamas-frame-fix-game-boy-romhack').platform,'GB');
-  assert.equal(plazaGame('https://romhackplaza.org/romhacks/breath-of-fire-ii-gba-portraits-by-goodlucktrying-snes'),null);
-  assert.equal(plazaGame('https://romhackplaza.org/utilities/some-tool-gba'),null);
-  assert.equal(plazaGame('https://romhackplaza.org/romhacks/%F0%9F%97%9D%EF%B8%8F-pokemon-quest-game-boy-advance').title,'Pokemon Quest');
-});
-
-test('hack covers use the original game box art only on a confident title match', () => {
-  const {matchBoxart, titleTokens} = require('../tools/extension-repo/build-repo.cjs');
-  const entry = (name, rank = 0) => {
-    const base = name.replace(/\s*\(.*$/,''); const segments = base.split(' - ');
-    return {name, rank, variants:[base, ...(segments.length >= 3 ? [segments.slice(0,2).join(' - ')] : [])].map(t => [...new Set(titleTokens(t))])};
-  };
-  const index = {GB:[entry('Pokemon - Red Version (USA, Europe)'), entry('Tetris (World)'), entry('Pokemon - Yellow Version - Special Pikachu Edition (USA)')],
-    GBC:[entry('Pokemon - Crystal Version (USA)')], GBA:[entry('Pokemon (USA)'), entry('Pokemon - FireRed Version (USA)')]};
-  assert.match(matchBoxart('Pokemon Fire Red Reignited','GBA',index).name,/FireRed/);
-  assert.equal(matchBoxart('Pokemon Legends X','GBA',index),null);          // franchise word alone is not enough
-  assert.match(matchBoxart('Pokemon Crystal Pikachu Edition','GBC',index).name,/Crystal/);
-  assert.match(matchBoxart('Pokemon Ruthless Red','GBC',index).url,/Nintendo_-_Game_Boy\/master/); // GBC hack of a GB game
-  assert.match(matchBoxart('Pokemon Yellow Full Color','GB',index).name,/Yellow/);
-  assert.match(matchBoxart('Tetris 1984','GB',index).url,/Named_Boxarts\/Tetris%20\(World\)\.png$/);
-  assert.equal(matchBoxart('Completely Original Quest','GB',index),null);
-});
-
 test('official game catalogs list real releases once, with covers and no download links', () => {
   const {officialGames, displayTitle} = require('../tools/extension-repo/build-repo.cjs');
   assert.equal(displayTitle('Legend of Zelda, The - Link\'s Awakening DX'),'The Legend of Zelda - Link\'s Awakening DX');
@@ -159,7 +127,7 @@ test('official game catalogs list real releases once, with covers and no downloa
     releaseyear:new Map([[key(names[0]),'2003']]), genre:new Map()};
   const games = officialGames('GBA',[entry(names[0],0),entry(names[1],2),entry(names[2],4),entry(names[3],0),entry(names[4],3),
     entry('Pokemon - AshGray Version [Hack by metapod23] (USA)',0),entry('Pokemon - Brown Version (USA)',0)],meta);
-  assert.deepEqual(games.map(g => g.title),['Harvest Moon - Friends of Mineral Town','Pocket Monsters - Emerald','Pokemon - Emerald Version']);
+  assert.deepEqual(games.map(g => g.title),['Harvest Moon - Friends of Mineral Town','Pocket Monsters - Emerald','Pokemon - Blattgruene Edition','Pokemon - Emerald Version']);
   const harvest = games[0];
   assert.equal(harvest.region,'USA'); assert.equal(harvest.publisher,'Natsume'); assert.equal(harvest.year,'2003'); assert.equal(harvest.gameType,'official');
   assert.match(harvest.cover,/Named_Boxarts\/Harvest%20Moon%20-%20Friends%20of%20Mineral%20Town%20\(USA\)\.png$/);

@@ -276,9 +276,8 @@ class MainActivity : AppCompatActivity() {
 
     private val browseDelegate = lazy { BrowseController(this) }
     internal val browseController by browseDelegate
-    internal val browseRomPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        browseController.importResult(uri)
-    }
+    internal val browseRomPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { browseController.importResult(it) }
+    internal val browseWebsite = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { browseController.websiteResult(it.data) }
 
     internal val statistics by lazy {
         StatisticsRepository(prefs, romIdentityStore, fileOps)

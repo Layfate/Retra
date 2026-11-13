@@ -31,6 +31,8 @@
             </intent-filter>
         </provider>
 
+        <activity android:name=".SourceBrowserActivity" android:exported="false"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

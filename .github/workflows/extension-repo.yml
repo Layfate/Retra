@@ -2,8 +2,8 @@ name: Retra extension repository
 
 # Rebuilds the extension repository published on the `repo` branch
 # (https://raw.githubusercontent.com/<owner>/<repo>/repo/index.json) so the
-# Homebrew Hub catalogs pick up new games. Previously hashed ROMs are reused
-# from hashes.json; only new authorized files are downloaded and hashed.
+# website catalogs pick up new games and artwork. The default index publishes
+# one extension containing PokéHarbor, PokeMundo and Roms Games sources.
 
 on:
   schedule:
