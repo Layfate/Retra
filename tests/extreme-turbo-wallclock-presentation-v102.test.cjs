@@ -1,0 +1,14 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const session = fs.readFileSync('app/src/main/java/com/retra/emulator/EmulationSessionManager.kt', 'utf8');
+const governor = fs.readFileSync('app/src/main/java/com/retra/emulator/TurboThroughputGovernor.kt', 'utf8');
+const mailbox = fs.readFileSync('app/src/main/java/com/retra/emulator/GameplayFrameMailbox.kt', 'utf8');
+const planner = fs.readFileSync('app/src/main/java/com/retra/emulator/TurboSlicePlanner.kt', 'utf8');
+assert.match(session, /turboGovernor\.onBatchComplete\(speed, framesThisSlice\)/);
+assert.match(governor, /targetNs = epochNs \+/);
+assert.match(governor, /lateByNs > recoveryThresholdNs/);
+assert.match(session, /turboPresentationHz/);
+assert.match(session, /setContinuousVsync\(turbo\)/);
+assert.match(session, /turboSlicePlanner\.nextFrames\(\)/);
+assert.match(planner, /phase \+= framesPerSliceExact/);
+assert.match(mailbox, /pending = completed/);

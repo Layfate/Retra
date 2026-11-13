@@ -1,10 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
     namespace = "com.retra.emulator"
+    // NDK r28+ produces 16 KB page-size compatible native libraries by default.
+    ndkVersion = "28.0.13004108"
     compileSdk {
         version = release(37)
     }
@@ -13,53 +16,63 @@ android {
         applicationId = "com.retra.emulator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 451
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // only ABIs we ship an mGBA core for (src/main/jniLibs)
-        ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+            }
+        }
     }
 
     buildTypes {
         release {
-            // R8 shrinking/optimisation: a much smoother app than debug builds (see keepRules/rules.keep)
             optimization {
                 enable = true
             }
-            // signed with the debug key so the fast build runs straight from Android Studio; use your own key to publish
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
-    packaging {
-        // libretro cores are loaded by file path, so they must be extracted from the APK
-        jniLibs.useLegacyPackaging = true
+    buildFeatures {
+        viewBinding = true
+    }
+    lint {
+        abortOnError = true
+        checkReleaseBuilds = true
+        warningsAsErrors = false
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.libretrodroid)
+    implementation(libs.androidx.webkit)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.coroutines.android)
+    ksp(libs.androidx.room.compiler)
+    implementation("androidx.documentfile:documentfile:1.1.0")
+    implementation("com.google.android.gms:play-services-auth:21.6.0")
+    implementation(libs.material)
     testImplementation(libs.junit)
-    testImplementation(libs.org.json) // Android's built-in org.json is stubbed out in JVM unit tests
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    androidTestImplementation(libs.androidx.room.testing)
 }

@@ -19,10 +19,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io") // LibretroDroid
     }
 }
 
-rootProject.name = "Retra!"
+rootProject.name = "Retra"
 include(":app")
- 

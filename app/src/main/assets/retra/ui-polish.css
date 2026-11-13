@@ -1,0 +1,1335 @@
+/* Shared interaction polish. Keep gameplay/editor dimensions independent. */
+:root {
+  --interaction-duration: 140ms;
+  --interaction-easing: cubic-bezier(.2, .8, .25, 1);
+}
+button, input, select, textarea { font-family: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+.chip, .text-action-btn, .sheet-options-item, .category-delete {
+  touch-action: manipulation;
+}
+.chip, .text-action-btn, .category-delete {
+  min-height: 44px;
+}
+.category-delete { min-width: 44px; }
+.chip, .text-action-btn, .sheet-options-item {
+  transition: background-color var(--interaction-duration) var(--interaction-easing),
+              color var(--interaction-duration) var(--interaction-easing);
+}
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+#categoriesList strong, .sheet-category-name strong { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* v4.26 centered, larger and low-latency Library multi-select. */
+.cover-card { position: relative; }
+.library-selection-check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 6;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(15,16,27,.58);
+  box-shadow: 0 5px 14px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: scale(.8);
+  pointer-events: none;
+  transition: opacity var(--interaction-duration) var(--interaction-easing),
+              transform var(--interaction-duration) var(--interaction-easing),
+              background-color var(--interaction-duration) var(--interaction-easing),
+              border-color var(--interaction-duration) var(--interaction-easing);
+}
+.library-selection-check svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+body.library-selection-mode .cover-card .library-selection-check {
+  opacity: 1;
+  transform: scale(1);
+}
+/* Draw the multi-select highlight on the cover itself, never on the title.
+   Use a real border instead of outline/color-mix shadows: older Android WebView
+   versions can drop the whole shadow declaration when one color function is
+   unsupported. A physical border remains reliable across WebView versions. */
+.cover-card::before {
+  content: none;
+}
+.cover-card > img,
+.cover-card .cover-art-placeholder {
+  box-sizing: border-box;
+  border: 0 solid transparent;
+  transition: border-color 85ms var(--interaction-easing),
+              border-width 85ms var(--interaction-easing),
+              border-radius 110ms var(--interaction-easing),
+              box-shadow 110ms var(--interaction-easing),
+              transform 110ms var(--interaction-easing),
+              filter 110ms var(--interaction-easing);
+  will-change: border-color, transform;
+}
+body.library-selection-mode .cover-card.library-selected,
+body.library-selection-mode .cover-card[data-selected="true"] {
+  outline: none;
+  box-shadow: none;
+  transform: none;
+}
+body.library-selection-mode .cover-card.library-selected > img,
+body.library-selection-mode .cover-card[data-selected="true"] > img,
+body.library-selection-mode .cover-card.library-selected .cover-art-placeholder,
+body.library-selection-mode .cover-card[data-selected="true"] .cover-art-placeholder {
+  border-width: 3px;
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+  filter: saturate(1.03);
+}
+body.library-selection-mode .cover-card.library-selected .library-selection-check,
+body.library-selection-mode .cover-card[data-selected="true"] .library-selection-check {
+  background: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 78%, white 22%);
+  box-shadow: 0 5px 14px rgba(0,0,0,.24), 0 0 0 2px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+body.library-selection-mode .cover-card.library-selected .library-selection-check svg,
+body.library-selection-mode .cover-card[data-selected="true"] .library-selection-check svg { opacity: 1; }
+
+.library-selection-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  height: calc(112px + var(--device-safe-bottom));
+  padding: 9px max(10px, var(--device-safe-right)) calc(9px + var(--device-safe-bottom)) max(10px, var(--device-safe-left));
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--nav-bg) 94%, transparent);
+  box-shadow: 0 -14px 34px rgba(0,0,0,.20);
+  backdrop-filter: blur(18px) saturate(1.18);
+  -webkit-backdrop-filter: blur(18px) saturate(1.18);
+  opacity: 0;
+  transform: translateY(110%);
+  pointer-events: none;
+  transition: opacity .18s var(--interaction-easing), transform .2s var(--interaction-easing);
+}
+.library-selection-bar.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.library-selection-close {
+  position: absolute;
+  left: max(10px, var(--device-safe-left));
+  top: 9px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--text);
+}
+.library-selection-close:active { background: var(--accent-soft); }
+.library-selection-close svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; }
+.library-selection-summary {
+  position: absolute;
+  z-index: 2;
+  left: max(56px, calc(var(--device-safe-left) + 56px));
+  right: 12px;
+  top: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.library-selection-summary strong { color: var(--text); font-size: 14px; white-space: nowrap; }
+.library-selection-summary span { color: var(--muted); font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.library-selection-actions {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  right: auto;
+  bottom: calc(8px + var(--device-safe-bottom));
+  width: min(372px, calc(100% - 20px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+.library-selection-action {
+  min-width: 0;
+  height: 56px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--nav-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-size: 10px;
+  font-weight: 750;
+}
+.library-selection-action:active,
+.library-selection-action.active { background: var(--nav-active-bg); color: var(--nav-active-text); }
+.library-selection-action svg { width: 29px; height: 29px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+#librarySelectionFavorite svg { fill: color-mix(in srgb, currentColor 22%, transparent); }
+#librarySelectionCategories svg { width: 27px; height: 27px; stroke-width: 1.8; }
+.library-selection-action > span:not(.sr-only) { display: none; }
+.library-selection-more-menu {
+  position: absolute;
+  /* Anchor the popup closer to the More action: lower and slightly more to
+     the RIGHT, even if it overlaps the selected-count helper copy. Keep a
+     small responsive inset so the full popup remains visible on narrow phones. */
+  right: max(calc(var(--device-safe-right) + 10px), clamp(14px, 6vw, 24px));
+  bottom: calc(88px + var(--device-safe-bottom));
+  z-index: 180;
+  width: min(220px, calc(100vw - 30px));
+  padding: 6px;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, rgba(255,255,255,.08));
+  border-radius: 18px;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--header-1) 97%, var(--accent) 3%) 0%,
+    color-mix(in srgb, var(--header-2) 98%, black 2%) 100%);
+  box-shadow: 0 16px 38px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.05);
+  opacity: 0;
+  transform: translateY(8px) scale(.985);
+  pointer-events: none;
+  transition: opacity .14s ease, transform .14s ease;
+}
+.library-selection-more-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.library-selection-more-menu button {
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: color-mix(in srgb, var(--panel-2, var(--nav-bg)) 92%, var(--accent) 8%);
+  color: var(--text);
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  transition: background-color var(--interaction-duration) var(--interaction-easing),
+              transform var(--interaction-duration) var(--interaction-easing),
+              border-color var(--interaction-duration) var(--interaction-easing),
+              box-shadow var(--interaction-duration) var(--interaction-easing);
+}
+.library-selection-more-menu button:active {
+  background: color-mix(in srgb, var(--accent-soft) 80%, white 20%);
+  transform: scale(.985);
+}
+.library-selection-more-menu button:hover {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--line) 68%);
+}
+.library-selection-more-menu button.danger { color: var(--danger); }
+.library-selection-more-menu svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  padding: 9px;
+  border-radius: 12px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.9;
+  background: color-mix(in srgb, var(--accent-soft) 78%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+}
+.library-selection-more-menu button span { display: grid; gap: 3px; min-width: 0; }
+.library-selection-more-menu strong { font-size: 13px; line-height: 1.25; }
+.library-selection-more-menu small { color: var(--muted); font-size: 9.5px; line-height: 1.35; }
+body.library-selection-mode .bottom-nav { opacity: 0; pointer-events: none; }
+body.library-selection-mode .add-rom-btn { opacity: 0; transform: scale(.85); pointer-events: none; }
+body.library-selection-mode .toast { bottom: calc(122px + var(--device-safe-bottom)); }
+
+.multi-category-card { max-height: min(76dvh, 560px); }
+.multi-category-copy { margin: -4px 0 10px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.multi-category-list { overflow: auto; max-height: min(52dvh, 390px); margin: 0 -4px; padding: 2px 4px; }
+.multi-category-item {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.multi-category-item:last-child { border-bottom: 0; }
+.multi-category-check { position: relative; width: 24px; height: 24px; flex: 0 0 24px; }
+.multi-category-check input { position: absolute; opacity: 0; pointer-events: none; }
+.multi-category-box {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  border: 1.5px solid color-mix(in srgb, var(--muted) 70%, transparent);
+  background: transparent;
+}
+.multi-category-check input:checked + .multi-category-box { background: var(--accent); border-color: var(--accent); }
+.multi-category-check input:checked + .multi-category-box::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: translateY(-1px) rotate(-45deg);
+}
+.multi-category-item.mixed .multi-category-box { border-color: var(--accent); background: var(--accent-soft); }
+.multi-category-item.mixed .multi-category-box::after { content: ''; width: 9px; height: 2px; border-radius: 2px; background: var(--accent); }
+.multi-category-name { min-width: 0; display: grid; gap: 3px; }
+.multi-category-name strong { color: var(--text); font-size: 12px; overflow-wrap: anywhere; }
+.multi-category-name small { color: var(--muted); font-size: 9px; line-height: 1.35; }
+
+@media (max-width: 380px) {
+  .library-selection-summary span { display: none; }
+  .library-selection-actions { width: calc(100% - 16px); gap: 5px; }
+  .library-selection-action { height: 54px; font-size: 9.5px; }
+  .library-selection-action svg { width: 27px; height: 27px; }
+  #librarySelectionCategories svg { width: 25px; height: 25px; }
+}
+
+/* Keep multi-select taps visually immediate on Android WebView. */
+body.library-selection-mode .cover-card {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 70ms var(--interaction-easing),
+              opacity 55ms var(--interaction-easing),
+              box-shadow 80ms var(--interaction-easing);
+}
+body.library-selection-mode .cover-card.selection-pressing {
+  transform: scale(.982);
+  opacity: .965;
+  will-change: transform, opacity;
+}
+@media (pointer: coarse), (max-width: 600px) {
+  .library-selection-bar,
+  .library-selection-more-menu,
+  .library-selection-check {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+body.library-selection-mode #libraryPage { padding-bottom: calc(132px + var(--device-safe-bottom)); }
+.cover-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* v4.33 responsiveness / high-refresh rendering polish. */
+main {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: auto;
+}
+
+/* Isolate card painting so rapid scroll/selection does not invalidate the
+   surrounding grid. Do not promote every card to its own GPU layer. */
+.cover-card {
+  contain: layout paint style;
+}
+
+/* Large libraries can skip rasterizing off-screen card contents while keeping
+   their aspect-ratio-based layout footprint. Supported Android WebView builds
+   use this as a paint optimization; older builds simply ignore it. */
+.library-grid.large-library .cover-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 250px;
+}
+
+/* Blur on every visible cover badge is expensive during finger scrolling.
+   Keep the translucent appearance on touch devices without per-card blur. */
+@media (pointer: coarse), (max-width: 600px) {
+  .favourite-heart {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(15,16,27,.72);
+  }
+}
+
+
+/* v4.47 — Solid Library refresh popup.
+   Keep the menu readable even when it overlaps the category chips. */
+.library-overflow-menu {
+  background: var(--panel-2) !important;
+  border-color: color-mix(in srgb, var(--line) 82%, var(--text) 18%);
+  box-shadow: 0 16px 34px rgba(0,0,0,.34);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: isolate;
+}
+.library-overflow-item {
+  background: var(--panel) !important;
+  border: 1px solid color-mix(in srgb, var(--line) 84%, transparent);
+}
+.library-overflow-item:hover,
+.library-overflow-item:active {
+  background: var(--panel-2) !important;
+}
+
+/* v4.47 Color Style — game-only color vibe presets with visual previews. */
+.color-style-page{
+  min-height:100%;
+}
+.color-style-content{
+  display:grid;
+  gap:14px;
+  padding-bottom:calc(18px + var(--device-safe-bottom));
+}
+.color-style-intro,
+.color-style-note{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.color-style-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.color-style-card{
+  position:relative;
+  min-width:0;
+  padding:8px 8px 11px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  text-align:left;
+  cursor:pointer;
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  transition:border-color .16s ease, background .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+.color-style-card:active{
+  transform:scale(.985);
+}
+.color-style-card.active{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  box-shadow:0 8px 24px rgba(0,0,0,.16);
+}
+.color-style-preview{
+  width:100%;
+  aspect-ratio:3/2;
+  overflow:hidden;
+  border-radius:11px;
+  background:#000;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.color-style-preview img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  image-rendering:pixelated;
+}
+.color-style-card-copy{
+  display:grid;
+  gap:3px;
+  padding:9px 3px 0;
+}
+.color-style-card-copy strong{
+  font-size:13px;
+  font-weight:650;
+}
+.color-style-card-copy span{
+  min-height:31px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
+}
+.color-style-check{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:rgba(12,13,22,.80);
+  border:1px solid rgba(255,255,255,.15);
+  opacity:0;
+  transform:scale(.82);
+  transition:opacity .15s ease, transform .15s ease;
+}
+.color-style-card.active .color-style-check{
+  opacity:1;
+  transform:scale(1);
+  background:var(--accent);
+  color:#16120d;
+}
+.color-style-check svg{
+  width:15px;
+  height:15px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+@media (max-width:360px){
+  .color-style-grid{grid-template-columns:1fr;}
+  .color-style-card{display:grid;grid-template-columns:132px 1fr;gap:9px;align-items:center;padding:8px;}
+  .color-style-card-copy{padding:0 3px;}
+  .color-style-card-copy span{min-height:0;}
+}
+
+
+/* v1.0.0 final interaction / accessibility polish.
+   These rules intentionally avoid changing gameplay control geometry. */
+:root{
+  --retra-tap-target:44px;
+  --retra-focus-ring:color-mix(in srgb, var(--accent) 78%, white 22%);
+  --retra-press-scale:.985;
+}
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body{
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button,
+[role="button"],
+a,
+input,
+select,
+textarea{
+  -webkit-tap-highlight-color:transparent;
+}
+button,
+[role="button"],
+.settings-item,
+.more-item,
+.detail-row,
+.frequency-option,
+.sheet-options-item,
+.bottom-nav button{
+  touch-action:manipulation;
+}
+.icon-btn,
+.back-btn,
+.small-icon-btn,
+.library-selection-close,
+.text-action-btn,
+.modal-btn,
+.bottom-nav button{
+  min-width:var(--retra-tap-target);
+  min-height:var(--retra-tap-target);
+}
+button:disabled,
+[aria-disabled="true"]{
+  cursor:default;
+  opacity:.5;
+  pointer-events:none;
+}
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+  outline:2px solid var(--retra-focus-ring);
+  outline-offset:3px;
+}
+.settings-item,
+.more-item,
+.detail-row,
+.frequency-option,
+.modal-btn,
+.text-action-btn,
+.icon-btn,
+.back-btn,
+.small-icon-btn{
+  transition:
+    background-color var(--interaction-duration) var(--interaction-easing),
+    border-color var(--interaction-duration) var(--interaction-easing),
+    color var(--interaction-duration) var(--interaction-easing),
+    opacity var(--interaction-duration) var(--interaction-easing),
+    transform var(--interaction-duration) var(--interaction-easing);
+}
+@media (hover:hover) and (pointer:fine){
+  .settings-item:hover,
+  .more-item:hover,
+  .detail-row:hover,
+  .frequency-option:hover{
+    background-color:color-mix(in srgb, var(--accent-soft) 42%, transparent);
+  }
+  .modal-btn:hover,
+  .text-action-btn:hover,
+  .icon-btn:hover,
+  .back-btn:hover,
+  .small-icon-btn:hover{
+    filter:brightness(1.06);
+  }
+}
+@media (pointer:coarse){
+  button:active,
+  [role="button"]:active,
+  .settings-item:active,
+  .more-item:active,
+  .detail-row:active{
+    transform:scale(var(--retra-press-scale));
+  }
+  /* Avoid expensive blur while a finger is interacting with dense menus. */
+  .settings-menu,
+  .detail-list,
+  .selection-modal-card{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}
+.modal-backdrop.open{
+  overscroll-behavior:contain;
+}
+.selection-modal-card,
+.category-modal-card,
+.confirm-modal-card,
+.rom-card-actions-sheet{
+  max-width:min(94vw, 520px);
+}
+.toast{
+  width:max-content;
+  min-width:0;
+  max-width:min(calc(100vw - 36px), 420px);
+  text-align:center;
+  padding:10px 16px;
+  overflow-wrap:anywhere;
+}
+@media (max-width:380px){
+  .modal-btn,
+  .text-action-btn{
+    min-height:46px;
+  }
+}
+@media (prefers-contrast:more){
+  .settings-item,
+  .more-item,
+  .detail-row,
+  .frequency-option,
+  .selection-modal-card,
+  .category-modal-card{
+    border-color:color-mix(in srgb, var(--text) 34%, var(--line));
+  }
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  a:focus-visible{
+    outline-width:3px;
+  }
+}
+
+/* v1.0.0 final Settings/About alignment polish */
+.section-label{
+  color:#78e8ee;
+  text-align:center;
+}
+
+/* Let the About frame background reach the full page edges while preserving
+   the existing inner content alignment. */
+#aboutSettingsPage .about-panel,
+#aboutPage .about-panel{
+  width:calc(100% + (var(--content-gutter) * 2));
+  max-width:none;
+  margin-left:calc(var(--content-gutter) * -1);
+  margin-right:calc(var(--content-gutter) * -1);
+  padding-left:calc(var(--content-gutter) + 8px);
+  padding-right:calc(var(--content-gutter) + 8px);
+  box-sizing:border-box;
+}
+
+/* v1.0.0 branding vertical alignment polish
+   Give the Retra mark a little more breathing room from the top edge on More
+   and both About entry points without changing the logo size. */
+#morePage .more-logo-wrap{
+  padding-top:16px;
+}
+
+#aboutSettingsPage .about-panel,
+#aboutPage .about-panel{
+  padding-top:34px;
+}
+
+/* v1.0 Data & Storage — portable .retra backup/restore. */
+.data-storage-content,
+.backup-create-content {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 22px;
+}
+.storage-section-label,
+.backup-group-label {
+  margin: 8px 2px 2px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+.data-storage-card,
+.backup-check-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+}
+.data-storage-card .detail-row {
+  padding: 14px;
+}
+.storage-usage-block {
+  padding: 16px 14px 17px;
+  border-top: 1px solid var(--line);
+}
+.storage-usage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.storage-usage-head strong { font-size: 13px; }
+.storage-usage-head span,
+.storage-usage-foot {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+.storage-meter {
+  height: 8px;
+  margin: 12px 0 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 72%, transparent);
+}
+.storage-meter > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 220ms var(--interaction-easing);
+}
+.backup-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.03);
+}
+.backup-action-btn {
+  min-height: 118px;
+  padding: 16px 14px;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 11px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.backup-action-btn + .backup-action-btn { border-left: 1px solid var(--line); }
+.backup-action-btn:active { background: rgba(255,255,255,.045); }
+
+.backup-action-btn.backup-cloud-recovery {
+  grid-column: 1 / -1;
+  min-height: 86px;
+  border-left: 0;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 430px) {
+  .backup-action-btn.backup-cloud-recovery { grid-column: auto; }
+}
+.backup-action-btn svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.backup-action-btn > svg,
+.backup-action-btn > div {
+  align-self: center;
+}
+.backup-action-btn > div {
+  display: flex;
+  min-height: 42px;
+  flex-direction: column;
+  justify-content: center;
+}
+.backup-action-btn strong { display:block; font-size:13px; line-height:1.3; }
+.backup-action-btn span { display:block; margin-top:6px; color:var(--muted); font-size:10px; line-height:1.45; }
+.storage-info-note,
+.backup-create-intro {
+  margin: 4px 2px 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+.backup-check-row {
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  user-select: none;
+}
+.backup-check-row:last-child { border-bottom: 0; }
+.backup-check-row input { position:absolute; opacity:0; pointer-events:none; }
+.backup-check-box {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid color-mix(in srgb, var(--muted) 72%, transparent);
+  border-radius: 7px;
+  background: transparent;
+  transition: background-color var(--interaction-duration) var(--interaction-easing),
+              border-color var(--interaction-duration) var(--interaction-easing);
+}
+.backup-check-box svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.backup-check-row input:checked + .backup-check-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.backup-check-row input:checked + .backup-check-box svg { opacity:1; }
+.backup-check-copy strong { display:block; font-size:13px; font-weight:600; }
+.backup-check-copy small { display:block; margin-top:5px; color:var(--muted); font-size:10px; line-height:1.4; }
+/* Create Backup owns its bottom geometry. Generic settings pages add their own
+   safe-area/scroll tails, so disable those while this page is active and keep
+   exactly one clearance: fixed action bar (72px) + 12px visual gap + system inset. */
+body.backup-create-open main {
+  padding-bottom: 0 !important;
+  scroll-padding-bottom: 0 !important;
+  overscroll-behavior-y: none;
+}
+body.backup-create-open #createBackupPage.active {
+  min-height: auto;
+  scroll-margin-bottom: 0;
+  padding-bottom: calc(84px + var(--device-safe-bottom)) !important;
+}
+.backup-create-footer {
+  /* The action belongs to the viewport, not the scrolling checklist. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  box-sizing: border-box;
+  padding:
+    12px max(var(--content-gutter), var(--device-safe-right))
+    calc(12px + var(--device-safe-bottom))
+    max(var(--content-gutter), var(--device-safe-left));
+  border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  background: var(--bg);
+  box-shadow: 0 -10px 28px rgba(0,0,0,.18);
+}
+.backup-create-button {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.backup-create-button:disabled { opacity:.45; cursor:default; }
+
+@media (max-width: 430px) {
+  .backup-action-grid { grid-template-columns: 1fr; }
+  .backup-action-btn + .backup-action-btn { border-left:0; border-top:1px solid var(--line); }
+  .backup-action-btn { min-height: 88px; }
+}
+
+/* v1.0.2 About/update surface — deliberately compact and native-settings-like. */
+.about-update-list{
+  width:min(100%, 380px);
+  margin:2px 0 22px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.about-update-row{
+  width:100%;
+  min-height:66px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 4px;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  font:inherit;
+}
+.about-update-row:last-child{border-bottom:0}
+.about-update-row>div{min-width:0;flex:1}
+.about-update-row strong{display:block;font-size:13.5px;font-weight:600;line-height:1.3}
+.about-update-row span{display:block;margin-top:4px;color:var(--muted);font-size:10.75px;line-height:1.35}
+.about-update-button{cursor:pointer;border-radius:0}
+.about-update-button:active{background:rgba(255,255,255,.035)}
+.about-update-button .chevron{width:18px;height:18px;flex:0 0 auto;color:var(--muted)}
+body[data-resolved-mode="light"] .about-update-button:active{background:rgba(16,24,40,.045)}
+
+.app-update-card{max-width:390px}
+.app-update-kicker{
+  display:block;
+  margin-bottom:8px;
+  color:var(--accent);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.app-update-notes{
+  max-height:190px;
+  overflow:auto;
+  margin:12px 0 18px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,.025);
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.55;
+  text-align:left;
+  white-space:pre-wrap;
+  overscroll-behavior:contain;
+}
+body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025)}
+
+/* Search field: the rounded .search-panel is the visual focus container.
+   Do not draw a second rectangular focus ring around the native text input. */
+.search-panel input:focus,
+.search-panel input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+
+/* ==========================================================================
+   Retra v1.0.3 — Library Sort + Display
+   Sort and Display live beside Search. There is intentionally no Filter tab,
+   and Display intentionally contains no Overlay or Tabs controls.
+   ========================================================================== */
+#libraryHeader .header-actions{
+  align-items:center;
+  gap:5px;
+}
+#libraryHeader .library-view-trigger.active{
+  color:var(--accent);
+  background:var(--accent-soft);
+  border-color:color-mix(in srgb, var(--accent) 42%, var(--line));
+}
+
+.library-view-backdrop{
+  position:absolute;
+  inset:0;
+  z-index:235;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0;
+  background:rgba(5,6,12,.46);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .16s var(--interaction-easing);
+}
+.library-view-backdrop.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.library-view-sheet{
+  width:100%;
+  max-height:min(78%, 660px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:0 18px calc(22px + var(--device-safe-bottom));
+  border-radius:28px 28px 0 0;
+  border:1px solid color-mix(in srgb, var(--line) 82%, var(--text) 12%);
+  border-bottom:0;
+  background:var(--panel-2);
+  box-shadow:0 -18px 48px rgba(0,0,0,.34);
+  transform:translateY(18px);
+  transition:transform .19s var(--interaction-easing);
+}
+.library-view-backdrop.open .library-view-sheet{transform:translateY(0);}
+.library-view-tabs{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  margin:0 -18px 14px;
+  padding:0 22px;
+  background:var(--panel-2);
+  border-bottom:1px solid var(--line);
+}
+.library-view-tab{
+  position:relative;
+  min-height:58px;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:15px;
+  font-weight:750;
+  cursor:pointer;
+}
+.library-view-tab::after{
+  content:'';
+  position:absolute;
+  left:22%;
+  right:22%;
+  bottom:-1px;
+  height:3px;
+  border-radius:999px 999px 0 0;
+  background:var(--accent);
+  opacity:0;
+}
+.library-view-tab.active{color:var(--text);}
+.library-view-tab.active::after{opacity:1;}
+.library-view-panel{display:none;}
+.library-view-panel.active{display:block;}
+.library-sort-options{display:grid;gap:2px;}
+.library-sort-option{
+  min-height:54px;
+  width:100%;
+  display:grid;
+  grid-template-columns:34px 1fr;
+  align-items:center;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  padding:0 10px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:550;
+}
+.library-sort-option:active{background:rgba(255,255,255,.045);}
+.library-sort-direction{
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  color:transparent;
+  font-size:23px;
+  line-height:1;
+}
+.library-sort-option.selected .library-sort-direction{color:var(--accent);}
+.library-sort-option.selected{font-weight:700;}
+.library-sort-option .random-icon{font-size:20px;}
+.library-view-hint{
+  margin:10px 10px 2px 44px;
+  color:var(--muted);
+  font-size:10.5px;
+  line-height:1.45;
+}
+.library-view-section-title{
+  margin:16px 2px 12px;
+  font-size:15px;
+  font-weight:750;
+}
+.library-display-modes{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.library-display-modes button{
+  min-height:46px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel);
+  color:var(--text);
+  font-size:13px;
+  font-weight:650;
+  cursor:pointer;
+}
+.library-display-modes button.selected{
+  color:var(--accent);
+  background:var(--accent-soft);
+  border-color:color-mix(in srgb, var(--accent) 48%, var(--line));
+}
+.library-items-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:26px;
+}
+.library-items-row > div{display:grid;gap:2px;}
+.library-items-row strong{font-size:14px;}
+.library-items-row small{font-size:10px;color:var(--muted);}
+.library-items-row > span{
+  min-width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  font-size:13px;
+  font-weight:750;
+}
+.library-items-slider{
+  width:100%;
+  margin:18px 0 4px;
+  accent-color:var(--accent);
+}
+.library-items-slider:disabled{opacity:.34;}
+.library-items-ticks{
+  display:flex;
+  justify-content:space-between;
+  padding:0 4px;
+  color:var(--muted);
+  font-size:9px;
+}
+.library-view-backdrop.list-mode .library-items-row,
+.library-view-backdrop.list-mode .library-items-slider,
+.library-view-backdrop.list-mode .library-items-ticks{opacity:.48;}
+
+/* The slider is authoritative for all three grid modes. This override comes
+   after the responsive landscape rules so user preference wins on phones,
+   tablets, foldables and split-screen. */
+#libraryPage .library-grid:not(.library-display-list){
+  grid-template-columns:repeat(var(--library-columns, 3), minmax(0,1fr)) !important;
+}
+#libraryPage .library-grid.library-display-compact{gap:10px;}
+#libraryPage .library-grid.library-display-comfortable{gap:16px;}
+#libraryPage .library-grid.library-display-comfortable .cover-card{
+  border-radius:17px;
+  box-shadow:0 12px 32px rgba(0,0,0,.27);
+}
+#libraryPage .library-grid.library-display-comfortable .cover-info strong{font-size:14px;}
+#libraryPage .library-grid.library-display-cover-only .cover-info,
+#libraryPage .library-grid.library-display-cover-only .top-badge,
+#libraryPage .library-grid.library-display-cover-only .favourite-heart{display:none !important;}
+
+#libraryPage .library-grid.library-display-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:stretch;
+}
+#libraryPage .library-grid.library-display-list .cover-card{
+  width:100%;
+  max-width:none;
+  min-height:82px;
+  aspect-ratio:auto;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:7px 8px;
+  overflow:visible;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  box-shadow:none;
+}
+#libraryPage .library-grid.library-display-list .cover-card::after{display:none;}
+#libraryPage .library-grid.library-display-list .cover-card > img{
+  order:1;
+  width:48px;
+  height:68px;
+  flex:0 0 48px;
+  border-radius:8px;
+  object-fit:cover;
+  box-shadow:0 5px 16px rgba(0,0,0,.24);
+}
+#libraryPage .library-grid.library-display-list .cover-card.no-cover{background:transparent;}
+#libraryPage .library-grid.library-display-list .cover-art-placeholder{
+  position:relative;
+  inset:auto;
+  order:1;
+  width:48px;
+  height:68px;
+  flex:0 0 48px;
+  border-radius:8px;
+  background:
+    radial-gradient(circle at 72% 24%, rgba(255,255,255,.055) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 28% 78%, rgba(255,255,255,.035) 0 16%, transparent 16.5%),
+    linear-gradient(155deg, var(--cover-fallback-a, rgba(68,70,91,.58)), var(--cover-fallback-b, rgba(11,12,22,.94)));
+  box-shadow:0 5px 16px rgba(0,0,0,.24);
+}
+#libraryPage .library-grid.library-display-list .cover-info{
+  position:static;
+  order:2;
+  min-width:0;
+  flex:1 1 auto;
+}
+#libraryPage .library-grid.library-display-list .cover-info strong{
+  color:var(--text);
+  font-size:14px;
+  font-weight:650;
+  line-height:1.35;
+  text-shadow:none;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#libraryPage .library-grid.library-display-list .top-badge{
+  position:static;
+  order:3;
+  flex:0 0 auto;
+  margin-left:auto;
+  padding:5px 8px;
+}
+#libraryPage .library-grid.library-display-list .favourite-heart{
+  top:50%;
+  right:54px;
+  transform:translateY(-50%);
+}
+#libraryPage .library-grid.library-display-list .library-selection-check{
+  top:50%;
+  left:18px;
+  transform:translateY(-50%) scale(.8);
+}
+body.library-selection-mode #libraryPage .library-grid.library-display-list .cover-card .library-selection-check{
+  transform:translateY(-50%) scale(1);
+}
+
+body[data-resolved-mode="light"] .library-view-sheet{
+  background:var(--panel-2);
+  box-shadow:0 -18px 48px rgba(33,42,68,.18);
+}
+
+.sr-only{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+
+@media (max-width:390px){
+  #libraryHeader .header-actions{gap:3px;}
+  #libraryHeader .icon-btn{width:37px;height:37px;border-radius:11px;}
+  #libraryHeader h1{font-size:25px;}
+}
+
+/* Match the reference behavior more closely: Compact Grid puts the title
+   underneath the cover, while Comfortable Grid keeps Retra's richer title
+   overlay. Cover-only and List remain intentionally minimal. */
+#libraryPage .library-grid.library-display-compact .cover-card{
+  aspect-ratio:auto;
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+#libraryPage .library-grid.library-display-compact .cover-card::after{display:none;}
+#libraryPage .library-grid.library-display-compact .cover-card > img{
+  width:100%;
+  height:auto;
+  aspect-ratio:.68;
+  object-fit:cover;
+  border-radius:12px;
+  box-shadow:0 7px 20px rgba(0,0,0,.24);
+}
+#libraryPage .library-grid.library-display-compact .cover-card.no-cover{background:transparent;}
+#libraryPage .library-grid.library-display-compact .cover-art-placeholder{
+  position:relative;
+  inset:auto;
+  width:100%;
+  aspect-ratio:.68;
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 72% 24%, rgba(255,255,255,.055) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 28% 78%, rgba(255,255,255,.035) 0 16%, transparent 16.5%),
+    linear-gradient(155deg, var(--cover-fallback-a, rgba(68,70,91,.58)), var(--cover-fallback-b, rgba(11,12,22,.94)));
+  box-shadow:0 7px 20px rgba(0,0,0,.24);
+}
+#libraryPage .library-grid.library-display-compact .cover-card.library-selected > img,
+#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
+#libraryPage .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
+#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
+  border-radius:16px;
+  transform:translateY(-1px);
+}
+#libraryPage .library-grid.library-display-list .cover-card.library-selected > img,
+#libraryPage .library-grid.library-display-list .cover-card[data-selected="true"] > img,
+#libraryPage .library-grid.library-display-list .cover-card.library-selected .cover-art-placeholder,
+#libraryPage .library-grid.library-display-list .cover-card[data-selected="true"] .cover-art-placeholder{
+  border-radius:12px;
+}
+#libraryPage .library-grid.library-display-compact .cover-info{
+  position:static;
+  margin-top:7px;
+  padding:0 2px;
+}
+#libraryPage .library-grid.library-display-compact .cover-info strong{
+  color:var(--text);
+  font-size:12px;
+  font-weight:600;
+  line-height:1.35;
+  text-shadow:none;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  overflow:hidden;
+  text-overflow:clip;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  min-height:calc(1.35em * 2);
+  max-height:calc(1.35em * 2);
+}
+#libraryPage .library-grid.library-display-list.large-library .cover-card{
+  content-visibility:visible;
+  contain-intrinsic-size:none;
+}
+
+
+/* Long ROM titles remain readable when users choose dense 5–6 column grids. */
+#libraryPage .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px;line-height:1.32;}
+#libraryPage .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px;line-height:1.3;}

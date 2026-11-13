@@ -1,0 +1,956 @@
+/* Retra — Material shell (Mihon parity)
+   Loaded last. One consistent Material 3 treatment for the app chrome:
+   flat top app bars with no divider lines, text tabs, Material icons,
+   borderless icon buttons, Mihon-style cover grid and navigation bar.
+   Every color derives from the active Appearance palette tokens
+   (--accent, --text, --muted, --shell-start) so all themes, Light/Dark
+   and Pure Black keep working without per-theme overrides here. */
+
+:root{
+  --header-height:64px;
+  --bottom-nav-height:80px;
+}
+
+body{
+  --m3-surface:var(--shell-start);
+  --m3-on-surface:var(--text);
+  --m3-on-surface-variant:var(--muted);
+  --m3-surface-container:color-mix(in srgb, var(--m3-surface) 91%, var(--accent) 9%);
+  --m3-surface-container-high:color-mix(in srgb, var(--m3-surface) 86%, var(--accent) 14%);
+  --m3-secondary-container:color-mix(in srgb, var(--m3-surface) 72%, var(--accent) 28%);
+  --m3-on-secondary-container:color-mix(in srgb, var(--text) 82%, var(--accent) 18%);
+  --m3-state-hover:color-mix(in srgb, var(--text) 8%, transparent);
+  --m3-state-press:color-mix(in srgb, var(--text) 12%, transparent);
+  --m3-primary-container:color-mix(in srgb, var(--accent) 78%, var(--m3-surface) 22%);
+}
+body[data-resolved-mode="light"]{
+  --m3-surface-container:color-mix(in srgb, var(--m3-surface) 90%, var(--accent) 10%);
+  --m3-surface-container-high:color-mix(in srgb, var(--m3-surface) 85%, var(--accent) 15%);
+  --m3-secondary-container:color-mix(in srgb, var(--m3-surface) 78%, var(--accent) 22%);
+  --m3-on-secondary-container:color-mix(in srgb, var(--text) 70%, var(--accent) 30%);
+  --m3-primary-container:color-mix(in srgb, var(--accent) 20%, var(--m3-surface) 80%);
+}
+
+/* ---------- Surface: one flat color, like Mihon ---------- */
+.app-shell{
+  background:var(--m3-surface);
+}
+
+/* ---------- Top app bar ---------- */
+.main-header{
+  gap:0;
+  padding-left:max(16px, var(--device-safe-left));
+  padding-right:max(4px, var(--device-safe-right));
+  padding-bottom:0;
+  padding-top:var(--device-safe-top);
+  background:var(--m3-surface);
+  border:0;
+  box-shadow:none;
+}
+html[data-retra-runtime="android"] .main-header{
+  padding-left:max(16px, var(--device-safe-left));
+  padding-right:max(4px, var(--device-safe-right));
+}
+body[data-translucent="true"] .main-header{
+  background:var(--m3-surface);
+}
+.main-header h1{
+  font-size:22px;
+  font-weight:400;
+  letter-spacing:0;
+  line-height:28px;
+  color:var(--m3-on-surface);
+}
+.header-actions,
+#libraryHeader .header-actions{
+  gap:0;
+}
+
+/* Icon buttons: 48px touch target, 40px circular state layer, no outline. */
+.icon-btn,
+.back-btn,
+#libraryHeader .icon-btn{
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:var(--m3-on-surface);
+  position:relative;
+  isolation:isolate;
+}
+.icon-btn::before,
+.back-btn::before{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:inherit;
+  background:transparent;
+  z-index:-1;
+  transition:background-color .15s ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .icon-btn:hover,
+  .back-btn:hover{background:transparent}
+  .icon-btn:hover::before,
+  .back-btn:hover::before{background:var(--m3-state-hover)}
+}
+.icon-btn:active::before,
+.back-btn:active::before{background:var(--m3-state-press)}
+body[data-resolved-mode="light"] .icon-btn,
+body[data-resolved-mode="light"] .back-btn{
+  background:transparent;
+}
+
+/* Material icons are filled glyphs, not strokes. */
+svg.ms,
+.icon-btn svg.ms,
+.back-btn svg.ms,
+.bottom-nav svg.ms,
+.more-icon svg.ms,
+.settings-item-icon svg.ms,
+.search-panel svg.ms,
+.add-rom-btn svg.ms,
+.library-overflow-item svg.ms{
+  width:24px;
+  height:24px;
+  fill:currentColor;
+  stroke:none;
+}
+
+/* ---------- Search field ---------- */
+.search-panel{
+  height:48px;
+  padding:0 16px;
+  gap:12px;
+  border:0;
+  border-radius:28px;
+  background:var(--m3-surface-container-high);
+}
+.search-panel svg.ms{color:var(--m3-on-surface-variant)}
+.search-panel input{font-size:15px}
+.search-panel input::placeholder{color:var(--m3-on-surface-variant)}
+
+/* ---------- Library category tabs (Mihon scrollable tab row) ----------
+   Text tabs with an accent indicator under the selected one.
+   Deliberately no full-width divider under the header or tabs. */
+#libraryPage .library-chips{
+  position:sticky;
+  top:0;
+  z-index:6;
+  gap:0;
+  margin:-10px calc(-1 * var(--content-gutter)) 10px;
+  padding:0 calc(var(--content-gutter) - 4px);
+  background:var(--m3-surface);
+  border:0;
+  box-shadow:none;
+}
+html[data-retra-runtime="android"] #libraryPage .library-chips{
+  margin-left:calc(-1 * max(var(--content-gutter), var(--device-safe-left)));
+  margin-right:calc(-1 * max(var(--content-gutter), var(--device-safe-right)));
+}
+#libraryPage .library-chips .chip{
+  position:relative;
+  min-width:72px;
+  height:48px;
+  padding:0 16px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--m3-on-surface-variant);
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.01em;
+  box-shadow:none;
+}
+#libraryPage .library-chips .chip::after{
+  content:"";
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:0;
+  height:3px;
+  border-radius:3px 3px 0 0;
+  background:var(--accent);
+  transform:scaleX(0);
+  transition:transform .2s ease;
+}
+/* !important only to beat the legacy `.chip.active` accent pill rule. */
+#libraryPage .library-chips .chip.active{
+  background:transparent !important;
+  border-color:transparent !important;
+  color:var(--accent) !important;
+}
+#libraryPage .library-chips .chip.active::after{transform:scaleX(1)}
+@media (hover:hover) and (pointer:fine){
+  #libraryPage .library-chips .chip:hover{background:var(--m3-state-hover)}
+}
+/* A lone "Default" tab carries no information; Mihon hides the row too. */
+#libraryPage .library-chips:has(> .chip:only-child){
+  display:none;
+}
+
+/* ---------- Cover grid ---------- */
+#libraryPage .library-grid.library-display-compact,
+#libraryPage .library-grid.library-display-comfortable,
+#libraryPage .library-grid.library-display-cover-only{
+  gap:8px;
+}
+#libraryPage .library-grid:not(.library-display-list) .cover-card{
+  border:0;
+  border-radius:8px;
+  box-shadow:none;
+}
+#libraryPage .library-grid:not(.library-display-list) .top-badge{
+  top:6px;
+  left:6px;
+  padding:2px 6px;
+  border-radius:6px;
+  background:var(--accent);
+  color:var(--on-accent);
+  font-size:11px;
+  font-weight:600;
+  line-height:16px;
+  letter-spacing:.02em;
+  box-shadow:none;
+}
+
+/* Compact grid (Mihon default): title sits on the cover over a bottom fade. */
+#libraryPage .library-grid.library-display-compact .cover-card{
+  aspect-ratio:.68;
+  overflow:hidden;
+  border-radius:8px;
+  background:var(--m3-surface-container);
+}
+#libraryPage .library-grid.library-display-compact .cover-card > img,
+#libraryPage .library-grid.library-display-compact .cover-art-placeholder{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  aspect-ratio:auto;
+  border-radius:0;
+  box-shadow:none;
+}
+#libraryPage .library-grid.library-display-compact .cover-card::after{
+  display:block;
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:50%;
+  background:linear-gradient(180deg, transparent 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+#libraryPage .library-grid.library-display-compact .cover-info{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  margin:0;
+  padding:0;
+  z-index:2;
+}
+#libraryPage .library-grid.library-display-compact .cover-info strong,
+body[data-resolved-mode="light"] #libraryPage .library-grid.library-display-compact .cover-info strong{
+  color:#fff;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.3;
+  min-height:0;
+  max-height:calc(1.3em * 2);
+  text-shadow:0 1px 4px rgba(0,0,0,.55);
+}
+#libraryPage .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px}
+#libraryPage .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px}
+#libraryPage .library-grid.library-display-compact .cover-card.library-selected > img,
+#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
+#libraryPage .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
+#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
+  border-radius:0;
+  transform:none;
+}
+
+/* Comfortable grid: title below the cover. */
+#libraryPage .library-grid.library-display-comfortable{row-gap:12px}
+#libraryPage .library-grid.library-display-comfortable .cover-card{
+  aspect-ratio:auto;
+  overflow:visible;
+  border-radius:0;
+  background:transparent;
+}
+#libraryPage .library-grid.library-display-comfortable .cover-card::after{display:none}
+#libraryPage .library-grid.library-display-comfortable .cover-card > img,
+#libraryPage .library-grid.library-display-comfortable .cover-art-placeholder{
+  position:relative;
+  inset:auto;
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:.68;
+  object-fit:cover;
+  border-radius:8px;
+  box-shadow:none;
+}
+#libraryPage .library-grid.library-display-comfortable .cover-info{
+  position:static;
+  margin-top:6px;
+  padding:0 2px;
+}
+#libraryPage .library-grid.library-display-comfortable .cover-info strong{
+  color:var(--m3-on-surface);
+  font-size:13px;
+  font-weight:500;
+  line-height:1.3;
+  text-shadow:none;
+  white-space:normal;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  min-height:calc(1.3em * 2);
+}
+
+/* ---------- History (flat Mihon rows) ---------- */
+#historyPage .history-list{gap:0}
+#historyPage .history-item{
+  grid-template-columns:52px 1fr auto;
+  gap:16px;
+  padding:8px 0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+#historyPage .history-cover{
+  width:52px;
+  height:74px;
+  border:0;
+  border-radius:6px;
+  background:var(--m3-surface-container);
+}
+#historyPage .history-copy strong{
+  font-size:15px;
+  font-weight:500;
+  line-height:1.3;
+  color:var(--m3-on-surface);
+}
+#historyPage .history-copy span{
+  margin:4px 0 0;
+  font-size:13px;
+  color:var(--m3-on-surface-variant);
+}
+#historyPage .continue-btn{
+  height:36px;
+  padding:0 16px;
+  border:0;
+  border-radius:18px;
+  background:var(--m3-secondary-container);
+  color:var(--m3-on-secondary-container);
+  font-size:13px;
+  font-weight:600;
+  box-shadow:none;
+}
+
+/* ---------- More & Settings home (flat lists, no cards, no dividers) ---------- */
+#morePage .more-page{gap:0;padding-top:0}
+/* Retra mark above the More list. Size and the Light-mode darkening filter
+   (style-appearance-light.css) are inherited, so the logo stays visible on
+   both dark and light surfaces. */
+#morePage .more-logo-wrap{padding:20px 0 16px}
+#morePage .more-card,
+body[data-resolved-mode="light"] #morePage .more-card{
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+  margin:0 calc(-1 * var(--content-gutter));
+}
+#morePage .more-card + .more-card{
+  margin-top:8px;
+}
+#morePage .more-toggle-row,
+#morePage .more-item,
+body[data-resolved-mode="light"] #morePage .more-toggle-row,
+body[data-resolved-mode="light"] #morePage .more-item{
+  min-height:56px;
+  padding:8px var(--content-gutter);
+  grid-template-columns:24px 1fr auto;
+  gap:20px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+}
+#morePage .more-icon,
+#settingsHomePage .settings-item-icon,
+body[data-resolved-mode] #settingsHomePage .settings-item-icon{
+  width:24px;
+  height:24px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--accent);
+  box-shadow:none;
+}
+body[data-resolved-mode="light"] .more-icon{background:transparent}
+#morePage .more-copy strong,
+#settingsHomePage .settings-item-copy strong{
+  font-size:16px;
+  font-weight:400;
+  line-height:1.4;
+  color:var(--m3-on-surface);
+}
+#morePage .more-copy span,
+#settingsHomePage .settings-item-copy span{
+  margin-top:2px;
+  font-size:13px;
+  color:var(--m3-on-surface-variant);
+}
+#morePage .more-item .chevron,
+#settingsHomePage .settings-item .chevron{display:none}
+
+#settingsHomePage .settings-menu,
+body[data-resolved-mode] #settingsHomePage .settings-menu{
+  margin:0 calc(-1 * var(--content-gutter));
+  width:auto;
+  max-width:none;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+#settingsHomePage .settings-item,
+body[data-resolved-mode="light"] #settingsHomePage .settings-item{
+  min-height:72px;
+  grid-template-columns:24px 1fr;
+  gap:20px;
+  padding:12px var(--content-gutter);
+  border:0;
+  background:transparent;
+}
+
+#settingsHomePage .version{margin-top:16px;color:var(--m3-on-surface-variant)}
+
+@media (hover:hover) and (pointer:fine){
+  #morePage .more-item:hover,
+  #settingsHomePage .settings-item:hover,
+  body[data-resolved-mode] #settingsHomePage .settings-item:hover{background:var(--m3-state-hover)}
+}
+
+/* ---------- Data and Storage (Mihon preference screen) ----------
+   Accent section headers over flat, full-width rows: no cards, no dividers,
+   no chevrons. Same row metrics as Settings home. */
+#dataStoragePage .data-storage-content{gap:0}
+#dataStoragePage .storage-section-label{
+  margin:20px 0 4px;
+  color:var(--accent);
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.01em;
+}
+#dataStoragePage .storage-section-label:first-child{margin-top:4px}
+#dataStoragePage .data-storage-card,
+#dataStoragePage .backup-action-grid{
+  width:auto;
+  max-width:none;
+  margin:0 calc(-1 * var(--content-gutter));
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+#dataStoragePage .data-storage-card .detail-row,
+body[data-resolved-mode="light"] #dataStoragePage .data-storage-card .detail-row{
+  min-height:72px;
+  padding:12px var(--content-gutter);
+  gap:16px;
+  border:0;
+  background:transparent;
+}
+#dataStoragePage .detail-row strong,
+#dataStoragePage .storage-usage-head strong,
+#dataStoragePage .backup-action-btn strong{
+  font-size:16px;
+  font-weight:400;
+  line-height:1.4;
+  color:var(--m3-on-surface);
+}
+#dataStoragePage .detail-row span,
+#dataStoragePage .backup-action-btn span{
+  margin-top:2px;
+  font-size:13px;
+  line-height:1.4;
+  color:var(--m3-on-surface-variant);
+}
+#dataStoragePage .detail-row .chevron{display:none}
+#dataStoragePage .storage-usage-block{
+  padding:12px var(--content-gutter) 16px;
+  border:0;
+}
+#dataStoragePage .storage-usage-head span,
+#dataStoragePage .storage-usage-foot{font-size:13px}
+#dataStoragePage .storage-meter{
+  height:6px;
+  margin:12px 0 8px;
+  background:var(--m3-surface-container-high);
+}
+
+/* Backup actions become two stacked rows with leading Material icons. */
+#dataStoragePage .backup-action-grid{grid-template-columns:1fr}
+#dataStoragePage .backup-action-btn,
+#dataStoragePage .backup-action-btn + .backup-action-btn{
+  min-height:72px;
+  padding:12px var(--content-gutter);
+  grid-template-columns:24px 1fr;
+  gap:20px;
+  border:0;
+  background:transparent;
+}
+#dataStoragePage .backup-action-btn > div{min-height:0}
+#dataStoragePage .backup-action-btn svg.ms{
+  width:24px;
+  height:24px;
+  fill:var(--accent);
+  stroke:none;
+}
+#dataStoragePage .storage-info-note{
+  margin:4px 0 0;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--m3-on-surface-variant);
+}
+@media (hover:hover) and (pointer:fine){
+  #dataStoragePage button.detail-row:not(:disabled):hover,
+  #dataStoragePage .backup-action-btn:hover{background:var(--m3-state-hover)}
+}
+#dataStoragePage button.detail-row:not(:disabled):active,
+#dataStoragePage .backup-action-btn:active{background:var(--m3-state-press)}
+#morePage .more-item:active,
+#settingsHomePage .settings-item:active{background:var(--m3-state-press)}
+
+/* ---------- Sub-page top app bars ---------- */
+.sub-header{
+  min-height:64px;
+  grid-template-columns:48px 1fr auto;
+  gap:4px;
+  margin:-8px 0 8px -12px;
+  border:0;
+  box-shadow:none;
+}
+.sub-header h2{
+  font-size:22px;
+  font-weight:400;
+  letter-spacing:0;
+  line-height:28px;
+}
+.rom-detail-header{margin-left:0}
+
+/* ---------- Navigation bar (Material 3) ---------- */
+.bottom-nav,
+body[data-resolved-mode="dark"] .bottom-nav,
+body[data-resolved-mode="light"] .bottom-nav{
+  gap:0;
+  padding-top:12px;
+  padding-bottom:calc(16px + var(--device-safe-bottom));
+  background:var(--m3-surface-container);
+  border:0;
+  border-top:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.bottom-nav .nav-item,
+.bottom-nav button.nav-item{
+  justify-content:flex-start;
+  gap:4px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--m3-on-surface-variant);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.03em;
+  box-shadow:none;
+  transform:none;
+}
+.bottom-nav .nav-item.active,
+.bottom-nav button.nav-item.active{
+  background:transparent;
+  color:var(--m3-on-surface);
+  font-weight:600;
+}
+.nav-indicator{
+  width:64px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:transparent;
+  transition:background-color .2s ease;
+}
+.nav-item.active .nav-indicator{
+  background:var(--m3-secondary-container);
+  color:var(--m3-on-secondary-container);
+}
+.nav-item:active .nav-indicator{background:var(--m3-state-press)}
+.nav-item.active:active .nav-indicator{background:var(--m3-secondary-container)}
+.nav-indicator svg.ms{grid-area:1/1}
+.nav-indicator .ms-on{display:none}
+.nav-item.active .nav-indicator .ms-on{display:block}
+.nav-item.active .nav-indicator .ms-off{display:none}
+
+/* ---------- Add ROM FAB (Material 3 primary container) ---------- */
+/* The legacy FAB fill is !important across normal/pressed/focus states (kept
+   so a WebView focus ring never flattens it after the file picker); the same
+   states are overridden here so that guarantee still holds. */
+.add-rom-btn,
+body[data-theme] .add-rom-btn{
+  position:absolute;
+  width:56px;
+  height:56px;
+  border:0;
+  border-radius:16px;
+  color:var(--on-accent);
+}
+.add-rom-btn,
+.add-rom-btn:active,
+.add-rom-btn:focus,
+.add-rom-btn:focus:not(:focus-visible){
+  background:var(--m3-primary-container) !important;
+  border-color:transparent !important;
+  box-shadow:0 3px 8px rgba(0,0,0,.28), 0 1px 3px rgba(0,0,0,.2) !important;
+}
+.add-rom-btn::before{display:none}
+body[data-resolved-mode="light"] .add-rom-btn,
+body[data-resolved-mode="light"][data-theme] .add-rom-btn{
+  color:color-mix(in srgb, var(--accent) 80%, black 20%);
+}
+body[data-resolved-mode="light"] .add-rom-btn,
+body[data-resolved-mode="light"] .add-rom-btn:active,
+body[data-resolved-mode="light"] .add-rom-btn:focus{
+  box-shadow:0 3px 8px rgba(30,30,60,.18), 0 1px 3px rgba(30,30,60,.14) !important;
+}
+@media (hover:hover) and (pointer:fine){
+  .add-rom-btn:hover,
+  .add-rom-btn:hover:focus{
+    background:color-mix(in srgb, var(--m3-primary-container) 92%, var(--text) 8%) !important;
+  }
+}
+
+/* ---------- Settings: smooth, bounce-free interaction ----------
+   Rows, cards and switches in More, Settings and their dialogs no longer
+   shrink on finger-down and spring back on release (the "bounce"). Like
+   Mihon, only colors change; nothing scales. The press class from
+   interaction-motion.js still runs (it also guards against accidental taps),
+   it just has no transform here. Library covers, nav and the FAB are untouched. */
+:is(#morePage, #settingsHomePage, .settings-detail-page, .selection-modal, .modal-backdrop){
+  --retra-press-scale:1;
+}
+:is(#morePage, #settingsHomePage, .settings-detail-page, .selection-modal, .modal-backdrop)
+  :is(button, [role="button"], label, .settings-item, .more-item, .more-toggle-row,
+      .detail-row, .detail-range-row, .frequency-option, .selection-option,
+      .sheet-options-item, .theme-preview-card, .theme-mode-option, .color-style-card,
+      .layout-card, .backup-action-btn, .text-action-btn, .modal-btn):is(:active, .retra-pressing){
+  --retra-press-scale:1;
+  transform:none !important;
+  opacity:1;
+  filter:none;
+}
+
+/* Switch: one even 200ms glide on Material's standard curve instead of the
+   snap-then-settle expo-out curve that read as a pop. */
+:is(body) .switch .slider{
+  transition:background-color 200ms cubic-bezier(.2, 0, 0, 1),
+             box-shadow 200ms cubic-bezier(.2, 0, 0, 1);
+}
+:is(body) .switch .slider::before{
+  transition:transform 200ms cubic-bezier(.2, 0, 0, 1),
+             background-color 200ms cubic-bezier(.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce){
+  :is(body) .switch .slider,
+  :is(body) .switch .slider::before{transition:none}
+}
+
+/* ---------- Screen editor: "Add control" dialog ----------
+   The list used a hard-coded black body under a theme-tinted header, so in
+   Light mode labels turned dark-on-black and the pale-gold footer buttons
+   vanished. The whole dialog is now one Material surface that follows the
+   active Appearance (light or dark), with accent text buttons. */
+.add-control-dialog,
+body[data-resolved-mode="light"] .add-control-dialog{
+  border-radius:24px;
+  background:var(--m3-surface-container-high);
+  color:var(--m3-on-surface);
+  box-shadow:0 18px 48px rgba(0,0,0,.36);
+}
+body[data-resolved-mode="light"] .add-control-dialog{
+  box-shadow:0 18px 48px rgba(30,30,60,.22);
+}
+.add-control-header,
+.add-control-footer,
+.add-control-list,
+body[data-resolved-mode="light"] .add-control-header,
+body[data-resolved-mode="light"] .add-control-footer{
+  background:transparent;
+}
+.add-control-header h3,
+body[data-resolved-mode="light"] .add-control-header h3{
+  color:var(--m3-on-surface);
+  font-weight:500;
+  letter-spacing:0;
+}
+.add-control-item,
+.add-control-item .add-control-label,
+body[data-resolved-mode="light"] .add-control-item,
+body[data-resolved-mode="light"] .add-control-label{
+  color:var(--m3-on-surface);
+}
+.add-control-item{border-radius:12px}
+.add-control-item:active,
+.add-control-item.retra-pressing{
+  transform:none !important;
+  opacity:1;
+  background:var(--m3-state-press);
+}
+.add-control-footer-btn{
+  color:var(--accent);
+  font-weight:600;
+  border-radius:20px;
+  padding-left:12px;
+  padding-right:12px;
+}
+.add-control-footer-btn:active{background:var(--m3-state-press)}
+.add-control-empty-state,
+body[data-resolved-mode="light"] .add-control-empty-state{
+  color:var(--m3-on-surface-variant);
+}
+
+/* Controller thumbnails keep the in-game look (white glyph + white ring).
+   On a light dialog their translucent fill disappears, so Light mode gives
+   them a solid dark controller face to keep that look readable. */
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.circle,
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.square,
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.duo > span,
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-shoulder-preview,
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-dpad-preview i,
+body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-start-select-preview i{
+  background:#2b303b !important;
+  border-color:rgba(255,255,255,.22) !important;
+}
+
+/* ---------- Layouts ----------
+   Profiles are inset Material cards (a little taller than before) instead of
+   a full-bleed band with top/bottom rules; the selected one is filled with
+   the accent container color. */
+#layoutsSettingsPage .layout-profiles-list{gap:12px}
+#layoutsSettingsPage .layout-card,
+body[data-resolved-mode="light"] #layoutsSettingsPage .layout-card{
+  width:100%;
+  max-width:100%;
+  min-height:84px;
+  margin:0;
+  padding:18px 20px;
+  gap:16px;
+  border:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius:16px;
+  background:var(--m3-surface-container);
+  box-shadow:none;
+}
+#layoutsSettingsPage .layout-profile-card.selected,
+body[data-resolved-mode="light"] #layoutsSettingsPage .layout-profile-card.selected{
+  border-color:color-mix(in srgb, var(--accent) 45%, transparent);
+  background:var(--m3-secondary-container);
+}
+#layoutsSettingsPage .layout-card strong{
+  font-size:16px;
+  font-weight:600;
+  line-height:1.35;
+  color:var(--m3-on-surface);
+}
+#layoutsSettingsPage .layout-card span{
+  margin-top:4px;
+  font-size:13px;
+  line-height:1.4;
+  color:var(--m3-on-surface-variant);
+}
+#layoutsSettingsPage .layout-card:active{background:color-mix(in srgb, var(--m3-surface-container) 88%, var(--text) 12%)}
+#layoutsSettingsPage .layout-profile-card.selected:active{background:var(--m3-secondary-container)}
+
+/* Header edit action: same borderless round icon button as every top bar. */
+.sub-header .small-icon-btn,
+body[data-resolved-mode="light"] .sub-header .small-icon-btn{
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  box-shadow:none;
+  color:var(--m3-on-surface);
+}
+.sub-header .small-icon-btn svg{width:22px;height:22px}
+.sub-header .small-icon-btn:active{background:var(--m3-state-press)}
+
+/* Page FABs (Layouts "+") match the Library Add ROM FAB. The legacy fill is
+   !important, so it is overridden the same way. */
+.detail-fab,
+.detail-fab:active,
+.detail-fab:focus{
+  width:56px;
+  height:56px;
+  border:0 !important;
+  border-radius:16px;
+  background:var(--m3-primary-container) !important;
+  color:var(--on-accent) !important;
+  box-shadow:0 3px 8px rgba(0,0,0,.28), 0 1px 3px rgba(0,0,0,.2) !important;
+}
+body[data-resolved-mode="light"] .detail-fab,
+body[data-resolved-mode="light"] .detail-fab:active,
+body[data-resolved-mode="light"] .detail-fab:focus{
+  color:color-mix(in srgb, var(--accent) 80%, black 20%) !important;
+  box-shadow:0 3px 8px rgba(30,30,60,.18), 0 1px 3px rgba(30,30,60,.14) !important;
+}
+.detail-fab svg{width:24px;height:24px;stroke-width:2.2}
+
+/* ---------- Dialogs (Material 3) ----------
+   Backdrops used a 14px blur + saturation that smeared the whole screen.
+   Now: a standard dim scrim with only a light 3px blur. Dialog cards are
+   flat Material surfaces (28px corners, no border); radio lists are plain
+   rows with a Material radio, without the outlined "selected" box. */
+body[data-resolved-mode] :is(.modal-backdrop, .selection-modal, .sheet-backdrop, .rom-card-actions-backdrop),
+body[data-translucent="true"] :is(.modal-backdrop, .selection-modal, .sheet-backdrop){
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+body[data-resolved-mode="light"] :is(.modal-backdrop, .selection-modal, .sheet-backdrop, .rom-card-actions-backdrop){
+  background:rgba(22,22,32,.32);
+}
+
+/* Cards */
+body[data-resolved-mode] .selection-modal .selection-modal-card:not(.import-saves-card),
+body[data-resolved-mode] .selection-modal .myboy-dialog-card:not(.import-saves-card),
+body[data-resolved-mode] .selection-modal .selection-modal-card.compact:not(.import-saves-card),
+body[data-resolved-mode] .category-modal-card,
+body[data-resolved-mode] .confirm-modal-card{
+  border:0;
+  border-radius:28px;
+  background:var(--m3-surface-container-high);
+  box-shadow:0 12px 40px rgba(0,0,0,.34);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+body[data-resolved-mode="light"] .selection-modal .selection-modal-card:not(.import-saves-card),
+body[data-resolved-mode="light"] .selection-modal .myboy-dialog-card:not(.import-saves-card),
+body[data-resolved-mode="light"] .category-modal-card,
+body[data-resolved-mode="light"] .confirm-modal-card{
+  background:color-mix(in srgb, var(--m3-surface) 94%, var(--accent) 6%);
+  box-shadow:0 12px 40px rgba(30,30,60,.20);
+}
+body[data-resolved-mode] .selection-modal .selection-modal-card:not(.import-saves-card),
+body[data-resolved-mode] .selection-modal .myboy-dialog-card:not(.import-saves-card){
+  width:min(360px, calc(100vw - 48px));
+  max-width:360px;
+  padding:24px 12px 12px;
+}
+/* Entrance: soft fade + 6px rise; no scale (keeps motion bounce-free). */
+.selection-modal .selection-modal-card:not(.import-saves-card){
+  transform:translate3d(0, 6px, 0);
+  transition:transform 200ms cubic-bezier(.2, 0, 0, 1), opacity 160ms ease-out;
+}
+.selection-modal.open .selection-modal-card:not(.import-saves-card){
+  transform:translate3d(0, 0, 0);
+}
+
+/* Title */
+body[data-resolved-mode] .selection-modal .selection-modal-card:not(.import-saves-card) h3,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card:not(.import-saves-card) h3{
+  margin:0 12px 12px;
+  color:var(--m3-on-surface);
+  font-size:22px;
+  font-weight:400;
+  line-height:1.3;
+  letter-spacing:0;
+}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) :is(h3, .modal-title){
+  color:var(--m3-on-surface);
+  font-size:22px;
+  font-weight:400;
+  letter-spacing:0;
+}
+body[data-resolved-mode] .selection-modal .selection-modal-copy{
+  margin:0 12px 12px;
+  color:var(--m3-on-surface-variant);
+}
+
+/* Radio rows. The accent rule paints the selected row with !important, so
+   it is neutralised the same way (beats it on specificity). */
+body[data-resolved-mode] .selection-modal .selection-options{gap:0}
+body[data-resolved-mode] .selection-modal .selection-option,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-option{
+  min-height:56px;
+  padding:0 12px;
+  gap:16px;
+  border:0;
+  border-radius:12px;
+  color:var(--m3-on-surface);
+  font-size:16px;
+  font-weight:400;
+}
+body[data-resolved-mode] .selection-modal .selection-option.active,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-option.active{
+  background:transparent !important;
+  border-color:transparent !important;
+}
+body[data-resolved-mode] .selection-modal .selection-option:active,
+body[data-resolved-mode] .selection-modal .selection-option.retra-pressing,
+body[data-resolved-mode] .selection-modal .selection-option.active:active{
+  background:var(--m3-state-press) !important;
+}
+@media (hover:hover) and (pointer:fine){
+  body[data-resolved-mode] .selection-modal .selection-option:hover{background:var(--m3-state-hover)}
+}
+body[data-resolved-mode] .selection-modal .selection-radio,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-radio{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  border:2px solid var(--m3-on-surface-variant);
+}
+body[data-resolved-mode] .selection-modal .selection-option.active .selection-radio,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-option.active .selection-radio{
+  border-color:var(--accent) !important;
+}
+body[data-resolved-mode] .selection-modal .selection-option.active .selection-radio::after,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-option.active .selection-radio::after{
+  inset:3px;
+  transition:none;
+}
+
+/* Text buttons (Cancel, Save, ...): sentence case, accent, pill state layer. */
+body[data-resolved-mode] .selection-modal .selection-actions,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .selection-actions{
+  margin:12px 0 0;
+  padding:0 4px;
+}
+body[data-resolved-mode] .selection-modal .text-action-btn,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .text-action-btn{
+  min-height:40px;
+  padding:0 12px;
+  border-radius:20px;
+  color:var(--accent);
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.01em;
+  text-transform:none;
+}
+body[data-resolved-mode] .selection-modal .text-action-btn:active,
+body[data-resolved-mode] .selection-modal .myboy-dialog-card .text-action-btn:active{
+  transform:none;
+  opacity:1;
+  background:var(--m3-state-press);
+}

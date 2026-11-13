@@ -1,50 +1,290 @@
-# Retra!
+<div align="center">
 
-An open-source Android emulator for **Game Boy Advance** (mGBA) and **RPG Maker XP/VX/VX Ace** (mkxp-z) games, with a Mihon-style library.
+<img src="docs/images/retra-logo.webp" alt="Retra logo" width="132">
 
-- **Library:** add GBA/GB/GBC ROMs, RPG Maker game folders (the one with `Game.ini`) or `.zip`/`.mkxpz` archives, and the RPG Maker XP RTP.
-- **Play:** on-screen gamepad, save states, battery saves, save import/export.
-- **Browse:** search the game repos you add and download straight into your library.
+# Retra
 
-Retra ships **no game sources and no games**. Only add repos and play games you have the right to.
+**A modern open-source Android emulator built around mGBA, focused on a polished Game Boy Advance experience.**
 
-## Building
+[![Release](https://img.shields.io/github/v/release/lascent/Retra?label=release)](https://github.com/lascent/Retra/releases/tag/v1.0.4)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://github.com/lascent/Retra/releases/tag/v1.0.4)
+[![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
+[![Core](https://img.shields.io/badge/core-mGBA-8A2BE2)](https://mgba.io/)
 
-Open the project in Android Studio and run it. The mGBA core is in `app/src/main/jniLibs/`.
-The mkxp-z core is built by the **Build mkxp-z core** GitHub Actions workflow (`.github/workflows/mkxp-z-core.yml`).
-Copy its artifacts into `app/src/main/jniLibs/<abi>/`.
+[**Download Retra v1.0.4**](https://github.com/lascent/Retra/releases/tag/v1.0.4) ·
+[**Changelog**](CHANGELOG.md) ·
+[**Troubleshooting**](TROUBLESHOOTING.md) ·
+[**Contributing**](CONTRIBUTING.md)
 
-## Writing a repo
+</div>
 
-A repo is a JSON file served over **https**. Users add its URL in **Browse → Add repo**.
+---
 
-```json
-{
-  "name": "My Homebrew Repo",
-  "games": [
-    {
-      "title": "Space Demo",
-      "url": "roms/space-demo.gba",
-      "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-      "description": "A homebrew shoot-em-up"
-    },
-    { "title": "My Fan RPG", "url": "https://cdn.example.org/my-fan-rpg.mkxpz" }
-  ]
-}
+## About Retra
+
+Retra is an open-source Android retro emulator built around the **mGBA** core, with feature development primarily focused on Game Boy Advance gameplay.
+
+It combines emulation with a mobile-first interface, persistent game data, customizable controls, backup and restore tools, save states, cheats, artwork, display customization, and local or remote GBA link features.
+
+> [!IMPORTANT]
+> Retra does **not** include commercial ROMs, BIOS files, or copyrighted game assets. Use only content you are legally permitted to use.
+
+## Features
+
+### Emulation & gameplay
+
+- GB, GBC, and GBA emulation through the mGBA integration.
+- Fast-forward and slow-motion speed controls.
+- Adaptive high-refresh interface presentation, with gameplay using a stable cadence-compatible 60/120 Hz presentation path while emulation timing remains independent from display refresh rate.
+- BIOS support, ROM patches, cheats, statistics, and per-ROM configuration.
+- Optional GLSL shaders and gameplay Color Style presets.
+
+#### v1.0.4 SmoothTurbo hardening
+
+- Four-buffer latest-frame mailbox with dedicated producer, pending, rendering, and spare roles.
+- Allocation-free producer and GL-consumer result holders during normal gameplay.
+- Stale turbo frames are dropped instead of queued, so high-speed emulation does not create a visual catch-up backlog.
+- Fractional `TurboSlicePlanner` scheduling keeps 2×/4×/8×/16× timing smooth against the GBA's ~59.73 Hz base cadence.
+- Hitch-safe cumulative turbo timing re-anchors after substantial Android/GC stalls instead of paying the delay back as a burst.
+- Native speed-aware FIR audio keeps high-speed PCM work out of the Kotlin/JNI hot path, with deterministic reset when the speed multiplier changes.
+- VSync scheduling reuses callback Runnables, coalesces real mailbox generations, and resets generation state for each new gameplay session.
+
+### Saves & persistent data
+
+- Battery saves, save states, and automatic resume.
+- Gameplay **Import save** accepts both `.sav` and `.srm` battery-save files with per-ROM filename and save-size safety checks.
+- Persistent ROM identity based on SHA-256 content hashes.
+- Compatible saves and metadata can reconnect after a ROM is moved, renamed, removed, or re-imported.
+- Portable **Create Backup** and **Restore Backup** using `.retra` files.
+- Android Auto Backup/device transfer support.
+- Reinstall continuity through Android's **Keep app data** flow.
+
+### Controls & interface
+
+- Screen Editor with independent portrait and landscape layouts.
+- Draggable and resizable on-screen controls.
+- Emulator-screen resizing and edge-aware layout editing.
+- Controller opacity controls.
+- Optional light controller tap sound and smooth haptics under **Sound**.
+- Automatic artwork with persistent manual cover and background overrides.
+- Lightweight gameplay color presets: **Classic**, **Vivid**, **Warm**, and **Muted**.
+
+### Multiplayer & sync
+
+- GBA **Local Link** on one Android device.
+- **Wi-Fi Remote Link** between supported devices.
+- **Bluetooth Remote Link** between supported Android devices.
+- Google Drive sync with conflict-safe behavior.
+- Android Storage Access Framework folder fallback.
+
+### Updates & project quality
+
+- Automatic GitHub Releases update checks on each fresh app process, so newly published versions are discovered on the next launch.
+- Manual **Check for updates** action in About.
+- Modular Android architecture.
+- Release validation, regression tests, lint checks, and CI quality gates.
+
+## Download
+
+The latest stable APK and release notes are available from:
+
+### **[Download Retra v1.0.4 →](https://github.com/lascent/Retra/releases/tag/v1.0.4)**
+
+Current stable release: **[Retra v1.0.4](https://github.com/lascent/Retra/releases/tag/v1.0.4)**
+
+| Item | Current status |
+|---|---|
+| Version | `v1.0.4` |
+| Release channel | Stable |
+| Minimum Android | API 26 / Android 8.0+ |
+| License | Mozilla Public License 2.0 |
+| Maintainer | Zense |
+| Emulator core | mGBA |
+
+## Release history
+
+| Version | Summary |
+|---|---|
+| **v1.0.0** | Official release |
+| **v1.0.1** | Added Create Backup and Restore Backup |
+| **v1.0.2** | Added in-app update checking and Android reinstall-recovery hardening |
+| **v1.0.3** | Added persistent ROM title editing plus controller, rewind, save-import, and Google Drive restore polish |
+| **v1.0.4** | SmoothTurbo hardening: four-buffer latest-frame handoff, allocation-free gameplay hot paths, safer VSync/session recovery, and cleaner turbo audio transitions |
+
+Public release numbering follows Semantic Versioning. Earlier project work is organized in [`docs/DEVELOPMENT_HISTORY.md`](docs/DEVELOPMENT_HISTORY.md).
+
+## Color Style
+
+Retra includes lightweight gameplay color presets that affect only the rendered game image. The Retra interface itself remains unchanged.
+
+**Available presets:** Classic · Vivid · Warm · Muted
+
+<p align="center">
+  <img src="docs/images/color-style.jpg" alt="Retra Color Style screen showing Classic, Vivid, Warm, and Muted gameplay color presets" width="420">
+</p>
+
+## Multiplayer scope
+
+Retra v1.0.4 supports normal GBA Link Cable-style multiplayer and two-player Local Single-Pak/Multiboot through:
+
+- **Local Link** on one Android device.
+- **Single-Pak / Multiboot** on one Android device using a user-provided 16 KiB GBA BIOS for the cartridge-less receiver.
+- **Wi-Fi Remote Link** between supported devices.
+- **Bluetooth Remote Link** between supported Android devices.
+
+Remote Link includes connection health metrics, heartbeat/timeouts, state-hash validation, jitter-aware input delay, host-authoritative recovery, bounded recovery retries, and deterministic input reseeding.
+
+
+## Persistent game data
+
+Retra separates replaceable ROM files from persistent user data.
+
+```text
+ROM content -> SHA-256 -> permanent romId
+                         |
+                         +-- Saves
+                         +-- Save states
+                         +-- Cheats
+                         +-- Layouts
+                         +-- Covers/backgrounds
+                         +-- Categories/favourites
+                         +-- Statistics
 ```
 
-| Field | Required | Meaning |
-|---|---|---|
-| `url` | yes | Download link, absolute or relative to the repo URL. Must be https. |
-| `title` | no | Shown in Browse. Defaults to the file name. |
-| `file` | no | File name to save as. Defaults to the last part of `url`. Must end in `.gba`, `.gb`, `.gbc`, `.zip`, `.mkxpz` or `.7z`. |
-| `sha256` | no | Hex SHA-256 of the file. If it's set and the download doesn't match, Retra discards the download. |
-| `description` | no | One line shown under the title. |
+Structured ROM metadata is stored with Room, application-wide settings use Preferences DataStore, and save commits use verified temporary files, per-ROM locking, and rotating backups.
 
-Entries with a non-https link or an unsupported file type are skipped.
-RPG Maker games are best packed as `.mkxpz` or `.zip`, with the `.rgssad`/`.rgss2a`/`.rgss3a` archives stored uncompressed.
+Import recovery uses a durable journal so interrupted imports can be recovered safely.
+
+For the full storage design, see [`docs/PERSISTENT_STORAGE_ARCHITECTURE.md`](docs/PERSISTENT_STORAGE_ARCHITECTURE.md).
+
+## Build from source
+
+### Requirements
+
+- Android Studio with the Android SDK required by the Gradle project.
+- The JDK/toolchain required by the included Android Gradle Plugin.
+- Android NDK **r28**.
+- CMake **3.22.1**.
+- The exact locked mGBA source revision used by Retra.
+
+Retra is pinned to mGBA commit:
+
+```text
+543a197582c30364584d773a974d7f991892fa43
+```
+
+The revision is recorded in `third_party/mgba.lock`.
+
+### Prepare mGBA
+
+```bash
+python3 tools/prepare_mgba.py
+```
+
+This prepares `third_party/mgba/` at the exact locked commit.
+
+CMake also accepts the legacy sibling `../mgba/` location or an explicit `RETRA_MGBA_SOURCE_DIR`, but verifies that the source matches the clean locked revision before configuring the native build.
+
+### Android release metadata
+
+```text
+versionName = 1.0.4
+versionCode = 451
+minSdk      = 26
+```
+
+`versionCode 451` upgrades cleanly over v1.0.3 (`450`), v1.0.2 (`449`), v1.0.1 (`448`), and v1.0.0 (`447`).
+
+### Open and build
+
+1. Clone or extract the Retra repository.
+2. Run `python3 tools/prepare_mgba.py`.
+3. Open the repository root in Android Studio.
+4. Allow Gradle to sync and install the requested SDK, NDK, and CMake components.
+5. Build and run on an Android device.
+
+### Command-line validation
+
+**Windows**
+
+```bat
+gradlew.bat :app:compileDebugKotlin :app:testDebugUnitTest :app:lintDebug
+```
+
+**macOS / Linux**
+
+```bash
+./gradlew :app:compileDebugKotlin :app:testDebugUnitTest :app:lintDebug
+```
+
+A full APK/AAB build requires the exact mGBA revision recorded in `third_party/mgba.lock`. CMake rejects a different or dirty tracked checkout.
+
+## Repository structure
+
+```text
+Retra/
+├─ app/                         Android application
+│  └─ src/main/
+│     ├─ assets/retra/          WebView UI modules, styles, and branding
+│     ├─ cpp/                   Native mGBA bridge and native build config
+│     └─ java/.../emulator/     Android controllers, repositories, and runtime
+├─ docs/                        Release, architecture, and engineering docs
+│  └─ history/                  Archived implementation/build notes
+├─ tests/                       Dependency-light regression tests
+├─ third_party/                 Preferred project-local mGBA location
+├─ tools/                       Release validation scripts
+├─ CHANGELOG.md                 Public release and development history
+├─ TROUBLESHOOTING.md           User troubleshooting and bug-reporting guide
+├─ CONTRIBUTING.md              Contribution guide
+├─ SECURITY.md                  Security policy
+├─ THIRD_PARTY_NOTICES.md       Third-party licensing notices
+└─ LICENSE                      MPL-2.0
+```
+
+See [`docs/README.md`](docs/README.md) for the documentation index and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the current architecture.
+
+## Validation
+
+Run the dependency-light release gate before publishing changes:
+
+```bash
+python3 tools/release_gate.py
+```
+
+It validates JavaScript syntax, regression tests, release structure, and release metadata that do not require the Android SDK/NDK or mGBA.
+
+For Android-specific validation, also run the Gradle compile/test/lint tasks above.
+
+Before publishing an APK/AAB, complete the physical-device checks in:
+
+- [`docs/RELEASE_CHECKLIST_v1.0.0.md`](docs/RELEASE_CHECKLIST_v1.0.0.md)
+- [`docs/REAL_DEVICE_VALIDATION_MATRIX_v1.0.1.md`](docs/REAL_DEVICE_VALIDATION_MATRIX_v1.0.1.md)
+
+## Documentation & support
+
+- [`CHANGELOG.md`](CHANGELOG.md) — public release and development history.
+- [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) — installation, ROM loading, performance, audio, controls, saves, backups, BIOS, multiplayer, sync, and crash-reporting help.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution requirements.
+- [`SECURITY.md`](SECURITY.md) — vulnerability reporting and security boundaries.
+- [`docs/DEVELOPMENT_HISTORY.md`](docs/DEVELOPMENT_HISTORY.md) — organized pre-v1.0 development history.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — current Android/runtime architecture and module boundaries.
+- [`docs/CONTROLLER_FEEDBACK.md`](docs/CONTROLLER_FEEDBACK.md) — controller sound/haptic behavior and design constraints.
+- [`docs/PERSISTENT_STORAGE_ARCHITECTURE.md`](docs/PERSISTENT_STORAGE_ARCHITECTURE.md) — persistent storage design.
 
 ## License
 
-GPL-3.0. Uses [LibretroDroid](https://github.com/Swordfish90/LibretroDroid) (GPL-3.0),
-[mGBA](https://mgba.io) (MPL-2.0) and [mkxp-z](https://github.com/mkxp-z/mkxp-z) (GPL).
+Retra source code is released under the **Mozilla Public License 2.0 (MPL-2.0)**. See [`LICENSE`](LICENSE).
+
+Retra integrates with the separately maintained **mGBA** emulator core. mGBA is not owned by Retra and retains its own copyright and MPL-2.0 notices.
+
+See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the license files included with the exact mGBA revision used for your build.
+
+ROMs, BIOS files, game artwork, trademarks, and game content are not distributed with Retra and remain the property of their respective rights holders.
+
+---
+
+<div align="center">
+
+**Retra** · Android retro emulation powered by mGBA
+
+</div>
