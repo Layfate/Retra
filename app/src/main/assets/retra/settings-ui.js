@@ -87,7 +87,7 @@ function applyUiFont(fontName, { persist = false, notify = false } = {}){
   });
 
   if (settingsVersionLabel) {
-    settingsVersionLabel.textContent = 'Retra v1.0.4';
+    settingsVersionLabel.textContent = 'Retra v1.0.0';
   }
 
   if (persist) { localStorage.setItem(fontStorageKey, selected); setNativeUiPreference('font', selected); }
@@ -122,7 +122,7 @@ function setUpdateStatus(text){
 }
 
 function hydrateRetraVersion(){
-  let versionName = '1.0.4';
+  let versionName = '1.0.0';
   try {
     if (window.AndroidBridge && typeof window.AndroidBridge.getAppVersionInfo === 'function') {
       const info = JSON.parse(String(window.AndroidBridge.getAppVersionInfo() || '{}'));

@@ -13,7 +13,7 @@ const shaderView = fs.readFileSync(path.join(__dirname, '../app/src/main/java/co
 
 test('release metadata and optimization are enabled', () => {
   assert.match(gradle, /versionCode = 451/);
-  assert.match(gradle, /versionName = "1\.0\.4"/);
+  assert.match(gradle, /versionName = "1.0.0"/);
   assert.match(gradle, /optimization \{\s*enable = true\s*\}/s);
 });
 

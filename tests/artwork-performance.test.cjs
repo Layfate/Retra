@@ -53,7 +53,7 @@ test('manual artwork remains protected and user controls are exposed', () => {
   assert.match(html, /id="retryArtworkBtn"/);
 });
 
-test('current Retra v1.0.4 release metadata is applied', () => {
+test('current Retra v1.0.0 release metadata is applied', () => {
   assert.match(gradle, /versionCode = 451/);
-  assert.match(gradle, /versionName = "1\.0\.4"/);
+  assert.match(gradle, /versionName = "1.0.0"/);
 });

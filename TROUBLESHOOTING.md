@@ -1,14 +1,14 @@
 # Retra Troubleshooting
 
-This guide covers common problems with **Retra v1.0.4** and the first things to try before opening an issue.
+This guide covers common problems with **Retra v1.0.0** and the first things to try before opening an issue.
 
-**Current release:** [Retra v1.0.4](https://github.com/lascent/Retra/releases/tag/v1.0.4)
+**Current release:** [Retra v1.0.0](https://github.com/Layfate/Retra/releases/tag/v1.0.0)
 
 > Retra does not include ROMs, BIOS files, or copyrighted game assets. Use only files you are legally permitted to use.
 
 ## Before you start
 
-1. Confirm that you are running **Retra v1.0.4** or a newer stable release.
+1. Confirm that you are running **Retra v1.0.0** or a newer stable release.
 2. Fully close Retra and open it again.
 3. Restart the Android device if the problem continues.
 4. Test another known-good ROM when possible to separate a game-specific problem from an app-wide problem.
@@ -22,7 +22,7 @@ A `.retra` backup can contain saves, save states, cheats, library metadata, cont
 
 ### Android says the APK cannot be installed
 
-Retra v1.0.4 requires **Android 8.0 / API 26 or newer**.
+Retra v1.0.0 requires **Android 8.0 / API 26 or newer**.
 
 Make sure the APK finished downloading and matches your device. If Android reports a package or signature conflict, the installed build may have been signed with a different key.
 
@@ -32,7 +32,7 @@ If you need to uninstall a conflicting build, create a `.retra` backup first so 
 
 The installed APK and the new APK were signed with different signing keys. Android will not install one over the other.
 
-Create a backup, uninstall the conflicting build, install Retra v1.0.4, and restore the backup.
+Create a backup, uninstall the conflicting build, install Retra v1.0.0, and restore the backup.
 
 ### `INSTALL_FAILED_NO_MATCHING_ABIS`
 
@@ -83,11 +83,11 @@ For a clean performance test:
 - Return emulation speed to **1×** first to check normal-speed performance.
 - Close demanding background apps and disable aggressive battery restrictions for Retra if Android is throttling it.
 
-Retra v1.0.4 keeps emulation timing separate from display presentation. Gameplay uses a cadence-compatible **60/120 Hz** presentation path where supported, while the emulator continues to advance at the requested game speed.
+Retra v1.0.0 keeps emulation timing separate from display presentation. Gameplay uses a cadence-compatible **60/120 Hz** presentation path where supported, while the emulator continues to advance at the requested game speed.
 
 ### Fast-forward is not smooth at 2×, 4×, 8×, or 16×
 
-v1.0.4 uses SmoothTurbo fractional scheduling and a four-buffer latest-frame pipeline. At high speed Retra intentionally presents the newest completed frame instead of queueing every emulated frame.
+v1.0.0 uses SmoothTurbo fractional scheduling and a four-buffer latest-frame pipeline. At high speed Retra intentionally presents the newest completed frame instead of queueing every emulated frame.
 
 If a high multiplier still feels uneven:
 
@@ -111,7 +111,7 @@ Then try:
 4. Fully close and reopen the game.
 5. Test another ROM to determine whether the problem is game-specific.
 
-Retra v1.0.4 resets the turbo audio transform when the speed multiplier changes. If an audio problem only occurs during a specific multiplier, report the exact transition, for example `1× → 16× → 1×`.
+Retra v1.0.0 resets the turbo audio transform when the speed multiplier changes. If an audio problem only occurs during a specific multiplier, report the exact transition, for example `1× → 16× → 1×`.
 
 ---
 
@@ -149,7 +149,7 @@ Removing a game from the Library is intended to be non-destructive. Permanent ga
 
 ## Create Backup or Restore Backup is not working
 
-Portable `.retra` backup and restore is supported in Retra v1.0.4.
+Portable `.retra` backup and restore is supported in Retra v1.0.0.
 
 ### Create a backup
 
@@ -239,7 +239,7 @@ Use compatible GBA games that support normal Link Cable multiplayer.
 
 ### Local Single-Pak / Multiboot
 
-Retra v1.0.4 supports **two-player Local Single-Pak/Multiboot on one Android device**. The cartridge-less receiver requires a user-provided **16 KiB GBA BIOS**. Game compatibility still depends on the title's own Single-Pak implementation.
+Retra v1.0.0 supports **two-player Local Single-Pak/Multiboot on one Android device**. The cartridge-less receiver requires a user-provided **16 KiB GBA BIOS**. Game compatibility still depends on the title's own Single-Pak implementation.
 
 ### Wi-Fi Remote Link
 
@@ -253,7 +253,7 @@ Make sure Bluetooth is enabled and the required Android Bluetooth permissions ar
 
 ---
 
-## Update checking does not find v1.0.4
+## Update checking does not find v1.0.0
 
 Retra checks the official GitHub Releases feed when a fresh app process starts and also provides **About → Check for updates**.
 
@@ -262,7 +262,7 @@ If an update is not detected:
 1. Confirm that the device is online.
 2. Fully close Retra and reopen it.
 3. Use **About → Check for updates**.
-4. Open the [Retra v1.0.4 release page](https://github.com/lascent/Retra/releases/tag/v1.0.4) directly to verify the release is published.
+4. Open the [Retra v1.0.0 release page](https://github.com/Layfate/Retra/releases/tag/v1.0.0) directly to verify the release is published.
 
 ---
 
@@ -276,11 +276,11 @@ Try to reproduce the crash once with a simple configuration:
 - Emulation speed: **1×**
 - BIOS: disabled unless required for the test
 
-If it still happens, open a report in [Retra GitHub Issues](https://github.com/lascent/Retra/issues).
+If it still happens, open a report in [Retra GitHub Issues](https://github.com/Layfate/Retra/issues).
 
 Include:
 
-- Retra version, for example `v1.0.4`
+- Retra version, for example `v1.0.0`
 - Android version
 - Device model
 - Portrait, landscape, or both
@@ -298,7 +298,7 @@ Do **not** upload copyrighted ROMs, BIOS files, private save data, account crede
 
 ## Still having a problem?
 
-Search [existing Retra issues](https://github.com/lascent/Retra/issues) before creating a new report.
+Search [existing Retra issues](https://github.com/Layfate/Retra/issues) before creating a new report.
 
 Use a short descriptive title such as:
 

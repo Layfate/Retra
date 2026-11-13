@@ -366,23 +366,52 @@ main {
 }
 
 
-/* v4.47 — Solid Library refresh popup.
-   Keep the menu readable even when it overlaps the category chips. */
+/* Library overflow menu — a single solid Material-style surface.
+   Items are flat rows inside it (no nested card/border), so the menu reads
+   as one popup instead of a box inside a box. */
 .library-overflow-menu {
+  top: calc(100% + 4px);
+  right: 4px;
+  min-width: 200px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 0;
+  border-radius: 12px;
+  border: 0 !important;
   background: var(--panel-2) !important;
-  border-color: color-mix(in srgb, var(--line) 82%, var(--text) 18%);
-  box-shadow: 0 16px 34px rgba(0,0,0,.34);
+  box-shadow: 0 8px 24px rgba(0,0,0,.36), 0 2px 6px rgba(0,0,0,.24);
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   isolation: isolate;
+  overflow: hidden;
 }
 .library-overflow-item {
-  background: var(--panel) !important;
-  border: 1px solid color-mix(in srgb, var(--line) 84%, transparent);
+  min-height: 48px;
+  padding: 0 16px;
+  gap: 14px;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--text);
+  font: inherit;
+}
+.library-overflow-item span {
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.library-overflow-item svg.ms {
+  flex: 0 0 auto;
+  color: var(--muted, currentColor);
 }
 .library-overflow-item:hover,
-.library-overflow-item:active {
-  background: var(--panel-2) !important;
+.library-overflow-item:active,
+.library-overflow-item:focus-visible {
+  background: color-mix(in srgb, var(--text) 8%, transparent) !important;
+  outline: none;
+}
+body[data-resolved-mode="light"] .library-overflow-menu {
+  background: var(--light-surface, #fff) !important;
+  box-shadow: 0 8px 24px rgba(38,45,63,.16), 0 2px 6px rgba(38,45,63,.10);
 }
 
 /* v4.47 Color Style — game-only color vibe presets with visual previews. */
