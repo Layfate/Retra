@@ -28,7 +28,7 @@ test('header and navigation use Material icons instead of stroke icons', () => {
   const header = html.match(/<header class="main-header active-header" id="libraryHeader">[\s\S]*?<\/header>/)?.[0] || '';
   assert.equal((header.match(/<svg class="ms"/g) || []).length, 4); // search, filter, more_vert, refresh
   const nav = html.match(/<nav class="bottom-nav">[\s\S]*?<\/nav>/)?.[0] || '';
-  assert.equal((nav.match(/class="nav-indicator"/g) || []).length, 3);
+  assert.equal((nav.match(/class="nav-indicator"/g) || []).length, 4);
   assert.match(nav, /class="ms ms-off"/);
   assert.match(nav, /class="ms ms-on"/);
   assert.match(css, /svg\.ms,[\s\S]*?fill:currentColor;\s*stroke:none;/);

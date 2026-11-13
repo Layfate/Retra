@@ -16,6 +16,7 @@
 <link href="style-layout-polish.css" rel="stylesheet"/>
 <link href="style-editor-modern.css" rel="stylesheet"/>
 <link href="style-features.css" rel="stylesheet"/>
+<link href="style-browse.css" rel="stylesheet"/>
 <link href="ui-polish.css" rel="stylesheet"/>
 <link href="style-safe-insets.css" rel="stylesheet"/>
 <link href="style-motion-performance.css" rel="stylesheet"/>
@@ -57,6 +58,30 @@
 <button aria-label="Remove everything" class="icon-btn" id="clearHistoryBtn">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15 16h4v2h-4zm0-8h7v2h-7zm0 4h6v2h-6zM3 18c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V8H3v10zm2-8h6v8H5v-8zm5-6H6L5 5H2v2h12V5h-3z"></path></svg>
 </button>
+</div>
+</header>
+<header class="main-header" id="browseHeader">
+<h1>Browse</h1>
+<div class="header-actions header-actions-with-menu">
+<button aria-label="Search sources" class="icon-btn" id="browseSearchBtn" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<button aria-label="Filter sources" class="icon-btn" id="browseFilterBtn" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"></path></svg>
+</button>
+<button aria-label="More options" class="icon-btn" id="browseMoreBtn" type="button" hidden>
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+</button>
+<div class="library-overflow-menu" id="browseOverflowMenu">
+<button class="library-overflow-item" id="browseRefresh" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></svg>
+<span>Check for updates</span>
+</button>
+<button class="library-overflow-item" id="browseRepositories" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z"></path></svg>
+<span>Extension repos</span>
+</button>
+</div>
 </div>
 </header>
 <header class="main-header" id="moreHeader">
@@ -202,6 +227,109 @@
 <section class="page" id="historyPage">
 <div class="history-list" id="historyList"></div>
 <div class="history-empty" id="historyEmpty">No recent history yet.</div>
+</section>
+<!-- BROWSE -->
+<section class="page browse-surface" id="browsePage">
+<div class="browse-tabs" role="tablist" aria-label="Browse">
+<button aria-controls="browseSources" aria-selected="true" class="browse-tab" id="sourcesTab" role="tab" type="button"><span class="browse-tab-label">Sources</span></button>
+<button aria-controls="browseExtensions" aria-selected="false" class="browse-tab" id="extensionsTab" role="tab" type="button"><span class="browse-tab-label">Extensions<span class="browse-tab-badge" id="extensionsBadge" hidden></span></span></button>
+</div>
+<section class="search-panel browse-search" id="browseSearchPanel">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+<input aria-label="Search sources" autocomplete="off" id="browseSearchInput" placeholder="Search sources..." type="search"/>
+</section>
+<p aria-live="polite" class="browse-status" id="browseStatus" role="status"></p>
+<div aria-labelledby="sourcesTab" class="browse-rows" id="browseSources" role="tabpanel"></div>
+<div aria-labelledby="extensionsTab" class="browse-rows" hidden id="browseExtensions" role="tabpanel"></div>
+</section>
+<!-- EXTENSION REPOS -->
+<section class="page settings-detail-page browse-surface" id="repositoriesPage">
+<div class="sub-header">
+<button aria-label="Back" class="back-btn" data-back-to="browsePage">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+</button>
+<h2>Extension repos</h2>
+</div>
+<div class="browse-rows" id="repositoryList"></div>
+<p class="browse-note">Repositories start untrusted. Retra installs only from repositories you trust. Retra extensions contain catalog data only, never executable code.</p>
+<button class="big-fab add-fab" id="addRepositoryBtn" type="button">
+<svg viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+<span>Add</span>
+</button>
+</section>
+<div class="modal-backdrop" id="repositoryModal">
+<form class="category-modal-card" id="repositoryForm">
+<h3 class="modal-title">Add repository</h3>
+<p class="modal-copy">Paste the HTTPS address of a Retra repository index.json, for example a raw GitHub URL.</p>
+<input aria-label="Repository index URL" autocomplete="off" id="repositoryUrl" inputmode="url" placeholder="https://raw.githubusercontent.com/…/index.json" required type="url"/>
+<div class="modal-actions">
+<button class="modal-btn secondary" id="cancelRepositoryBtn" type="button">Cancel</button>
+<button class="modal-btn primary" id="saveRepositoryBtn" type="submit">Add</button>
+</div>
+</form>
+</div>
+<!-- EXTENSION DETAILS -->
+<section class="page settings-detail-page browse-surface" id="extensionDetailsPage">
+<div class="sub-header">
+<button aria-label="Back" class="back-btn" data-back-to="browsePage">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+</button>
+<h2>Extension info</h2>
+</div>
+<div id="extensionDetails"></div>
+</section>
+<!-- SOURCE CATALOG -->
+<section class="page settings-detail-page browse-surface" id="catalogPage">
+<div class="sub-header">
+<button aria-label="Back" class="back-btn" data-back-to="browsePage">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+</button>
+<h2 id="catalogTitle">Source</h2>
+<div class="header-actions header-actions-with-menu">
+<button aria-label="Search games" class="icon-btn" id="catalogSearchButton" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+</button>
+<button aria-label="Switch to list view" aria-pressed="false" class="icon-btn" id="catalogView" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M3 14h4v-4H3v4zm0 5h4v-4H3v4zM3 9h4V5H3v4zm5 5h13v-4H8v4zm0 5h13v-4H8v4zM8 5v4h13V5H8z"></path></svg>
+</button>
+<button aria-label="More options" class="icon-btn" id="catalogMoreBtn" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+</button>
+<div class="library-overflow-menu" id="catalogOverflowMenu">
+<button class="library-overflow-item" id="catalogRefresh" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path></svg>
+<span>Refresh catalog</span>
+</button>
+<button class="library-overflow-item" id="catalogSourceInfo" type="button">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+<span>Source information</span>
+</button>
+</div>
+</div>
+</div>
+<form class="search-panel browse-search" id="catalogSearchForm">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+<input aria-label="Search games" autocomplete="off" enterkeyhint="search" id="catalogQuery" placeholder="Search games..." type="search"/>
+</form>
+<div aria-label="Catalog listing" class="browse-chips" role="group">
+<button aria-pressed="true" class="browse-chip" id="catalogPopular" type="button"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg><span>Popular</span></button>
+<button aria-pressed="false" class="browse-chip" id="catalogLatest" type="button"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg><span>Latest</span></button>
+<button aria-haspopup="dialog" aria-pressed="false" class="browse-chip" id="catalogFilter" type="button"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"></path></svg><span>Filter</span></button>
+</div>
+<p aria-live="polite" class="browse-status" id="catalogStatus" role="status"></p>
+<div class="library-grid library-display-compact browse-catalog-grid" id="catalogGames"></div>
+<div aria-hidden="true" class="browse-sentinel" id="catalogSentinel"></div>
+<button class="modal-btn secondary browse-load-more" hidden id="catalogMore" type="button">Load more</button>
+</section>
+<!-- CATALOG GAME DETAILS -->
+<section class="page settings-detail-page browse-surface" id="catalogDetailsPage">
+<div class="sub-header">
+<button aria-label="Back" class="back-btn" data-back-to="catalogPage" id="catalogDetailsBack">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+</button>
+<h2>Game details</h2>
+</div>
+<div aria-live="polite" id="catalogDetails"></div>
 </section>
 <!-- MORE -->
 <section class="page" id="morePage">
@@ -1568,6 +1696,51 @@
   </div>
 </div>
 
+<div class="library-view-backdrop" id="browseFilterSheet" aria-hidden="true">
+  <section class="library-view-sheet" role="dialog" aria-modal="true" aria-labelledby="browseFilterSheetTitle">
+    <div class="library-view-tabs" role="tablist" aria-label="Source options">
+      <button class="library-view-tab active" data-browse-sheet-tab="filter" type="button" role="tab" aria-selected="true">Filter</button>
+      <button class="library-view-tab" data-browse-sheet-tab="sort" type="button" role="tab" aria-selected="false">Sort</button>
+    </div>
+    <h2 class="sr-only" id="browseFilterSheetTitle">Source filter and sort</h2>
+    <div class="library-view-panel active" data-browse-sheet-panel="filter" role="tabpanel">
+      <h3 class="library-view-section-title">Platform</h3>
+      <div class="library-display-modes" id="browsePlatformModes">
+        <button data-platform="" type="button">All</button>
+        <button data-platform="GBA" type="button">GBA</button>
+        <button data-platform="GBC" type="button">GBC</button>
+        <button data-platform="GB" type="button">GB</button>
+      </div>
+    </div>
+    <div class="library-view-panel" data-browse-sheet-panel="sort" role="tabpanel">
+      <div class="library-sort-options" id="browseSortOptions">
+        <button class="library-sort-option" data-browse-sort="name" type="button"><span class="library-sort-direction" aria-hidden="true">↓</span><span>Alphabetically</span></button>
+        <button class="library-sort-option" data-browse-sort="platform" type="button"><span class="library-sort-direction" aria-hidden="true">↓</span><span>Platform</span></button>
+      </div>
+      <p class="library-view-hint">Tap Alphabetically again to reverse its order.</p>
+    </div>
+  </section>
+</div>
+
+<div class="library-view-backdrop" id="catalogFilterSheet" aria-hidden="true">
+  <section class="library-view-sheet" role="dialog" aria-modal="true" aria-labelledby="catalogFilterSheetTitle">
+    <div class="library-view-tabs"><button class="library-view-tab active" id="catalogFilterSheetTitle" type="button">Filter</button></div>
+    <form class="browse-filter-form" id="catalogFilters">
+      <label class="browse-field"><span>Platform</span><select name="platform"><option value="">All</option><option>GBA</option><option>GBC</option><option>GB</option></select></label>
+      <label class="browse-field"><span>Availability</span><select name="availability"><option value="">All</option><option value="download">Authorized download</option><option value="catalog">Catalog only</option></select></label>
+      <label class="browse-field"><span>Genre</span><input autocomplete="off" name="genre" placeholder="e.g. Puzzle"/></label>
+      <label class="browse-field"><span>Release year</span><input autocomplete="off" inputmode="numeric" name="year" placeholder="e.g. 2024"/></label>
+      <label class="browse-field"><span>Region</span><input autocomplete="off" name="region" placeholder="e.g. World"/></label>
+      <label class="browse-field"><span>Language</span><input autocomplete="off" name="language" placeholder="e.g. en"/></label>
+      <label class="browse-field"><span>Game type</span><input autocomplete="off" name="gameType" placeholder="e.g. homebrew"/></label>
+      <div class="sheet-actions">
+        <button class="modal-btn secondary" type="reset">Reset</button>
+        <button class="modal-btn primary" type="submit">Filter</button>
+      </div>
+    </form>
+  </section>
+</div>
+
 <!-- LIBRARY SORT / DISPLAY SHEET -->
 <div class="library-view-backdrop" id="libraryViewSheet" aria-hidden="true">
   <section class="library-view-sheet" role="dialog" aria-modal="true" aria-labelledby="libraryViewSheetTitle">
@@ -1618,6 +1791,9 @@
 <span class="nav-indicator"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"></path></svg></span>
 <span>History</span>
 </button>
+<button class="nav-item" data-page="browsePage">
+<span class="nav-indicator"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm2.2 12.2L6 18l3.8-8.2L18 6l-3.8 8.2zM12 10.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg></span><span>Browse</span>
+</button>
 <button class="nav-item" data-page="morePage">
 <span class="nav-indicator"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></span>
 <span>More</span>
@@ -1634,6 +1810,7 @@
 <script src="i18n.js"></script>
 <script src="app-shell.js"></script>
 <script src="library-ui.js"></script>
+<script src="browse-ui.js"></script>
 <script src="settings-ui.js"></script>
 <script src="controller-editor-ui.js"></script>
 <script src="screen-editor.js"></script>

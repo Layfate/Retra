@@ -912,7 +912,7 @@ button.detail-row:hover{background:rgba(255,255,255,.02)}
   left:0;right:0;bottom:0;
   height:var(--bottom-nav-total-height);
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:2px;
   padding:8px max(14px, var(--device-safe-right)) calc(12px + var(--device-safe-bottom)) max(14px, var(--device-safe-left));
   background:var(--nav-bg);

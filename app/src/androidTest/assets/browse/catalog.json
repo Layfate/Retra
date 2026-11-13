@@ -1,0 +1,33 @@
+{
+  "apiVersion": 1,
+  "games": [
+    {
+      "id": "retra-pad",
+      "title": "Retra Pad",
+      "platform": "GB",
+      "developer": "Retra contributors",
+      "publisher": "Retra contributors",
+      "year": "2026",
+      "genre": "Demo",
+      "language": "en",
+      "region": "World",
+      "gameType": "homebrew",
+      "popularity": 1,
+      "updatedAt": 1794528000000,
+      "description": "A CC0 homebrew test cartridge. Move the square using the D-pad.",
+      "cover": "https://example.org/retra/cover.png",
+      "screenshots": [
+        "https://example.org/retra/screenshot.png"
+      ],
+      "download": {
+        "url": "https://example.org/retra/retra-pad.gb",
+        "sha256": "1fbafbb5a54e6ca3172ba4e45370bfc91d3d172828478968f27e6142d34c7351",
+        "size": 32768,
+        "fileName": "retra-pad.gb",
+        "authorized": true,
+        "license": "CC0-1.0",
+        "rightsUrl": "https://example.org/retra/LICENSE.txt"
+      }
+    }
+  ]
+}

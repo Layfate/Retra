@@ -543,6 +543,7 @@ internal fun MainActivity.persistNativeItem(item: NativeLibraryItem) {
         )
     )
     romIdentityStore.addIdentityAlias(item.id, item.legacyIdentityHash, "legacy_bundle_v1")
+    browseController.reconcileImported(item)
     previous?.contentHash?.takeIf { it.isNotBlank() && !it.equals(item.contentHash, true) }?.let {
         romIdentityStore.addIdentityAlias(item.id, it, "previous_content_hash")
     }
@@ -574,4 +575,5 @@ internal fun MainActivity.notifyWebImported(item: NativeLibraryItem, replaceExis
         "window.retraNativeFileImported && window.retraNativeFileImported(${jsQuote(json.toString())})",
         null
     )
+    browseController.notifyImported(item.id)
 }

@@ -1,0 +1,59 @@
+name: Retra extension repository
+
+# Rebuilds the extension repository published on the `repo` branch
+# (https://raw.githubusercontent.com/<owner>/<repo>/repo/index.json) so the
+# Homebrew Hub catalogs pick up new games. Previously hashed ROMs are reused
+# from hashes.json; only new authorized files are downloaded and hashed.
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retra-extension-repo
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout builder
+        uses: actions/checkout@v5
+
+      - name: Checkout published repository
+        uses: actions/checkout@v5
+        with:
+          ref: repo
+          path: site
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Build repository
+        shell: bash
+        env:
+          # Lifts the GitHub API rate limit for the libretro-thumbnails box art index.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/extension-repo/build-repo.cjs "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/repo/" site
+
+      - name: Publish changes
+        shell: bash
+        working-directory: site
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Catalogs unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh Retra extension catalogs"
+          git push origin HEAD:repo

@@ -1,0 +1,17 @@
+{
+  "apiVersion": 1,
+  "id": "org.retra.pad",
+  "versionCode": 1,
+  "sources": [
+    {
+      "id": "homebrew",
+      "name": "Retra Homebrew Sample",
+      "platforms": [
+        "GB"
+      ],
+      "latest": true,
+      "catalogUrl": "https://example.org/retra/catalog.json",
+      "icon": "https://example.org/retra/icon.png"
+    }
+  ]
+}

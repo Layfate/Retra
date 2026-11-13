@@ -4,6 +4,7 @@ const path = require('node:path');
 const JS_MODULES = [
   'app-shell.js',
   'library-ui.js',
+  'browse-ui.js',
   'settings-ui.js',
   'controller-editor-ui.js',
   'screen-editor.js',
@@ -19,6 +20,7 @@ const CSS_MODULES = [
   'style-layout-polish.css',
   'style-editor-modern.css',
   'style-features.css',
+  'style-browse.css',
 ];
 
 function read(root, rel) {

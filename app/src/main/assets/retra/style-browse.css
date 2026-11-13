@@ -1,0 +1,349 @@
+/* Retra — Browse (Sources, Extensions, source catalog, catalog details).
+   Built from the existing shell components: search panel, overflow menu,
+   library sheets, cover cards, ROM detail tiles/meta lines and detail rows.
+   Only Browse-specific layout lives here. Like the rest of the Mihon-style
+   shell there are no divider lines under the header or tabs. Colors come from
+   the Material shell tokens so every Appearance theme keeps working. */
+
+.browse-surface [hidden],
+#browseHeader [hidden]{display:none !important}
+#browsePage.page{animation:none}
+
+/* ---------- Tabs: text tabs with an accent indicator under the label ---------- */
+.browse-tabs{
+  position:sticky;
+  top:0;
+  z-index:6;
+  display:flex;
+  margin:-10px calc(-1 * var(--content-gutter)) 4px;
+  padding:0 calc(var(--content-gutter) - 4px);
+  background:var(--m3-surface);
+  border:0;
+  box-shadow:none;
+}
+html[data-retra-runtime="android"] .browse-tabs{
+  margin-left:calc(-1 * max(var(--content-gutter), var(--device-safe-left)));
+  margin-right:calc(-1 * max(var(--content-gutter), var(--device-safe-right)));
+}
+.browse-tab{
+  flex:1;
+  height:48px;
+  padding:0 16px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--m3-on-surface-variant);
+  font:inherit;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.01em;
+  display:flex;
+  justify-content:center;
+  cursor:pointer;
+}
+.browse-tab-label{
+  position:relative;
+  height:100%;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.browse-tab-label::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:3px;
+  border-radius:3px 3px 0 0;
+  background:var(--accent);
+  transform:scaleX(0);
+  transition:transform .2s ease;
+}
+.browse-tab[aria-selected="true"]{color:var(--accent)}
+.browse-tab[aria-selected="true"] .browse-tab-label::after{transform:scaleX(1)}
+@media (hover:hover) and (pointer:fine){
+  .browse-tab:hover{background:var(--m3-state-hover)}
+}
+.browse-tab-badge{
+  min-width:22px;
+  height:22px;
+  padding:0 6px;
+  border-radius:11px;
+  background:var(--m3-secondary-container);
+  color:var(--m3-on-secondary-container);
+  font-size:12px;
+  font-weight:600;
+  display:inline-grid;
+  place-items:center;
+}
+
+/* ---------- Search (reuses .search-panel) and status text ---------- */
+.browse-search{margin:8px 0 12px}
+.browse-search input[type="search"]::-webkit-search-cancel-button{display:none}
+.browse-status{
+  margin:24px 0;
+  text-align:center;
+  color:var(--m3-on-surface-variant);
+  font-size:14px;
+  line-height:1.6;
+  white-space:pre-line;
+  overflow-wrap:anywhere;
+}
+.browse-status:empty{display:none}
+.browse-note{
+  margin:16px 0;
+  color:var(--m3-on-surface-variant);
+  font-size:13px;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+#confirmMessage{white-space:pre-line;overflow-wrap:anywhere}
+
+/* ---------- Flat list rows (Sources, Extensions, Repositories) ---------- */
+.browse-rows{display:flex;flex-direction:column}
+.browse-section-title{
+  margin:16px 0 4px;
+  font-size:14px;
+  font-weight:500;
+  line-height:20px;
+  color:var(--m3-on-surface);
+}
+.browse-item{
+  display:flex;
+  align-items:center;
+  gap:0;
+  min-height:72px;
+  margin:0 -8px;
+}
+.browse-item-main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:8px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+}
+button.browse-item-main{cursor:pointer}
+button.browse-item-main:active{background:var(--m3-state-press)}
+@media (hover:hover) and (pointer:fine){
+  button.browse-item-main:hover{background:var(--m3-state-hover)}
+}
+.browse-icon{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  border-radius:12px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:var(--m3-surface-container-high);
+  color:var(--m3-on-surface-variant);
+}
+.browse-icon img{width:100%;height:100%;object-fit:cover;display:block}
+.browse-icon svg.ms{width:26px;height:26px}
+.browse-icon-large{width:72px;height:72px;flex-basis:72px;border-radius:16px}
+.browse-icon-large svg.ms{width:36px;height:36px}
+.browse-item-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
+.browse-item-copy strong{
+  font-size:16px;
+  font-weight:400;
+  line-height:1.35;
+  color:var(--m3-on-surface);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.browse-item-copy small{
+  font-size:14px;
+  line-height:1.4;
+  color:var(--m3-on-surface-variant);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.browse-tone-accent{color:var(--accent)}
+.browse-tone-error{color:var(--danger, #ef6b73)}
+.browse-item .icon-btn{flex:0 0 48px;color:var(--m3-on-surface-variant)}
+.browse-item .icon-btn.browse-pinned{color:var(--accent)}
+.browse-text-btn{
+  flex:0 0 auto;
+  min-height:48px;
+  padding:0 12px;
+  border:0;
+  border-radius:24px;
+  background:transparent;
+  color:var(--accent);
+  font:inherit;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+}
+.browse-text-btn:active{background:var(--m3-state-press)}
+@media (hover:hover) and (pointer:fine){
+  .browse-text-btn:hover{background:var(--m3-state-hover)}
+}
+.browse-spinner{
+  flex:0 0 auto;
+  width:24px;
+  height:24px;
+  margin:12px;
+  border-radius:50%;
+  border:3px solid var(--m3-surface-container-high);
+  border-top-color:var(--accent);
+  animation:browse-spin .9s linear infinite;
+}
+@keyframes browse-spin{to{transform:rotate(360deg)}}
+
+/* Empty states reuse .empty-page + .kaomoji from Categories. */
+.browse-empty{min-height:50vh}
+.browse-empty p{max-width:310px;margin:0 0 16px;font-size:13px;line-height:1.7}
+.browse-empty .modal-btn{min-width:160px}
+
+/* Repositories FAB sits where the Categories Add button sits. */
+#repositoriesPage{padding-bottom:120px}
+#repositoriesPage #addRepositoryBtn{bottom:calc(58px + var(--device-safe-bottom))}
+#repositoryUrl{width:100%}
+
+/* ---------- Extension info ---------- */
+.browse-extension-hero{display:flex;align-items:center;gap:16px;margin:8px 0 20px}
+.browse-extension-hero .browse-item-copy strong{font-size:20px;white-space:normal;overflow-wrap:anywhere}
+.browse-extension-hero .browse-item-copy small{white-space:normal}
+.browse-surface .detail-list{margin-bottom:8px}
+.browse-surface .detail-row span{overflow-wrap:anywhere}
+.browse-surface a.browse-link{color:inherit;text-decoration:none}
+
+/* ---------- Source catalog ---------- */
+.browse-chips{
+  display:flex;
+  gap:8px;
+  margin:0 0 12px;
+  padding:8px 0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.browse-chips::-webkit-scrollbar{display:none}
+.browse-chip{
+  position:relative;
+  flex:0 0 auto;
+  height:32px;
+  padding:0 16px 0 8px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid color-mix(in srgb, var(--m3-on-surface-variant) 45%, transparent);
+  border-radius:8px;
+  background:transparent;
+  color:var(--m3-on-surface-variant);
+  font:inherit;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+}
+/* 48px touch target around the 32px chip. */
+.browse-chip::before{content:"";position:absolute;inset:-8px 0}
+.browse-chip svg.ms{width:18px;height:18px}
+.browse-chip[aria-pressed="true"]{
+  border-color:transparent;
+  background:var(--m3-secondary-container);
+  color:var(--m3-on-secondary-container);
+}
+.browse-catalog-grid .browse-in-library{
+  position:absolute;
+  top:6px;
+  right:6px;
+  z-index:3;
+  padding:2px 6px;
+  border-radius:6px;
+  background:var(--m3-secondary-container);
+  color:var(--m3-on-secondary-container);
+  font-size:11px;
+  font-weight:600;
+  line-height:16px;
+}
+.browse-catalog-grid.library-display-list .browse-in-library{position:static;order:4;flex:0 0 auto}
+.browse-catalog-grid .cover-card{cursor:pointer}
+.browse-sentinel{height:1px}
+.browse-sentinel.loading{height:auto}
+.browse-sentinel.loading::after{
+  content:"";
+  display:block;
+  width:24px;
+  height:24px;
+  margin:20px auto;
+  border-radius:50%;
+  border:3px solid var(--m3-surface-container-high);
+  border-top-color:var(--accent);
+  animation:browse-spin .9s linear infinite;
+}
+.browse-load-more{display:block;margin:16px auto}
+
+/* Catalog filter sheet (reuses .library-view-sheet). */
+.browse-filter-form{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:12px;
+  padding-top:12px;
+}
+.browse-field{display:grid;gap:6px;min-width:0;font-size:13px;color:var(--m3-on-surface-variant)}
+.browse-field input,
+.browse-field select{
+  width:100%;
+  min-height:48px;
+  padding:0 14px;
+  border:0;
+  border-radius:12px;
+  background:var(--m3-surface-container-high);
+  color:var(--m3-on-surface);
+  font:inherit;
+  font-size:15px;
+}
+.browse-filter-form .sheet-actions{grid-column:1 / -1}
+
+/* ---------- Catalog game details (ROM detail building blocks) ---------- */
+#catalogDetails .browse-detail-top{margin:8px 0 20px;align-items:center}
+.browse-detail-cover{position:relative}
+.browse-detail-cover .cover-art-placeholder{position:absolute;inset:0;width:100%;height:100%}
+#catalogDetails .rom-meta h2{font-size:22px;line-height:1.25;color:var(--m3-on-surface);overflow-wrap:anywhere}
+#catalogDetails .meta-line,
+#catalogDetails .meta-line svg{color:var(--m3-on-surface-variant)}
+#catalogDetails .meta-line span{overflow-wrap:anywhere}
+.browse-actions{margin:0 0 16px}
+.browse-description{
+  margin:0 0 16px;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--m3-on-surface-variant);
+  white-space:pre-line;
+  overflow-wrap:anywhere;
+}
+.browse-download:empty{display:none}
+.browse-download{margin:0 0 16px}
+.browse-download progress{width:100%;accent-color:var(--accent)}
+.browse-download .modal-btn{margin-top:8px}
+.browse-screenshots{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.browse-screenshots::-webkit-scrollbar{display:none}
+.browse-screenshot{
+  position:relative;
+  flex:0 0 auto;
+  width:220px;
+  aspect-ratio:3 / 2;
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--m3-surface-container);
+}
+.browse-screenshot img{width:100%;height:100%;object-fit:cover;display:block}
+#catalogDetailsPage,
+#extensionDetailsPage{padding-bottom:32px}
+
+@media (prefers-reduced-motion:reduce){
+  .browse-spinner,
+  .browse-sentinel.loading::after{animation-duration:2.4s}
+  .browse-tab-label::after{transition:none}
+}

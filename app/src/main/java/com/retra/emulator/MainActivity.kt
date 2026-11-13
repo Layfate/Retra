@@ -274,6 +274,12 @@ class MainActivity : AppCompatActivity() {
         RomIdentityStore(this)
     }
 
+    private val browseDelegate = lazy { BrowseController(this) }
+    internal val browseController by browseDelegate
+    internal val browseRomPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        browseController.importResult(uri)
+    }
+
     internal val statistics by lazy {
         StatisticsRepository(prefs, romIdentityStore, fileOps)
     }
@@ -913,6 +919,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        if (browseDelegate.isInitialized()) browseController.close()
         try { remoteAttemptCloser?.invoke() } catch (_: Exception) {}
         if (!isChangingConfigurations && romLoaded) {
             // Last lifecycle fallback before the native core is torn down. This
@@ -945,6 +952,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class RetraBridge {
+
+        @JavascriptInterface
+        fun browseRequest(requestId: String, action: String, arguments: String) =
+            browseController.request(requestId, action, arguments)
 
         @JavascriptInterface
         fun launchRom(id: String, title: String, fileName: String, system: String) {
@@ -1010,6 +1021,7 @@ class MainActivity : AppCompatActivity() {
 
         @JavascriptInterface
         fun getNativeLibraryRecords(): String = JSONArray().apply {
+            val catalogMetadata = browseController.repository.store.all("library").associateBy { it.optString("romId") }
             romIdentityStore.all().forEach { record ->
                 put(JSONObject().apply {
                     put("id", record.romId)
@@ -1024,6 +1036,7 @@ class MainActivity : AppCompatActivity() {
                     put("favorite", record.favorite)
                     put("archived", record.archived)
                     put("fileAvailable", record.fileAvailable)
+                    browseController.writeMetadata(this, catalogMetadata[record.romId])
                     put("playtime", record.playtimeMs)
                     put("lastPlayedAt", prefs.getLong("last_played_at_v1_${record.romId}", 0L).coerceAtLeast(0L))
                     put("playCount", prefs.getInt("play_count_v1_${record.romId}", 0).coerceAtLeast(0))

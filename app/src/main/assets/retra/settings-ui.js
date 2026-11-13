@@ -588,7 +588,7 @@ document.querySelectorAll('[data-back-to]').forEach(btn => {
       }
     }
     const target = btn.dataset.backTo;
-    if (target === 'libraryPage' || target === 'historyPage' || target === 'morePage') {
+    if (mainTabPageIds.has(target)) {
       setMainPage(target);
     } else {
       openSubPage(target);

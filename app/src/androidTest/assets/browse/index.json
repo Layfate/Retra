@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "Retra homebrew sample",
+  "extensions": [
+    {
+      "id": "org.retra.pad",
+      "name": "Retra Homebrew Sample",
+      "publisher": "Retra contributors",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GB"
+      ],
+      "packageUrl": "https://example.org/retra/extension.json",
+      "sha256": "14ec3cba521a6d2376d1e759b50a18421f9479ef344b965fa03c54fd24c84b13",
+      "icon": "https://example.org/retra/icon.png"
+    }
+  ]
+}

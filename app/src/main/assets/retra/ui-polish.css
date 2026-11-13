@@ -1165,27 +1165,27 @@ body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025
 /* The slider is authoritative for all three grid modes. This override comes
    after the responsive landscape rules so user preference wins on phones,
    tablets, foldables and split-screen. */
-#libraryPage .library-grid:not(.library-display-list){
+:is(#libraryPage,#catalogPage) .library-grid:not(.library-display-list){
   grid-template-columns:repeat(var(--library-columns, 3), minmax(0,1fr)) !important;
 }
-#libraryPage .library-grid.library-display-compact{gap:10px;}
-#libraryPage .library-grid.library-display-comfortable{gap:16px;}
-#libraryPage .library-grid.library-display-comfortable .cover-card{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact{gap:10px;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable{gap:16px;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-card{
   border-radius:17px;
   box-shadow:0 12px 32px rgba(0,0,0,.27);
 }
-#libraryPage .library-grid.library-display-comfortable .cover-info strong{font-size:14px;}
-#libraryPage .library-grid.library-display-cover-only .cover-info,
-#libraryPage .library-grid.library-display-cover-only .top-badge,
-#libraryPage .library-grid.library-display-cover-only .favourite-heart{display:none !important;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-info strong{font-size:14px;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-cover-only .cover-info,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-cover-only .top-badge,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-cover-only .favourite-heart{display:none !important;}
 
-#libraryPage .library-grid.library-display-list{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list{
   display:flex;
   flex-direction:column;
   gap:6px;
   align-items:stretch;
 }
-#libraryPage .library-grid.library-display-list .cover-card{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card{
   width:100%;
   max-width:none;
   min-height:82px;
@@ -1200,8 +1200,8 @@ body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025
   background:transparent;
   box-shadow:none;
 }
-#libraryPage .library-grid.library-display-list .cover-card::after{display:none;}
-#libraryPage .library-grid.library-display-list .cover-card > img{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card::after{display:none;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card > img{
   order:1;
   width:48px;
   height:68px;
@@ -1210,8 +1210,8 @@ body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025
   object-fit:cover;
   box-shadow:0 5px 16px rgba(0,0,0,.24);
 }
-#libraryPage .library-grid.library-display-list .cover-card.no-cover{background:transparent;}
-#libraryPage .library-grid.library-display-list .cover-art-placeholder{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card.no-cover{background:transparent;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-art-placeholder{
   position:relative;
   inset:auto;
   order:1;
@@ -1225,13 +1225,13 @@ body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025
     linear-gradient(155deg, var(--cover-fallback-a, rgba(68,70,91,.58)), var(--cover-fallback-b, rgba(11,12,22,.94)));
   box-shadow:0 5px 16px rgba(0,0,0,.24);
 }
-#libraryPage .library-grid.library-display-list .cover-info{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-info{
   position:static;
   order:2;
   min-width:0;
   flex:1 1 auto;
 }
-#libraryPage .library-grid.library-display-list .cover-info strong{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-info strong{
   color:var(--text);
   font-size:14px;
   font-weight:650;
@@ -1241,24 +1241,24 @@ body[data-resolved-mode="light"] .app-update-notes{background:rgba(16,24,40,.025
   overflow:hidden;
   text-overflow:ellipsis;
 }
-#libraryPage .library-grid.library-display-list .top-badge{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .top-badge{
   position:static;
   order:3;
   flex:0 0 auto;
   margin-left:auto;
   padding:5px 8px;
 }
-#libraryPage .library-grid.library-display-list .favourite-heart{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .favourite-heart{
   top:50%;
   right:54px;
   transform:translateY(-50%);
 }
-#libraryPage .library-grid.library-display-list .library-selection-check{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .library-selection-check{
   top:50%;
   left:18px;
   transform:translateY(-50%) scale(.8);
 }
-body.library-selection-mode #libraryPage .library-grid.library-display-list .cover-card .library-selection-check{
+body.library-selection-mode :is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card .library-selection-check{
   transform:translateY(-50%) scale(1);
 }
 
@@ -1288,7 +1288,7 @@ body[data-resolved-mode="light"] .library-view-sheet{
 /* Match the reference behavior more closely: Compact Grid puts the title
    underneath the cover, while Comfortable Grid keeps Retra's richer title
    overlay. Cover-only and List remain intentionally minimal. */
-#libraryPage .library-grid.library-display-compact .cover-card{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card{
   aspect-ratio:auto;
   overflow:visible;
   border:0;
@@ -1296,8 +1296,8 @@ body[data-resolved-mode="light"] .library-view-sheet{
   background:transparent;
   box-shadow:none;
 }
-#libraryPage .library-grid.library-display-compact .cover-card::after{display:none;}
-#libraryPage .library-grid.library-display-compact .cover-card > img{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card::after{display:none;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card > img{
   width:100%;
   height:auto;
   aspect-ratio:.68;
@@ -1305,8 +1305,8 @@ body[data-resolved-mode="light"] .library-view-sheet{
   border-radius:12px;
   box-shadow:0 7px 20px rgba(0,0,0,.24);
 }
-#libraryPage .library-grid.library-display-compact .cover-card.no-cover{background:transparent;}
-#libraryPage .library-grid.library-display-compact .cover-art-placeholder{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card.no-cover{background:transparent;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-art-placeholder{
   position:relative;
   inset:auto;
   width:100%;
@@ -1318,25 +1318,25 @@ body[data-resolved-mode="light"] .library-view-sheet{
     linear-gradient(155deg, var(--cover-fallback-a, rgba(68,70,91,.58)), var(--cover-fallback-b, rgba(11,12,22,.94)));
   box-shadow:0 7px 20px rgba(0,0,0,.24);
 }
-#libraryPage .library-grid.library-display-compact .cover-card.library-selected > img,
-#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
-#libraryPage .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
-#libraryPage .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card.library-selected > img,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
   border-radius:16px;
   transform:translateY(-1px);
 }
-#libraryPage .library-grid.library-display-list .cover-card.library-selected > img,
-#libraryPage .library-grid.library-display-list .cover-card[data-selected="true"] > img,
-#libraryPage .library-grid.library-display-list .cover-card.library-selected .cover-art-placeholder,
-#libraryPage .library-grid.library-display-list .cover-card[data-selected="true"] .cover-art-placeholder{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card.library-selected > img,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card[data-selected="true"] > img,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card.library-selected .cover-art-placeholder,
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list .cover-card[data-selected="true"] .cover-art-placeholder{
   border-radius:12px;
 }
-#libraryPage .library-grid.library-display-compact .cover-info{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-info{
   position:static;
   margin-top:7px;
   padding:0 2px;
 }
-#libraryPage .library-grid.library-display-compact .cover-info strong{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-info strong{
   color:var(--text);
   font-size:12px;
   font-weight:600;
@@ -1353,12 +1353,12 @@ body[data-resolved-mode="light"] .library-view-sheet{
   min-height:calc(1.35em * 2);
   max-height:calc(1.35em * 2);
 }
-#libraryPage .library-grid.library-display-list.large-library .cover-card{
+:is(#libraryPage,#catalogPage) .library-grid.library-display-list.large-library .cover-card{
   content-visibility:visible;
   contain-intrinsic-size:none;
 }
 
 
 /* Long ROM titles remain readable when users choose dense 5–6 column grids. */
-#libraryPage .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px;line-height:1.32;}
-#libraryPage .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px;line-height:1.3;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px;line-height:1.32;}
+:is(#libraryPage,#catalogPage) .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px;line-height:1.3;}

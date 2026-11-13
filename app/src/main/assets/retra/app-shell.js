@@ -32,6 +32,7 @@ const pages = document.querySelectorAll('.page');
 const headers = {
   libraryPage: document.getElementById('libraryHeader'),
   historyPage: document.getElementById('historyHeader'),
+  browsePage: document.getElementById('browseHeader'),
   morePage: document.getElementById('moreHeader')
 };
 
@@ -213,7 +214,7 @@ let confirmAction = null;
 // the DOM and keeps its scroll/search/category state while the user visits
 // History, More, or a detail/settings page. This avoids rebuilding the ROM grid
 // or showing an empty frame when returning Home.
-const mainTabPageIds = new Set(['libraryPage', 'historyPage', 'morePage']);
+const mainTabPageIds = new Set(['libraryPage', 'historyPage', 'browsePage', 'morePage']);
 const pageUiStateStorageKey = 'retraPageUiStateV1';
 const pageUiState = new Map();
 
@@ -776,7 +777,11 @@ function hydrateLibraryFromNativeRoom(){
         native: true,
         favorite,
         completed: Boolean(record.completed || previous.completed),
-        fileAvailable: record.fileAvailable !== false
+        fileAvailable: record.fileAvailable !== false,
+        catalogSource: record.catalogSource || '',
+        catalogGameId: record.catalogGameId || '',
+        catalogSourceName: record.catalogSourceName || '',
+        catalogCover: record.catalogCover || ''
       };
       const nativePlayedAt = Math.max(0, Number(record.lastPlayedAt) || 0);
       if (nativePlayedAt > 0) {

@@ -130,8 +130,8 @@ function createRomCard(rom){
   article.dataset.studio = rom.system === 'PATCH' ? 'ROM patch file' : `${rom.system} ROM`;
   const fileAvailable = rom.fileAvailable !== false;
   article.dataset.fileAvailable = fileAvailable ? 'true' : 'false';
-  article.dataset.status = !fileAvailable ? 'ROM file required' : (rom.system === 'PATCH' ? 'Patch file' : 'Ready to Play');
-  article.dataset.source = !fileAvailable ? 'Restored Library' : 'Local Library';
+  article.dataset.status = !fileAvailable ? (rom.catalogSource ? 'Not Installed' : 'ROM file required') : (rom.system === 'PATCH' ? 'Patch file' : 'Ready to Play');
+  article.dataset.source = rom.catalogSourceName || (!fileAvailable ? 'Restored Library' : 'Local Library');
   article.dataset.description = `${rom.fileName} • ${formatRomFileSize(rom.size)}`;
   article.dataset.entries = '';
 
@@ -205,17 +205,20 @@ function createRomCard(rom){
       toggleLibraryRomSelection(rom.id, article);
       return;
     }
-    openRomDetail(article);
+    if (rom.catalogSource && window.RetraBrowse) window.RetraBrowse.openDetails(rom.catalogSource, rom.catalogGameId, 'libraryPage');
+    else openRomDetail(article);
   });
   article.addEventListener('keydown', event => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
     if (isLibrarySelectionMode()) toggleLibraryRomSelection(rom.id, article);
+    else if (rom.catalogSource && window.RetraBrowse) window.RetraBrowse.openDetails(rom.catalogSource, rom.catalogGameId, 'libraryPage');
     else openRomDetail(article);
   });
   if (!cover) {
     applyFallbackArtwork(article, rom);
-    observeAutomaticArtwork(article, rom);
+    if (rom.catalogCover && window.RetraBrowse) window.RetraBrowse.loadCover(article, rom.catalogCover, rom.title);
+    else observeAutomaticArtwork(article, rom);
   }
   if ((!cover && rom.coverCached) || (rom.cover && String(rom.cover).startsWith('data:'))) {
     window.setTimeout(() => hydrateCachedRomCover(rom, article), 0);

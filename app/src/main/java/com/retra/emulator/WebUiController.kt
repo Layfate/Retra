@@ -35,6 +35,8 @@ class WebUiController(
     fun configure() {
         val assetLoader = WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(activity))
+            .addPathHandler("/browse-images/", WebViewAssetLoader.InternalStoragePathHandler(activity,
+                java.io.File(activity.filesDir, "browse/images").apply { mkdirs() }))
             .addPathHandler("/covers/", WebViewAssetLoader.InternalStoragePathHandler(activity, fileOps.persistentCategoryDir("Covers")))
             .addPathHandler("/backgrounds/", WebViewAssetLoader.InternalStoragePathHandler(activity, fileOps.persistentCategoryDir("Backgrounds")))
             .build()
