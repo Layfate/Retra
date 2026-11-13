@@ -191,17 +191,17 @@ html[data-retra-runtime="android"] #libraryPage .library-chips{
 }
 
 /* ---------- Cover grid ---------- */
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-cover-only{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-cover-only{
   gap:8px;
 }
-:is(#libraryPage,#catalogPage) .library-grid:not(.library-display-list) .cover-card{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid:not(.library-display-list) .cover-card{
   border:0;
   border-radius:8px;
   box-shadow:none;
 }
-:is(#libraryPage,#catalogPage) .library-grid:not(.library-display-list) .top-badge{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid:not(.library-display-list) .top-badge{
   top:6px;
   left:6px;
   padding:2px 6px;
@@ -216,14 +216,14 @@ html[data-retra-runtime="android"] #libraryPage .library-chips{
 }
 
 /* Compact grid (Mihon default): title sits on the cover over a bottom fade. */
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card{
   aspect-ratio:.68;
   overflow:hidden;
   border-radius:8px;
   background:var(--m3-surface-container);
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card > img,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-art-placeholder{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card > img,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-art-placeholder{
   position:absolute;
   inset:0;
   width:100%;
@@ -232,7 +232,7 @@ html[data-retra-runtime="android"] #libraryPage .library-chips{
   border-radius:0;
   box-shadow:none;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card::after{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card::after{
   display:block;
   content:"";
   position:absolute;
@@ -242,7 +242,7 @@ html[data-retra-runtime="android"] #libraryPage .library-chips{
   pointer-events:none;
   z-index:1;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-info{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-info{
   position:absolute;
   left:8px;
   right:8px;
@@ -251,8 +251,8 @@ html[data-retra-runtime="android"] #libraryPage .library-chips{
   padding:0;
   z-index:2;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-info strong,
-body[data-resolved-mode="light"] :is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-info strong{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-info strong,
+body[data-resolved-mode="light"] :is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-info strong{
   color:#fff;
   font-size:13px;
   font-weight:500;
@@ -261,27 +261,27 @@ body[data-resolved-mode="light"] :is(#libraryPage,#catalogPage) .library-grid.li
   max-height:calc(1.3em * 2);
   text-shadow:0 1px 4px rgba(0,0,0,.55);
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px}
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px}
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card.library-selected > img,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact[data-items-per-row="5"] .cover-info strong{font-size:11px}
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact[data-items-per-row="6"] .cover-info strong{font-size:10.5px}
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card.library-selected > img,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card[data-selected="true"] > img,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card.library-selected .cover-art-placeholder,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-compact .cover-card[data-selected="true"] .cover-art-placeholder{
   border-radius:0;
   transform:none;
 }
 
 /* Comfortable grid: title below the cover. */
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable{row-gap:12px}
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-card{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable{row-gap:12px}
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-card{
   aspect-ratio:auto;
   overflow:visible;
   border-radius:0;
   background:transparent;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-card::after{display:none}
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-card > img,
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-art-placeholder{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-card::after{display:none}
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-card > img,
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-art-placeholder{
   position:relative;
   inset:auto;
   display:block;
@@ -292,12 +292,12 @@ body[data-resolved-mode="light"] :is(#libraryPage,#catalogPage) .library-grid.li
   border-radius:8px;
   box-shadow:none;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-info{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-info{
   position:static;
   margin-top:6px;
   padding:0 2px;
 }
-:is(#libraryPage,#catalogPage) .library-grid.library-display-comfortable .cover-info strong{
+:is(#libraryPage,#catalogPage,#browsePage) .library-grid.library-display-comfortable .cover-info strong{
   color:var(--m3-on-surface);
   font-size:13px;
   font-weight:500;

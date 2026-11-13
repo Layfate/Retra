@@ -37,7 +37,8 @@
     (snapshot.repositories || []).forEach(repo => (repo.index?.extensions || []).forEach(meta => rows.push({repo, meta})));
     (snapshot.installed || []).forEach(installed => {
       if (!rows.some(row => row.repo.url === installed.repository && row.meta.id === installed.metadata.id)) {
-        rows.push({repo:{url:installed.repository, name:'Removed repository', trusted:false, missing:true}, meta:installed.metadata});
+        // The repository was removed or no longer lists this extension; it stays usable until uninstalled.
+        rows.push({repo:{url:installed.repository, name:'No longer listed', trusted:false, missing:true}, meta:installed.metadata});
       }
     });
     return rows.map(row => {
@@ -257,18 +258,86 @@
       throw error;
     }
   }
-  function renderAll(){ renderSources(); renderExtensions(); renderRepositories(); renderExtensionDetails(); }
-  function searchQuery(){ return $('browseSearchPanel').classList.contains('open') ? $('browseSearchInput').value.trim() : ''; }
+  function renderAll(){ renderSources(); renderExtensions(); renderRepositories(); renderExtensionDetails(); if (tab === 'search') renderGlobal(); }
+  function searchQuery(){ return tab !== 'search' && $('browseSearchPanel').classList.contains('open') ? $('browseSearchInput').value.trim() : ''; }
+
+  // ---------- Global search (every enabled source, like Mihon) ----------
+  let globalQuery = '';
+  let globalRan = '';
+  let globalGeneration = 0;
+  let globalTimer = 0;
+  function renderGlobal(force = false){
+    const container = $('browseGlobal');
+    if (!loaded) return;
+    const query = globalQuery.trim();
+    const sources = snapshot.sources.filter(row => row.enabled !== false)
+      .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || a.name.localeCompare(b.name));
+    if (!sources.length) {
+      globalRan = ''; container.replaceChildren();
+      emptyState(container, '(・o・;)', 'No sources installed. Install a Retra catalog extension to search games.', 'Browse extensions', () => selectTab('extensions'));
+      return;
+    }
+    if (query.length < 2) { globalRan = ''; container.replaceChildren(); emptyState(container, '', 'Type at least two letters to search every installed source.'); return; }
+    if (!force && query === globalRan) return;
+    globalRan = query;
+    const generation = ++globalGeneration;
+    container.replaceChildren();
+    const sections = sources.map(row => {
+      const section = element('section', 'browse-search-section');
+      const head = element('button', 'browse-search-head');
+      head.type = 'button'; head.setAttribute('aria-label', `Open ${row.name} results for ${query}`);
+      const copy = element('span', 'browse-item-copy');
+      copy.append(element('strong', '', row.name), element('small', '', row.platforms.join(' · ')));
+      head.append(sourceIcon(row.icon, row.name), copy);
+      head.insertAdjacentHTML('beforeend', '<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>');
+      head.addEventListener('click', () => run(() => openSource(row, 'popular', query)));
+      const body = element('div', 'browse-search-body');
+      body.append(spinner(`Searching ${row.name}`));
+      section.append(head, body); container.append(section);
+      return {row, body};
+    });
+    let next = 0;
+    // Three sources at a time; each one fails or succeeds on its own.
+    const worker = async () => {
+      while (next < sections.length && generation === globalGeneration) {
+        const {row, body} = sections[next++];
+        try {
+          const result = await request('catalog', {source:row.key, page:1, query, filters:{}, mode:'popular'});
+          if (generation !== globalGeneration) return;
+          body.replaceChildren();
+          if (!result.games.length) { body.append(element('p', 'browse-note', 'No results')); continue; }
+          const strip = element('div', 'library-grid library-display-compact browse-strip');
+          result.games.slice(0, 12).forEach(game => strip.append(gameCard(game, row.key, 'browsePage')));
+          body.append(strip);
+          if (result.hasNext || result.games.length > 12) body.append(element('p', 'browse-note', 'More results: open the source above.'));
+        } catch (error) {
+          if (generation !== globalGeneration) return;
+          body.replaceChildren(element('p', 'browse-note browse-tone-error', `Unavailable: ${error.message}`));
+        }
+      }
+    };
+    return Promise.all([worker(), worker(), worker()]);
+  }
   function selectTab(next){
+    const previous = tab;
     tab = next;
-    for (const [id, name] of [['sourcesTab', 'sources'], ['extensionsTab', 'extensions']]) $(id).setAttribute('aria-selected', String(tab === name));
-    $('browseSources').hidden = tab !== 'sources'; $('browseExtensions').hidden = tab !== 'extensions';
-    $('browseFilterBtn').hidden = tab !== 'sources'; $('browseMoreBtn').hidden = tab !== 'extensions';
+    for (const [id, name] of [['sourcesTab', 'sources'], ['extensionsTab', 'extensions'], ['searchTab', 'search']]) $(id).setAttribute('aria-selected', String(tab === name));
+    $('browseSources').hidden = tab !== 'sources'; $('browseExtensions').hidden = tab !== 'extensions'; $('browseGlobal').hidden = tab !== 'search';
+    $('browseFilterBtn').hidden = tab !== 'sources'; $('browseMoreBtn').hidden = tab !== 'extensions'; $('browseSearchBtn').hidden = tab === 'search';
     $('browseOverflowMenu').classList.remove('open');
-    const label = tab === 'sources' ? 'Search sources' : 'Search extensions';
+    const label = {sources:'Search sources', extensions:'Search extensions', search:'Search all sources'}[tab];
     $('browseSearchBtn').setAttribute('aria-label', label);
     $('browseSearchInput').setAttribute('aria-label', label);
     $('browseSearchInput').placeholder = `${label}...`;
+    if (tab === 'search') {
+      // Global search keeps its own query; the field is always shown on this tab.
+      $('browseSearchInput').value = globalQuery;
+      $('browseSearchPanel').classList.add('open');
+      renderGlobal();
+      requestAnimationFrame(() => $('browseSearchInput').focus({preventScroll:true}));
+    } else if (previous === 'search') {
+      $('browseSearchInput').value = ''; $('browseSearchPanel').classList.remove('open');
+    }
     renderSources(); renderExtensions();
   }
   function lastUsedSource(){ return storage.get('retraBrowseLastSource', ''); }
@@ -458,11 +527,11 @@
     storage.set('retraBrowseList', String(list));
   }
   let suppressFilterReset = false;
-  function openSource(row, mode = 'popular'){
+  function openSource(row, mode = 'popular', query = ''){
     source = row; rememberSource(row.key);
     $('catalogTitle').textContent = row.name;
     $('catalogLatest').hidden = !row.latest;
-    $('catalogQuery').value = ''; $('catalogSearchForm').classList.remove('open');
+    $('catalogQuery').value = query; $('catalogSearchForm').classList.toggle('open', Boolean(query));
     suppressFilterReset = true; $('catalogFilters').reset(); suppressFilterReset = false;
     syncCatalogColumns();
     openSubPage('catalogPage');
@@ -475,17 +544,17 @@
   function inLibrary(sourceKey, gameId){
     try { return libraryRoms.some(rom => rom.catalogSource === sourceKey && rom.catalogGameId === gameId); } catch (_) { return false; }
   }
-  function gameCard(game){
+  function gameCard(game, sourceKey = source.key, back = 'catalogPage'){
     const card = element('article', 'cover-card no-cover browse-game');
     card.tabIndex = 0; card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `${game.title}, ${game.platform}`);
     const placeholder = element('div', 'cover-art-placeholder'); placeholder.setAttribute('aria-hidden', 'true');
     const info = element('div', 'cover-info'); info.append(element('strong', '', game.title));
     card.append(placeholder, element('span', 'top-badge', game.platform), info);
-    if (inLibrary(source.key, game.id)) card.append(element('span', 'browse-in-library', 'In library'));
-    fallbackArt(card, `${source.key}/${game.id}`, game.title, game.platform);
+    if (inLibrary(sourceKey, game.id)) card.append(element('span', 'browse-in-library', 'In library'));
+    fallbackArt(card, `${sourceKey}/${game.id}`, game.title, game.platform);
     loadCover(card, game.cover, game.title);
-    const open = () => openDetails(source.key, game.id);
+    const open = () => openDetails(sourceKey, game.id, back);
     card.addEventListener('click', open);
     card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
     return card;
@@ -703,7 +772,7 @@
   const previousBack = root.retraHandleAndroidBack;
   root.retraHandleAndroidBack = function(){
     for (const [selector, close] of closables()) if (document.querySelector(selector)) { close(); return true; }
-    if (activePageId() === 'browsePage' && $('browseSearchPanel').classList.contains('open')) { toggleBrowseSearch(false); return true; }
+    if (activePageId() === 'browsePage' && tab !== 'search' && $('browseSearchPanel').classList.contains('open')) { toggleBrowseSearch(false); return true; }
     return typeof previousBack === 'function' ? previousBack() : false;
   };
   function toggleBrowseSearch(open = !$('browseSearchPanel').classList.contains('open')){
@@ -717,7 +786,19 @@
   $('sourcesTab').addEventListener('click', () => selectTab('sources'));
   $('extensionsTab').addEventListener('click', () => selectTab('extensions'));
   $('browseSearchBtn').addEventListener('click', () => toggleBrowseSearch());
-  $('browseSearchInput').addEventListener('input', () => { renderSources(); renderExtensions(); });
+  $('searchTab').addEventListener('click', () => selectTab('search'));
+  $('browseSearchInput').addEventListener('input', () => {
+    if (tab === 'search') {
+      globalQuery = $('browseSearchInput').value;
+      clearTimeout(globalTimer); globalTimer = setTimeout(() => renderGlobal(), 450);
+      return;
+    }
+    renderSources(); renderExtensions();
+  });
+  $('browseSearchInput').addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || tab !== 'search') return;
+    clearTimeout(globalTimer); globalQuery = event.target.value; renderGlobal(true); event.target.blur();
+  });
   $('browseFilterBtn').addEventListener('click', event => { event.stopPropagation(); updateSourceSheet(); setSourceSheetTab('filter'); openSheet($('browseFilterSheet')); });
   $('browseMoreBtn').addEventListener('click', event => { event.stopPropagation(); $('browseOverflowMenu').classList.toggle('open'); });
   $('browseRefresh').addEventListener('click', () => {

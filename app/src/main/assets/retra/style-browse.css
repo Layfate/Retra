@@ -211,6 +211,41 @@ button.browse-item-main:active{background:var(--m3-state-press)}
 #repositoriesPage #addRepositoryBtn{bottom:calc(58px + var(--device-safe-bottom))}
 #repositoryUrl{width:100%}
 
+/* ---------- Global search: one row of Library cover cards per source ---------- */
+.browse-global{padding-bottom:16px}
+.browse-search-section{margin:4px 0 12px}
+.browse-search-head{
+  width:calc(100% + 16px);
+  margin:0 -8px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:8px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.browse-search-head .browse-item-copy{flex:1}
+.browse-search-head .chevron{width:24px;height:24px;color:var(--m3-on-surface-variant);flex:0 0 auto}
+.browse-search-head:active{background:var(--m3-state-press)}
+@media (hover:hover) and (pointer:fine){.browse-search-head:hover{background:var(--m3-state-hover)}}
+.browse-search-body{min-height:48px;display:flex;flex-direction:column;justify-content:center}
+.browse-search-body .browse-note{margin:4px 0 0 4px}
+/* Beats the Library column count (ui-polish sets grid-template-columns with !important). */
+#browsePage #browseGlobal .library-grid.browse-strip{
+  grid-template-columns:none !important;
+  grid-auto-flow:column;
+  grid-auto-columns:112px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  padding:4px 0;
+}
+#browsePage #browseGlobal .browse-strip::-webkit-scrollbar{display:none}
+
 /* ---------- Extension info ---------- */
 .browse-extension-hero{display:flex;align-items:center;gap:16px;margin:8px 0 20px}
 .browse-extension-hero .browse-item-copy strong{font-size:20px;white-space:normal;overflow-wrap:anywhere}

@@ -265,7 +265,7 @@ async function boxartIndex(){
           const variants = [base, ...(segments.length >= 3 ? [segments.slice(0, 2).join(' - ')] : [])]
             .map(text => [...new Set(titleTokens(text))]).filter(tokens => tokens.length);
           return {name, variants, rank:rank < 0 ? REGION_RANK.length : rank,
-            clean:!/\((Beta|Proto|Demo|Sample|Hack|Unl|Pirate|Kiosk)/i.test(name)};
+            clean:!/\((Beta|Proto|Demo|Sample|Hack|Unl|Pirate|Kiosk|Aftermarket|Homebrew|Program|Test|Competition)/i.test(name)};
         }).filter(entry => entry.variants.length && entry.clean);
       console.log(`box art index ${platform}: ${index[platform].length}`);
     } catch (error) {
@@ -310,13 +310,192 @@ function patchIcon(){
   });
 }
 
-async function build(base, out){
+// ---------- Official games (catalog only) ----------
+// One entry per licensed GB/GBC/GBA release that has box art in libretro-thumbnails (No-Intro names),
+// with developer, publisher, release year and genre from libretro-database. These are catalog entries
+// only: no download links. Players add a game to their Library and link their own cartridge dump with
+// Import ROM.
+const METADAT = 'https://raw.githubusercontent.com/libretro/libretro-database/master/metadat';
+const DAT_NAMES = {GB:'Nintendo - Game Boy', GBC:'Nintendo - Game Boy Color', GBA:'Nintendo - Game Boy Advance'};
+const artKey = name => name.replace(/[&*/:"<>?\\|]/g, '_').toLowerCase();
+async function metadata(platform){
+  const fields = {developer:'developer', publisher:'publisher', releaseyear:'releaseyear', genre:'genre'};
+  const result = {names:new Map(), official:new Set()};
+  // No-Intro: the list of real cartridge releases. Box art for hacks or fan works is not in it.
+  try {
+    const text = (await fetchRetry(`${METADAT}/no-intro/${encodeURIComponent(DAT_NAMES[platform])}.dat`, 'buffer')).toString('utf8');
+    for (const [, name] of text.matchAll(/game \(\s*\n\s*name "([^"]*)"/g)) result.official.add(artKey(name));
+  } catch (error) { console.warn(`No-Intro list ${platform} unavailable: ${error.message}`); }
+  for (const [file, field] of Object.entries(fields)) {
+    result[field] = new Map();
+    try {
+      const text = (await fetchRetry(`${METADAT}/${file}/${encodeURIComponent(DAT_NAMES[platform])}.dat`, 'buffer')).toString('utf8');
+      for (const [, block] of text.matchAll(/game \(([\s\S]*?)\n\)/g)) {
+        const name = (block.match(/comment "([^"]*)"/) || [])[1];
+        const value = (block.match(new RegExp(`\\b${field} "([^"]*)"`)) || [])[1];
+        if (!name || !value) continue;
+        result[field].set(artKey(name), value);
+        result.names.set(artKey(name), name); // Original spelling (box art file names replace & : / etc.).
+      }
+    } catch (error) { console.warn(`metadata ${platform} ${file} unavailable: ${error.message}`); }
+  }
+  return result;
+}
+/** "Legend of Zelda, The - Link's Awakening DX" -> "The Legend of Zelda - Link's Awakening DX". */
+function displayTitle(base){
+  return base.replace(/^(.*?), (The|A|An)( - .*)?$/, (_, title, article, rest = '') => `${article} ${title}${rest}`);
+}
+// Releases sold only in these regions are translations of English releases ("Blaue Edition", "Edicion Azul").
+const LOCALIZED_ONLY = new Set(['Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Sweden', 'Denmark', 'Norway',
+  'Finland', 'Portugal', 'Brazil', 'Greece', 'Poland', 'Russia', 'Korea', 'China', 'Taiwan', 'Hong Kong']);
+function officialGames(platform, entries, meta){
+  const best = new Map();
+  for (const entry of entries) {
+    if (meta.official.size && !meta.official.has(artKey(entry.name))) continue;
+    if (/\[/.test(entry.name)) continue; // [Hack by …], [T-En by …]
+    const regions = ((entry.name.match(/\(([^)]*)\)/) || [])[1] || '').split(/,\s*/);
+    if (regions.every(region => LOCALIZED_ONLY.has(region))) continue;
+    const base = entry.name.replace(/\s*\(.*$/, '').trim();
+    const key = base.toLowerCase();
+    const current = best.get(key);
+    if (!current || entry.rank < current.rank || (entry.rank === current.rank && entry.name.length < current.name.length)) best.set(key, entry);
+  }
+  const ids = new Set();
+  return [...best.values()].map(entry => {
+    const key = artKey(entry.name);
+    const original = meta.names.get(key) || entry.name;
+    const title = displayTitle(original.replace(/\s*\(.*$/, '').trim());
+    const region = ((entry.name.match(/\(([^)]*)\)/) || [])[1] || '').split(/,\s*/).filter(region => /^[A-Z][a-z]+$|^USA$/.test(region)).join(', ');
+    const year = (meta.releaseyear.get(key) || '').match(/^\d{4}$/)?.[0];
+    let id = catalogId(`${title}`.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-')) || 'game';
+    for (let n = 2; ids.has(id); n++) id = catalogId(`${id.replace(/-\d+$/, '')}-${n}`);
+    ids.add(id);
+    const cover = boxartUrl(platform, entry.name);
+    return {
+      id, title, platform,
+      developer:meta.developer.get(key), publisher:meta.publisher.get(key), year,
+      genre:meta.genre.get(key), region:region || undefined, gameType:'official',
+      updatedAt:year ? Date.UTC(Number(year), 0, 1) : 0,
+      description:`Official ${PLATFORM_NAME[platform]} release${region ? ` (${region})` : ''}. ` +
+        'Add it to your Library, then use Import ROM to link your own cartridge dump.',
+      cover:acceptedUrl(cover) ? cover : undefined
+    };
+  }).sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
+}
+
+// ---------- Original artwork (anti-aliased) ----------
+const supersample = (fn, size = 4) => (x, y) => {
+  const sum = [0, 0, 0];
+  for (let i = 0; i < size; i++) for (let j = 0; j < size; j++) {
+    const color = fn(x + (i + 0.5) / size, y + (j + 0.5) / size);
+    sum[0] += color[0]; sum[1] += color[1]; sum[2] += color[2];
+  }
+  return sum.map(value => Math.round(value / (size * size)));
+};
+const inRoundRect = (x, y, x0, y0, x1, y1, r) => {
+  if (x < x0 || x > x1 || y < y0 || y > y1) return false;
+  const cx = Math.min(Math.max(x, x0 + r), x1 - r), cy = Math.min(Math.max(y, y0 + r), y1 - r);
+  return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
+};
+const mix = (a, b, t) => a.map((value, i) => value + (b[i] - value) * t);
+/** A cartridge on a diagonal gradient; `mark` draws the label symbol ("patch" plus or stripes). */
+function cartridgeArt(size, from, to, label, mark){
+  const s = size / 192;
+  return sample.png(size, size, supersample((px, py) => {
+    const x = px / s, y = py / s;
+    let color = mix(from, to, (x + y) / 384);
+    const body = inRoundRect(x, y, 50, 30, 142, 162, 14) && !(x > 118 && y < 54 && (x - 118) + (54 - y) > 24);
+    if (body) color = [244, 244, 245];
+    if (body && inRoundRect(x, y, 64, 52, 128, 116, 10)) {
+      color = label;
+      if (mark(x - 96, y - 84)) color = [255, 255, 255];
+    }
+    if (body && y > 146 && y < 158 && x > 70 && x < 122 && Math.floor((x - 70) / 6) % 2 === 0) color = mix(from, to, 0.6);
+    if (body && inRoundRect(x, y, 70, 126, 122, 134, 4)) color = [212, 212, 216];
+    return color;
+  }));
+}
+const plusMark = (x, y) => (Math.abs(x) < 7 && Math.abs(y) < 22) || (Math.abs(y) < 7 && Math.abs(x) < 22);
+const stripeMark = (x, y) => Math.abs(y) < 20 && Math.abs(x) < 22 && Math.floor((y + 20) / 8) % 2 === 0;
+const LOGOS = {
+  plaza:() => cartridgeArt(192, [15, 118, 110], [55, 48, 163], [245, 158, 11], plusMark),
+  GB:() => cartridgeArt(192, [107, 114, 128], [31, 41, 55], [132, 204, 22], stripeMark),
+  GBC:() => cartridgeArt(192, [168, 85, 247], [76, 29, 149], [236, 72, 153], stripeMark),
+  GBA:() => cartridgeArt(192, [79, 70, 229], [30, 27, 75], [56, 189, 248], stripeMark)
+};
+
+function readme(base, extensions){
+  const url = `${base}index.json`;
+  return `# Retra extension repository\n\nCatalog extensions for Retra (extension API 1). Add this URL in Retra under ` +
+    `**Browse → Extensions → ⋮ → Extension repos → Add**:\n\n\`\`\`\n${url}\n\`\`\`\n\n## Extensions\n\n` +
+    extensions.map(ext => `- **${ext.name}**: ${ext.summary}`).join('\n') +
+    `\n\nEverything here is catalog data. Commercial games are listed for your Library only, with no download links. ` +
+    `Add a game, then link your own cartridge dump with Import ROM. Romhack Plaza entries link to the page hosting the hack's patch. ` +
+    `Apply it to your own clean ROM from Library → +.\n\nCovers come from libretro-thumbnails, and game details from libretro-database.\n\n` +
+    `This branch is generated by \`tools/extension-repo/build-repo.cjs\` on \`main\` and refreshed weekly. Do not edit it by hand.\n`;
+}
+
+async function build(base, out, {homebrew = false} = {}){
   assert(new URL(base).protocol === 'https:' && base.endsWith('/'), 'Base must be an https URL ending in /');
   fs.mkdirSync(out, {recursive:true});
   const cacheFile = path.join(out, 'hashes.json');
   const cache = fs.existsSync(cacheFile) ? JSON.parse(fs.readFileSync(cacheFile, 'utf8')) : {};
+  // Start from an empty tree (keeping git metadata and the ROM hash cache) so removed extensions disappear.
+  for (const name of fs.readdirSync(out)) if (!['.git', 'hashes.json'].includes(name)) fs.rmSync(path.join(out, name), {recursive:true, force:true});
+  const extensions = [];
+  const summaries = [];
+  const boxarts = await boxartIndex();
 
-  // 1. Retra Homebrew Sample (writes its own files and a one-entry index).
+  // Romhack Plaza: hack and translation index plus official game catalogs, in one extension.
+  const plaza = await plazaCatalogs();
+  for (const game of plaza) {
+    const match = matchBoxart(game.title, game.platform, boxarts);
+    if (!match || !acceptedUrl(match.url)) continue;
+    game.cover = match.url;
+    game.description += ` Cover shows the original game (${match.name.replace(/\s*\(.*$/, '')}).`;
+  }
+  console.log(`Romhack Plaza covers matched: ${plaza.filter(game => game.cover).length} of ${plaza.length}`);
+  const plazaDir = path.join(out, 'romhackplaza');
+  fs.mkdirSync(plazaDir, {recursive:true});
+  fs.writeFileSync(path.join(plazaDir, 'icon.png'), LOGOS.plaza());
+  const plazaSources = [];
+  for (const platform of PLATFORMS) {
+    const ids = new Set();
+    const games = plaza.filter(game => game.platform === platform && !ids.has(game.id) && ids.add(game.id))
+      .sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
+    writeJson(path.join(plazaDir, `${platform.toLowerCase()}.json`), {apiVersion:1, games});
+    plazaSources.push({id:platform.toLowerCase(), name:`Romhack Plaza ${platform}`, platforms:[platform], latest:true,
+      catalogUrl:`${base}romhackplaza/${platform.toLowerCase()}.json`, icon:`${base}romhackplaza/icon.png`});
+    console.log(`Romhack Plaza ${platform}: ${games.length} hacks and translations (catalog only)`);
+  }
+  for (const platform of PLATFORMS) {
+    const games = officialGames(platform, boxarts[platform] || [], await metadata(platform));
+    assert(games.length <= 10000, 'API 1 catalogs hold at most 10,000 games');
+    const file = `official-${platform.toLowerCase()}`;
+    writeJson(path.join(plazaDir, `${file}.json`), {apiVersion:1, games});
+    fs.writeFileSync(path.join(plazaDir, `${file}.png`), LOGOS[platform]());
+    plazaSources.push({id:file, name:`Official ${platform} Games`, platforms:[platform], latest:true,
+      catalogUrl:`${base}romhackplaza/${file}.json`, icon:`${base}romhackplaza/${file}.png`});
+    console.log(`Official ${platform}: ${games.length} games, ${games.filter(game => game.developer || game.publisher).length} with developer/publisher`);
+  }
+  // versionCode 2: official game sources added (installed copies show "Update available").
+  const plazaSha = writeJson(path.join(plazaDir, 'extension.json'), {apiVersion:1, id:'org.retra.romhackplaza', versionCode:2, sources:plazaSources});
+  extensions.push({
+    id:'org.retra.romhackplaza', name:'Romhack Plaza', publisher:'Retra contributors (index of romhackplaza.org and official releases)',
+    versionCode:2, versionName:'2.0', format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
+    packageUrl:`${base}romhackplaza/extension.json`, sha256:plazaSha, icon:`${base}romhackplaza/icon.png`
+  });
+  summaries.push({name:'Romhack Plaza', summary:'GB, GBC and GBA ROM hacks and fan translations listed on romhackplaza.org, plus catalogs of official GB, GBC and GBA games with box art.'});
+
+  if (homebrew) await buildHomebrew(base, out, cache, extensions, summaries);
+  if (Object.keys(cache).length) fs.writeFileSync(cacheFile, JSON.stringify(Object.fromEntries(Object.entries(cache).sort()), null, 1) + '\n');
+  writeJson(path.join(out, 'index.json'), {schemaVersion:1, name:'Retra extensions', extensions});
+  fs.writeFileSync(path.join(out, 'README.md'), readme(base, summaries));
+}
+
+/** Optional (--homebrew): the CC0 Retra Pad sample and the Homebrew Hub catalogs with authorized downloads. */
+async function buildHomebrew(base, out, cache, extensions, summaries){
+  // Retra Homebrew Sample (writes its own files and a one-entry index, replaced by the combined index later).
   sample.build(base, out);
   const sampleEntry = JSON.parse(fs.readFileSync(path.join(out, 'index.json'), 'utf8')).extensions[0];
 
@@ -339,49 +518,21 @@ async function build(base, out){
     console.log(`${platform}: ${games.length} games, ${games.filter(game => game.download).length} with authorized downloads`);
   }
   const packageSha = writeJson(path.join(dir, 'extension.json'), {apiVersion:1, id:'org.retra.homebrewhub', versionCode:1, sources});
-  fs.writeFileSync(cacheFile, JSON.stringify(Object.fromEntries(Object.entries(cache).sort()), null, 1) + '\n');
-
-  // 3. Romhack Plaza catalogs (catalog only), one source per platform.
-  const plaza = await plazaCatalogs();
-  const boxarts = await boxartIndex();
-  for (const game of plaza) {
-    const match = matchBoxart(game.title, game.platform, boxarts);
-    if (!match || !acceptedUrl(match.url)) continue;
-    game.cover = match.url;
-    game.description += ` Cover shows the original game (${match.name.replace(/\s*\(.*$/, '')}).`;
-  }
-  console.log(`Romhack Plaza covers matched: ${plaza.filter(game => game.cover).length} of ${plaza.length}`);
-  const plazaDir = path.join(out, 'romhackplaza');
-  fs.mkdirSync(plazaDir, {recursive:true});
-  fs.writeFileSync(path.join(plazaDir, 'icon.png'), patchIcon());
-  const plazaSources = [];
-  for (const platform of PLATFORMS) {
-    const ids = new Set();
-    const games = plaza.filter(game => game.platform === platform && !ids.has(game.id) && ids.add(game.id))
-      .sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
-    writeJson(path.join(plazaDir, `${platform.toLowerCase()}.json`), {apiVersion:1, games});
-    plazaSources.push({id:platform.toLowerCase(), name:`Romhack Plaza ${platform}`, platforms:[platform], latest:true,
-      catalogUrl:`${base}romhackplaza/${platform.toLowerCase()}.json`, icon:`${base}romhackplaza/icon.png`});
-    console.log(`Romhack Plaza ${platform}: ${games.length} hacks and translations (catalog only)`);
-  }
-  const plazaSha = writeJson(path.join(plazaDir, 'extension.json'), {apiVersion:1, id:'org.retra.romhackplaza', versionCode:1, sources:plazaSources});
-
-  // 4. Combined repository index.
-  writeJson(path.join(out, 'index.json'), {schemaVersion:1, name:'Retra extensions', extensions:[sampleEntry, {
+  extensions.push(sampleEntry, {
     id:'org.retra.homebrewhub', name:'Homebrew Hub', publisher:'Retra contributors (catalog data from hh.gbdev.io)',
     versionCode:1, versionName:'1.0', format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
     packageUrl:`${base}homebrewhub/extension.json`, sha256:packageSha, icon:`${base}homebrewhub/icon.png`
-  }, {
-    id:'org.retra.romhackplaza', name:'Romhack Plaza', publisher:'Retra contributors (index of romhackplaza.org)',
-    versionCode:1, versionName:'1.0', format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
-    packageUrl:`${base}romhackplaza/extension.json`, sha256:plazaSha, icon:`${base}romhackplaza/icon.png`
-  }]});
-  console.log(`entries: ${entries.length}, catalog games: ${rows.length}, newly hashed ROMs: ${fetched}`);
+  });
+  summaries.push({name:'Retra Homebrew Sample', summary:'Retra Pad, a CC0 Game Boy homebrew cartridge.'},
+    {name:'Homebrew Hub', summary:'GB, GBC and GBA homebrew from the gbdev Homebrew Hub, with authorized downloads for openly licensed games.'});
+  console.log(`Homebrew Hub entries: ${entries.length}, catalog games: ${rows.length}, newly hashed ROMs: ${fetched}`);
 }
 
 if (require.main === module) {
-  const [base, out] = process.argv.slice(2);
-  if (!base || !out) { console.error('Usage: node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir>'); process.exit(2); }
-  build(base, path.resolve(out)).catch(error => { console.error(error); process.exit(1); });
+  const args = process.argv.slice(2);
+  const homebrew = args.includes('--homebrew');
+  const [base, out] = args.filter(arg => !arg.startsWith('--'));
+  if (!base || !out) { console.error('Usage: node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir> [--homebrew]'); process.exit(2); }
+  build(base, path.resolve(out), {homebrew}).catch(error => { console.error(error); process.exit(1); });
 }
-module.exports = {build, normalizeLicense, toGame, acceptedUrl, plazaGame, matchBoxart, titleTokens, LICENSE};
+module.exports = {build, normalizeLicense, toGame, acceptedUrl, plazaGame, matchBoxart, titleTokens, displayTitle, officialGames, LICENSE};

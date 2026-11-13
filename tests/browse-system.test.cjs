@@ -65,7 +65,8 @@ test('Extensions list groups updates, installed, then available by repository; b
 
 test('Browse UI reuses Retra shell components: Material icons, two tabs, no glyph icons or header dividers', () => {
   const page = html.match(/<section class="page browse-surface" id="browsePage">[\s\S]*?<\/section>\s*<!-- EXTENSION REPOS -->/)[0];
-  assert.deepEqual([...page.matchAll(/class="browse-tab" id="(\w+)"/g)].map(m => m[1]),['sourcesTab','extensionsTab']);
+  assert.deepEqual([...page.matchAll(/class="browse-tab" id="(\w+)"/g)].map(m => m[1]),['sourcesTab','extensionsTab','searchTab']);
+  assert.match(page,/id="browseGlobal" role="tabpanel"/);
   assert.match(page,/class="search-panel browse-search"/);
   const header = html.match(/<header class="main-header" id="browseHeader">[\s\S]*?<\/header>/)[0];
   assert.match(header,/class="library-overflow-menu"/);
@@ -76,7 +77,7 @@ test('Browse UI reuses Retra shell components: Material icons, two tabs, no glyp
   const css = fs.readFileSync(path.join(root,'app/src/main/assets/retra/style-browse.css'),'utf8');
   assert.doesNotMatch(css.match(/\.browse-tabs\{[^}]*\}/)[0],/border-bottom/);
   const shell = fs.readFileSync(path.join(root,'app/src/main/assets/retra/style-material-shell.css'),'utf8');
-  assert.match(shell,/:is\(#libraryPage,#catalogPage\) \.library-grid\.library-display-compact \.cover-card\{/);
+  assert.match(shell,/:is\(#libraryPage,#catalogPage,#browsePage\) \.library-grid\.library-display-compact \.cover-card\{/);
 });
 
 test('only redistributable licenses enable the Download action, in sync with Kotlin and the repo builder', () => {
@@ -145,6 +146,24 @@ test('hack covers use the original game box art only on a confident title match'
   assert.match(matchBoxart('Pokemon Yellow Full Color','GB',index).name,/Yellow/);
   assert.match(matchBoxart('Tetris 1984','GB',index).url,/Named_Boxarts\/Tetris%20\(World\)\.png$/);
   assert.equal(matchBoxart('Completely Original Quest','GB',index),null);
+});
+
+test('official game catalogs list real releases once, with covers and no download links', () => {
+  const {officialGames, displayTitle} = require('../tools/extension-repo/build-repo.cjs');
+  assert.equal(displayTitle('Legend of Zelda, The - Link\'s Awakening DX'),'The Legend of Zelda - Link\'s Awakening DX');
+  const key = name => name.replace(/[&*/:"<>?\\|]/g,'_').toLowerCase();
+  const names = ['Harvest Moon - Friends of Mineral Town (USA)','Harvest Moon - Friends of Mineral Town (Europe)',
+    'Pokemon - Blattgruene Edition (Germany)','Pokemon - Emerald Version (USA, Europe)','Pocket Monsters - Emerald (Japan)'];
+  const entry = (name, rank) => ({name, rank});
+  const meta = {official:new Set(names.map(key)), names:new Map(), developer:new Map(), publisher:new Map([[key(names[0]),'Natsume']]),
+    releaseyear:new Map([[key(names[0]),'2003']]), genre:new Map()};
+  const games = officialGames('GBA',[entry(names[0],0),entry(names[1],2),entry(names[2],4),entry(names[3],0),entry(names[4],3),
+    entry('Pokemon - AshGray Version [Hack by metapod23] (USA)',0),entry('Pokemon - Brown Version (USA)',0)],meta);
+  assert.deepEqual(games.map(g => g.title),['Harvest Moon - Friends of Mineral Town','Pocket Monsters - Emerald','Pokemon - Emerald Version']);
+  const harvest = games[0];
+  assert.equal(harvest.region,'USA'); assert.equal(harvest.publisher,'Natsume'); assert.equal(harvest.year,'2003'); assert.equal(harvest.gameType,'official');
+  assert.match(harvest.cover,/Named_Boxarts\/Harvest%20Moon%20-%20Friends%20of%20Mineral%20Town%20\(USA\)\.png$/);
+  assert.ok(games.every(g => !g.download && !g.romSha256));
 });
 
 test('sample homebrew package and ROM hashes match the published index and catalog', () => {
