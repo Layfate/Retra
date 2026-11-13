@@ -49,8 +49,10 @@ Your saves, covers, and layouts stay associated with a game when its ROM is move
 3. Install the listed extension, then open **Sources** to browse its catalogs.
 
 ```text
-https://raw.githubusercontent.com/Layfate/Retra/repo/index.json
+https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 ```
+
+If you used the old `repo` branch URL, uninstall its extension and remove that repository before adding this URL and reinstalling the extension.
 
 Search across enabled sources from the **Search** tab. See the [source guide](tools/extension-repo/README.md) for supported websites and download behavior.
 

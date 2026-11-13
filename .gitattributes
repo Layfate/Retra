@@ -1,0 +1,2 @@
+# Catalog package checksums must match the published bytes on every platform.
+extensions/** -text

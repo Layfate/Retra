@@ -12,7 +12,15 @@ Only downloads explicitly described by a catalog's size, SHA-256 and redistribut
 Build the files into a disposable output directory:
 
 ```sh
-node tools/extension-repo/build-repo.cjs https://raw.githubusercontent.com/Layfate/Retra/repo/ build/extension-repo
+node tools/extension-repo/build-repo.cjs https://raw.githubusercontent.com/Layfate/Retra/main/extensions/ build/extension-repo
 ```
 
-The builder replaces the output directory's contents. Publish the complete generated tree on the `repo` branch, preserving the base URL used above. The scheduled workflow rebuilds it weekly; it can also run manually. Existing users refresh their repository and update the installed extension. The new in-app browser also requires the updated APK.
+The builder replaces the output directory's contents. Publish the complete generated tree in `extensions/` on `main`, preserving the base URL used above. The scheduled workflow rebuilds that directory weekly; it can also run manually. The project uses only the `main` branch.
+
+The catalog index is now at:
+
+```text
+https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
+```
+
+If you added the former `repo` branch URL, uninstall its extension, remove the old repository, then add the new URL and reinstall the extension. Existing saved repository URLs cannot redirect after the old branch is removed. Your imported games and saves remain in Library.

@@ -1,0 +1,446 @@
+{
+ "https://hh3.gbdev.io/static/database-gb/entries/144p-test-suite/gb240p.gb": {
+  "sha256": "2f68e8aa7d060bb6b58a5dfd308ed48c15da8f4738936db5f20fee7280a2156d",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/2048gb/2048.gb": {
+  "sha256": "3ea2376b15b34bd26b10e6b31d2753bf8b086098dbdb5ee84d9c0f03d66d3d7f",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/5-mazes-master-levels/5%20mazes%20Master%20levels.gb": {
+  "sha256": "abc7cb1a6f83a8770822c189dc2a978116a025cd393106791e1b6c977c8b4034",
+  "size": 524288
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/5-mazes/5%20mazes.gb": {
+  "sha256": "4cb6a4a021056164dfad11ba041cb1c36d7453d2ebe6bb7fa9fe4b3eadbc4c60",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/5-more-mazes/5%20more%20mazes.gb": {
+  "sha256": "95d095823ecbf9f31482e7981a06e34a1d5b966d4a5b62bf89f4f89b2f1cf318",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/a-slime-travel/aslimetravel.gbc": {
+  "sha256": "a92919a1e0d78683f0a245de55d3fc1a0fc07df74a758084ab2e552cb3bc115c",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/aevilia/aevilia.gbc": {
+  "sha256": "67e784ed61846bc84bfe9f45b9da343371eec6b896ed1b945b64c0aec7aa735b",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/airaki/airaki.gb": {
+  "sha256": "fd8fe6e023d9969935e05e7469c0f687f34a430d1a71fdeb5bb30183ce1ea2dd",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/airplanz/AIRPLANZ.gb": {
+  "sha256": "736b821e17f5509d9b0088289977e1232e18338cad923f3e5588300d8622a662",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/alien-invasion/Alien-Invasion.gb": {
+  "sha256": "78cbb13080f587c108d8a18661db7d7b4a5c14c730f5bb86794a41132035fbf0",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/bannerprinter/bannerprint.gb": {
+  "sha256": "6f81cd87c25bf8b65a4ffb9ca77a5f7bcd41288aba0285c6bbb34023f7a9f1cb",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/big2small/big2small.gb": {
+  "sha256": "59c096333f93c12c8eb25a5fcffa2be15001abcd5d20b9a82c2bc2dae7e625b2",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/bit_bang/bit_bang.gb": {
+  "sha256": "2a4e25370cab3fa7b76a7ca630321b585be70aa4030ac776228c0641154c7735",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/brekstascat/brekstascat_1_3.gb": {
+  "sha256": "e46dc09ce51b0bf3ca5c4539350ab7e2d4ea4d428329540605aa0a978ac3ece8",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/carazu/carazu.gb": {
+  "sha256": "eef9dea9ecba15be7b21f3495e8c8bad937a0b2245cac09eec8baf61dfc91fb5",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/catmario-gb/catmario-gb.gbc": {
+  "sha256": "ffe4f597f654f6edc8804aaf8d1014c6f9373f448210fc40ccde9076b300e67e",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/color-bar/colorbar.gb": {
+  "sha256": "05c1f84cd46f2cf2d861da14ecac1c1a70a8bc4ff27f073f1ec7489f19a2ea51",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/corrib75/corrib75.gb": {
+  "sha256": "9ef17859e70db0adb10f4e7b843f4228a4369acc51ec4b8142515937d7a58ff8",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/crossconnect/CrossConnect.gbc": {
+  "sha256": "5465e7b4aa37ee0d630d2e63a026f282e8d17c213a2bd9f087417e68061e8b95",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/crystal-lake/CrystalLake.gb": {
+  "sha256": "1688e11265c729eecbd26e46c4090dfcdcb79637800b8ca92d6c3170684826c5",
+  "size": 1048576
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/dashy-no-witch/DashyHalloween2019.gb": {
+  "sha256": "102e04c6559afec6d007c1ded5c32c14492a1fa680b86384e3fb8100e189bdf1",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/dawn-will-come/DawnWillCome.gb": {
+  "sha256": "3a3b9881b5a3a3708e217efd73f443f6a97782d3b0d3a2086e1a00ac176e5e9f",
+  "size": 2097152
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/dd-character-sheet-demade/game.gb": {
+  "sha256": "7b2f62e0f4bf6dc90e7d7a0ca36ab830b670009f1dcd52c43204736901434dda",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/deep-scan/dscan.gb": {
+  "sha256": "eda9b4caa0bddf091f4ea78254abbea7c3dcd384fb472752221620cd09f56d6a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/deved_potion-panic/files/potionpanic_jam.gbc": {
+  "sha256": "86922a48308031d5ca7e79cecbfbe3b4d41c8f094e0c2a5f90b6ced362d708f8",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/domination/domination.gb": {
+  "sha256": "3e87c6be7de03ecb97690a5dbcffac312344807eaae31ceaec71df9d24c0c133",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/dorotea/pasquiindustry_dorotea_en_v_1_1_0.gb": {
+  "sha256": "d5da803ac2c0f79417e0a9dcebf92621d33f91cbb52500b5cfe7b895bfbe7073",
+  "size": 524288
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/droneboy/droneboy.gb": {
+  "sha256": "5c7aeadb6ee836f6091975d5e57c0759705c4c3d5ead5d19cd6496f7c7e8134a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/dusky-dungeon/DuskyDungeon-0.1.0.gb": {
+  "sha256": "e57c333cbddee9e47ee078936be9804a1d9fb95c3fd7a36d2689e26d526f4428",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/el-dueloroso/ElDueloroso.gb": {
+  "sha256": "21b8c78aec985c9c9335db154b186adde9e2aaba32fc7ed76c9cf37cb8ffcf3c",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/escape-obliterizer-dx/ESCAPE_OBLITERIZER_DX.gb": {
+  "sha256": "7784d2e829ece4c6da154701051c1881f49c9c069667f7b6a65e666849750e81",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/europa-rescue/Europa%20Rescue.gbc": {
+  "sha256": "96ed044ab6bb97683bd4369a749e8f07679feb1b02decb92f14e9b79afc6b82c",
+  "size": 1048576
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/flooder/flooder.gb": {
+  "sha256": "fc5b3c68dc9a8685eabe3dc69f937a0e703a236821b3d710bc60c797a85957e4",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/game_boy_of_life/life.gb": {
+  "sha256": "d491f5d18f0fad55e660277210d1a07a7b52b65c480927e5c78f2f70d824895a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-clock/clock.gb": {
+  "sha256": "3acad9e7cdc9e53915a680d3a6e3f02ef9910a5e9456f8921831f93b766f910f",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-corp/gbcorp.gb": {
+  "sha256": "5a39926a23ff50448859b2d924d8bba5a8c68db91563783f0c593a3aa8e7bad3",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-dtmf/GB-DTMF.GB": {
+  "sha256": "38a5a391494bfb3e72fba07b463f16590724953a60d55f72c93852a2e712680e",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-key/gb-key.gb": {
+  "sha256": "e3723bb8a26de8a9729bbe21b4d02dbb5216a73e9602745206ba423e4fb44527",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-pda/pda.gb": {
+  "sha256": "c867046b584788ff3cb08a60c1efe409efc2a630ffe4e0662f3378f7fccea59a",
+  "size": 524288
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-rem/gb-rem.gb": {
+  "sha256": "68fec69c8cf82a7e439927ee33aea53d053caed77522a4d095e1b9367ee79132",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gb-wordyl/GBWORDYL_0.85_en.gb": {
+  "sha256": "acc12e3e920e0c432606846da60a5ca9bba21f8012304e8de4a26f88273d14de",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcbarcode/gb-bar.gb": {
+  "sha256": "28fb2b828bbd8198b8e1e66f7afc8e1c6d2a6c4a64748e1443e8ad52c3f2b10b",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbccardgame/pelmanism.gb": {
+  "sha256": "3dcfc0c06543f3006a2d8344661c9da94b5266c34a4e310d8f42b8f17ded6a0a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbccuecat/gb-cat.gb": {
+  "sha256": "ac2fdb355794ff7b8ec48d8a8853f77ed4c7d9ea506422f449b20f48ae90fb8e",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcgps/gb-gps.gb": {
+  "sha256": "77afb7f3c01fe175a83de4d44b47a227a532f4cdee04aa50d385f2ecd642db5f",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcirviewer/ir_view.gb": {
+  "sha256": "7a680058192def2108acea24838e9b3530d1f7faaacd0d3f56d0070dfa3ebb1f",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcjkit/jkit.gb": {
+  "sha256": "858e0309757cbacef398b683f1cc2e0c4dacec73b008d200beeefe021419a2af",
+  "size": 524288
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcpdc/gb-pdc.gb": {
+  "sha256": "5708b63cdb21ad2e931996cea791c431bb4350fcb4eca141401812d9496048fe",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbcshell/shell.gb": {
+  "sha256": "e296f3b646591a7c5ddf697e87fe3fc7e7d8cebef1e4454c555422a81206cb9d",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gbhack/gbhack.gbc": {
+  "sha256": "f93a27e8b6272771bbba96105a2754f27ffc3f8317d71c063bdbd60dd0d74527",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/geometrix/geometrix.gbc": {
+  "sha256": "f13575af6bf87003c3eef8c2cab67a49ca6b02aa23ff6a31a38beb96d6eb1795",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/grub-glide/GrubGlide.gb": {
+  "sha256": "7cb3d8ae5dd5d042436982f0e78a5daab4d99620eb50adb260cab9b37221b9c0",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/gunpey/namihey.gb": {
+  "sha256": "d63f596767594c20bd276d5422b80f95304d35ede11271e0d54d8d968d6fbcfc",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/jp/jp.gb": {
+  "sha256": "417fa2e7287fb26f27bc90f51e36c3edb7f5a6745654af870b2cb6fa587bdc8a",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/labirinth/Labirinth.gbc": {
+  "sha256": "b0a2efc53c9d1770e75cbdbb410e96fdf2bc6ea049249ea269bc1da0f4d92f8a",
+  "size": 524288
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/leanart_sgb/files/sgb_jam.gb": {
+  "sha256": "2736d9d1614c2fc8113247fbc5e4546eb12bac3352dcd1500cab4067e5e2df8c",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/libbet/libbet.gb": {
+  "sha256": "079d161bf2bff4f3baec01339b4f6f02ff6f966c69456885a165b97aac11fa12",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/life-gb/life.gb": {
+  "sha256": "b739ec5b2bb72b547243680429d776277b0a98fa9994b196a016a378278c694b",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/lofi-gb-beats-1/lofi-chiptune-1.gb": {
+  "sha256": "66c0bb3766e286d0e0406da1e3ddaf4637bba9d4dc31c6073792076cf0033b66",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/madpews-battlegrounds/battlegrounds.gb": {
+  "sha256": "6aa0bfb4223def21034226ce61550ed1efb64da72a2b41a2f7d702a902ece4f3",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/mateusdigital_el-jamon-volador/files/el-jamon-volador_1.2.1.gb": {
+  "sha256": "c2868703b46215ca13fec107a02875dab04e0ee639515fb116a48d07d34e5a15",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/maxpirate/maxpirate.gb": {
+  "sha256": "ade748a976cc87d382cf538daf441a3545c324c81d5fcda1f89ec0511b227d7a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/maxpirateeb/maxpirateeb.gb": {
+  "sha256": "11320e82aea34d56c3b8b5cabd3c15122ff0bbb281ec397d39b3f80a0bda688c",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/petris/Petris_web.gbc": {
+  "sha256": "4711b5cdaf3da8fb20b6296787dd11834d34fbc9fdad5a446c0ee0e563807d92",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/phreakboy/gb-phreak.gb": {
+  "sha256": "d12c49ffe3f8f9afc539eb33f66268c486a2d8c093803af672d5ac29f573cb48",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/plantboy/PlantBoy.gb": {
+  "sha256": "4b62569dfa8eda20912166b66306ff71885282916e78d760e2a7e3ec4ab3aa01",
+  "size": 16384
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/plutos-corner/PLUTOS_CORNER.gb": {
+  "sha256": "1647c713b49641a69d719238dde2e7015699389adefbd1f4b340bc0b6cd41d68",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/plyr0_qulqy/files/qulqy_jam.gbc": {
+  "sha256": "bd133d953b54a86b75464e766ba767182758b1eb14399b8b0aac22ff16d3ee5a",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/porklike-gb/porklike.gb": {
+  "sha256": "d4ee86833a580c92aa789aef03407b90a6cc6eb27e70d3477c41c970d0cf3f11",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/postbot/PostBot.gb": {
+  "sha256": "65824d3d7df8003f19923b38055a0660c20542cc363894091da661d9d49d13ad",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/postie/Postie-1.1.gbc": {
+  "sha256": "a2dfc32e5468fa0a8d2529bfc344528517b7615ad104f264e400c67c5b314a98",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/rebound/Rebound.gbc": {
+  "sha256": "195765b8ca3b0fb7d37b7b92d0242d6c7e01ec71f27f93e565fa081e449cbb92",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/renegade-rush/RenegadeRush.gb": {
+  "sha256": "0511a3de1bb59a5bd8bcf4e1463df7ea03a2aae66f30542b85ee51aa25f527a6",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/rex-run-v1-0/rex-run-v1.0.gb": {
+  "sha256": "9e074f66648f709528e4fc908dd979d098d74ab54cb24d09a75fa69d674eccaf",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/rex-runner-gb/rex-runner.gb": {
+  "sha256": "91bd12159d30e86cf4eb0312f28ff1c394e701085d6a8ca641ed92b2bcc8429c",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/rorecon/RoReCon.gb": {
+  "sha256": "bd2fd4f3ebfb6dbd6a0db9473490631a5c73d1631fc8c9fd8d5c585853e9a41b",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/scorching-light/pasquiindustry_scorchinglight_en_v1_0_1.gb": {
+  "sha256": "52c3669a986b7d720480799a18d9ba717af95ecc7d6ce6650c72a31d3e52d261",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/shock-lobster/shocklobster.gb": {
+  "sha256": "f14efd0340903b1b00d7e8b4b39687d4bc33355ac7742267ccfddfe92f54a611",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/snake/snake.gb": {
+  "sha256": "eda9a5a9455ed13e496abca8fff765122c0f79b624fab736b407fd68c29adf7e",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/squishy-the-turtle/squishy-magfest.gb": {
+  "sha256": "ac1e2eff95cdcf71ed931bd16c88f080038977b8b9dcde433bc023ee6b86c021",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/superconnard/sc_prod.gb": {
+  "sha256": "3e81e30535d86b46b5002e9c63bc5ca9b7e6e5e28dbcf3ab81877fd294ef7db8",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/sushi-nights/SushiNights.gb": {
+  "sha256": "5b3203e60e8815acf75e25c5ae369815da047c0f46b81ad3bcc8513ce7167e25",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/tobutobugirl/tobu.gb": {
+  "sha256": "5d3871cae77db2287807e8914fd21f76203e73aa3fec20955489d45cb4571d8f",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/tobutobugirldeluxe/tobudx.gb": {
+  "sha256": "0a0e8018dbbc8d7f8cd99f05e7cdc7b4cc9e358ecfe9377ebfb2291a84c6e310",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/totp-gb/totp-gb.gb": {
+  "sha256": "f757a08f67980615dba2770c364e95008a680a92eabeb4d67cecb55eb05836dc",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/trabant/Trabant_1_3.gbc": {
+  "sha256": "d8d89d8972b1282ca30d3d3603bed462ba2bd704d9e767769c373f713d858127",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/tuff/game.gb": {
+  "sha256": "ca28220f7f04460cef5d652a6298989ff00efe92e2a08a67f874bc865d98f7a6",
+  "size": 65536
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/ucity/ucity.gbc": {
+  "sha256": "0d608db175dd8ba22780be5df5fc17bf135876f6964f58ee141e4f8d81c62947",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/unstoppable-knight/knight2.gb": {
+  "sha256": "42637b68a3d2806062ba410eb848e7ff2c021829a0fb616d15e3b56643f241fc",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/ur4guys/ur4guys.gbc": {
+  "sha256": "d13633dc4e32875dd0fe2b23cbdb6045d3b58732f04eb128db74819701c1a22e",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/waternet/waternet.gbc": {
+  "sha256": "76bfa37e0db237d5d50a3084fca9a876592aaabfd6a9533adadd2d356998423d",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/wyrmhole/Wyrmhole.gb": {
+  "sha256": "a5e07f89119ee9c93aa50ec1ff828b2441781fa9b1a137f03af7b6c53ce03252",
+  "size": 32768
+ },
+ "https://hh3.gbdev.io/static/database-gb/entries/zone-booth_pizza-palace/files/pizza_palace.gb": {
+  "sha256": "40ae5e447079216af2a95ff446039aa3b65d42edaffee9e113305d1a4bf5ed33",
+  "size": 262144
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/afska_beat-beast/files/BeatBeast_jam.gba": {
+  "sha256": "2a4986bdf6bd65601f1ae08f471d0aafc3e23d57f594162f77f351a1150e43eb",
+  "size": 33506864
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/apotris/Apotris.gba": {
+  "sha256": "e5e7b124407d97cb1268b3bde4239bd2f018e133b1cb7990a635fc01937e78f6",
+  "size": 4194304
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/attack-on-voxelburg/voxelburg_jam.gba": {
+  "sha256": "9522f3e7a89640616c5397cf259785a85839692df9099a6caf73cc8a422a80ec",
+  "size": 827676
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/breadmakesyoufull_gbadev-containers/files/gbadev-containers_jam.gba": {
+  "sha256": "d33fcfe3cdf70316550e7b29a4caa16c2104c6fd8fa6ecc31752a702210b7438",
+  "size": 2593252
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/gbatris/gbatris.gba": {
+  "sha256": "607ba9f6ad2a3b7af9863bc8ee979fe77c77619119c22e8ab04cfa4729255c67",
+  "size": 2343292
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/grimlight/grimlight-v14.gba": {
+  "sha256": "440759f57cde56652713421c1d537c9742363981fe5a3190960962a46f6f8132",
+  "size": 51716
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/jeremyelkayam_trogba/files/trogba.gba": {
+  "sha256": "0dffc8fadf30fad67942c35aa5996a2d0aa92da66be585ea52e3b5961770ca36",
+  "size": 4854904
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/meteorain-gba-jam-2021/MeteoRain.gba": {
+  "sha256": "ce45d4624c385bf2aa4545aee8613cfff5f4b1f3879a0c704dfc5e349f64798d",
+  "size": 1710503
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/minicraft-gba/minicraft.gba": {
+  "sha256": "d0a62b6457b0d6fab383c417dca7ce9bcb9e239ced4c047e5fcbd1e010844caf",
+  "size": 131072
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/origamiscienceguy_galactic-quest/files/Galactic_Quest_jam.gba": {
+  "sha256": "fc998703b8abd960e718c76facab75ed89fa4e7eb3ff8fad6ebf9ea23475770a",
+  "size": 2687076
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/piugba/piuGBA_v1.10.0_demo.gba": {
+  "sha256": "9ddd3877b59f9dbeb745ebb6f69c6760ea1f129cdc93aee95eab09c329ee60c4",
+  "size": 6614656
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/skyland/Skyland.gba": {
+  "sha256": "1446735f17c00d4a2d369160e7716a0c66ea9ea292f89fdf998783682a044044",
+  "size": 24693968
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/solar-guard/Solar_Guard_GBA_JAM_2021.gba": {
+  "sha256": "cfd07990e0fa05611fb36b3230d68cea4b65ae11482e822b5b6f97a32a8b88b0",
+  "size": 4272776
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/the-hat-chooses-the-wizard/the-hat-chooses-the-wizard.gba": {
+  "sha256": "77d180e4d4668256e7af39403d107ff522bdaa0ede27a206772ac05d5b36a066",
+  "size": 2097152
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/the-purple-night/the-purple-night.gba": {
+  "sha256": "646c2a5d3405c82c7f165bfdff99e3ffd372b02f861017da9ec1f623cdfb3edc",
+  "size": 8388608
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/totp-gba/totp-gba.gba": {
+  "sha256": "0837eec9bd6e16065b12d726921b33236b1f861d1d7a6e169876a6e96cc02a3e",
+  "size": 40324
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/ucity-advance/ucity-advance-v1.0.1.gba": {
+  "sha256": "c94413b46c45af5d4ba050f69a53db0df7a4bd5f58b13e347f64f8eed03cff7a",
+  "size": 1925124
+ },
+ "https://hh3.gbdev.io/static/database-gba/entries/xniq/xniq-alpha.gba": {
+  "sha256": "49da35070ebfc3760a07354a0f90a68c16bd0590046cc99d8a7dfcd947563cc1",
+  "size": 1436448
+ }
+}

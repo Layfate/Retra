@@ -9,13 +9,13 @@ The sample is a CC0 Game Boy cartridge: use the D-pad to move a square. It inclu
 With no arguments the generator rebuilds the Android test fixture in `app/src/androidTest/assets/browse/` (its `example.org` addresses are placeholders, not live hosting). To build a publishable repository, pass the public HTTPS address it will be served from and an output folder:
 
 ```sh
-node samples/catalog-extension/build-fixture.cjs https://raw.githubusercontent.com/OWNER/REPO/repo/ ../retra-repo
+node samples/catalog-extension/build-fixture.cjs https://raw.githubusercontent.com/OWNER/REPO/main/extensions/ ../retra-repo
 ```
 
-The official Retra repository is served from the `repo` branch of this project (the same layout Mihon's keiyoushi repo uses):
+The official Retra repository is served from `extensions/` on this project's `main` branch:
 
 ```
-https://raw.githubusercontent.com/Layfate/Retra/repo/index.json
+https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 ```
 
 Publish every generated file (index, package, catalog, ROM, artwork, license) at the top level of that branch. The generator recalculates both hashes; any JSON change needs a regenerated package hash, so always rebuild rather than hand-editing. In Retra open Browse → Extensions → ⋮ → Extension repos → Add, paste the `index.json` URL, install the extension (confirming trust), then open Sources. Select Retra Pad, add it to Library, download it, and play.

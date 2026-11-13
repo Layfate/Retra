@@ -1,0 +1,1306 @@
+{
+  "apiVersion": 1,
+  "games": [
+    {
+      "id": "aria-of-sorrow-fix-3-localization-fix-game-boy-advance",
+      "title": "Aria Of Sorrow Fix 3 Localization Fix",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/aria-of-sorrow-fix-3-localization-fix-game-boy-advance"
+    },
+    {
+      "id": "avatar-emerald-pokemon-the-last-airbender-game-boy-advance",
+      "title": "Avatar Emerald Pokemon The Last Airbender",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1775067335000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Avatar - The Last Airbender).",
+      "website": "https://romhackplaza.org/romhacks/avatar-emerald-pokemon-the-last-airbender-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Avatar%20-%20The%20Last%20Airbender%20(USA).png"
+    },
+    {
+      "id": "black-matrix-zero-korean-translation-game-boy-advance",
+      "title": "Black Matrix Zero Korean",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Korean",
+      "updatedAt": 1700949653000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Black Matrix Zero).",
+      "website": "https://romhackplaza.org/translations/black-matrix-zero-korean-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Black%20Matrix%20Zero%20(Japan).png"
+    },
+    {
+      "id": "blackthorne-palette-restoration-game-boy-advance-romhack",
+      "title": "Blackthorne Palette Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1791445115000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Blackthorne).",
+      "website": "https://romhackplaza.org/romhacks/blackthorne-palette-restoration-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Blackthorne%20(USA).png"
+    },
+    {
+      "id": "blackthorne-spanish-translation-game-boy-advance",
+      "title": "Blackthorne Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1702151623000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Blackthorne).",
+      "website": "https://romhackplaza.org/translations/blackthorne-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Blackthorne%20(USA).png"
+    },
+    {
+      "id": "boktai-2-solar-boy-django-undub-game-boy-advance",
+      "title": "Boktai 2 Solar Boy Django Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Boktai 2 - Solar Boy Django).",
+      "website": "https://romhackplaza.org/romhacks/boktai-2-solar-boy-django-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Boktai%202%20-%20Solar%20Boy%20Django%20(USA).png"
+    },
+    {
+      "id": "boktai-the-sun-is-in-your-hand-undub-game-boy-advance",
+      "title": "Boktai The Sun Is In Your Hand Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Boktai - The Sun Is in Your Hand).",
+      "website": "https://romhackplaza.org/romhacks/boktai-the-sun-is-in-your-hand-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Boktai%20-%20The%20Sun%20Is%20in%20Your%20Hand%20(USA).png"
+    },
+    {
+      "id": "castlevania-aria-of-sorrow-definitive-edition-tommy-edition-game-boy-advance",
+      "title": "Castlevania Aria Of Sorrow Definitive Edition Tommy Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Castlevania - Aria of Sorrow).",
+      "website": "https://romhackplaza.org/romhacks/castlevania-aria-of-sorrow-definitive-edition-tommy-edition-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Castlevania%20-%20Aria%20of%20Sorrow%20(USA)%20(Castlevania%20Advance%20Collection).png"
+    },
+    {
+      "id": "castlevania-aria-of-sorrow-recolor-fix-by-goodlucktrying-game-boy-advance",
+      "title": "Castlevania Aria Of Sorrow Recolor Fix By Goodlucktrying",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1756398407000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Castlevania - Aria of Sorrow).",
+      "website": "https://romhackplaza.org/romhacks/castlevania-aria-of-sorrow-recolor-fix-by-goodlucktrying-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Castlevania%20-%20Aria%20of%20Sorrow%20(USA)%20(Castlevania%20Advance%20Collection).png"
+    },
+    {
+      "id": "castlevania-harmony-of-dissonance-no-blue-border-game-boy-advance",
+      "title": "Castlevania Harmony Of Dissonance No Blue Border",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1733870434000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Castlevania - Harmony of Dissonance).",
+      "website": "https://romhackplaza.org/romhacks/castlevania-harmony-of-dissonance-no-blue-border-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Castlevania%20-%20Harmony%20of%20Dissonance%20(USA)%20(Castlevania%20Advance%20Collection).png"
+    },
+    {
+      "id": "castlevania-harmony-of-dissonance-visual-improvement-game-boy-advance-romhack",
+      "title": "Castlevania Harmony Of Dissonance Visual Improvement",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1794528054000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Castlevania - Harmony of Dissonance).",
+      "website": "https://romhackplaza.org/romhacks/castlevania-harmony-of-dissonance-visual-improvement-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Castlevania%20-%20Harmony%20of%20Dissonance%20(USA)%20(Castlevania%20Advance%20Collection).png"
+    },
+    {
+      "id": "castlevania-harmony-of-dissonance-visual-improvement-no-outlines-better-title-screen-game-boy-advance",
+      "title": "Castlevania Harmony Of Dissonance Visual Improvement No Outlines Better Title Screen",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1734014914000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Castlevania - Harmony of Dissonance).",
+      "website": "https://romhackplaza.org/romhacks/castlevania-harmony-of-dissonance-visual-improvement-no-outlines-better-title-screen-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Castlevania%20-%20Harmony%20of%20Dissonance%20(USA)%20(Castlevania%20Advance%20Collection).png"
+    },
+    {
+      "id": "chocobo-land-a-game-of-dice-english-translation-game-boy-advance",
+      "title": "Chocobo Land A Game Of Dice English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1723964544000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Chocobo Land - A Game of Dice).",
+      "website": "https://romhackplaza.org/translations/chocobo-land-a-game-of-dice-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Chocobo%20Land%20-%20A%20Game%20of%20Dice%20(Japan).png"
+    },
+    {
+      "id": "contra-advance-the-alien-wars-ex-spanish-translation-game-boy-advance",
+      "title": "Contra Advance The Alien Wars Ex Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1706883185000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Contra Advance - The Alien Wars EX).",
+      "website": "https://romhackplaza.org/translations/contra-advance-the-alien-wars-ex-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Contra%20Advance%20-%20The%20Alien%20Wars%20EX%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "corrupt-theocracy-game-boy-advance",
+      "title": "Corrupt Theocracy",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701081020000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/corrupt-theocracy-game-boy-advance"
+    },
+    {
+      "id": "custom-robo-gx-english-translation-game-boy-advance",
+      "title": "Custom Robo Gx English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1758985515000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Custom Robo GX).",
+      "website": "https://romhackplaza.org/translations/custom-robo-gx-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Custom%20Robo%20GX%20(Japan).png"
+    },
+    {
+      "id": "disneys-magical-quest-2-starring-mickey-and-minnie-spanish-translation-game-boy-advance",
+      "title": "Disneys Magical Quest 2 Starring Mickey And Minnie Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1706883050000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Magical Quest 2 Starring Mickey _ Minnie).",
+      "website": "https://romhackplaza.org/translations/disneys-magical-quest-2-starring-mickey-and-minnie-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Magical%20Quest%202%20Starring%20Mickey%20_%20Minnie%20(USA)%20(En%2CFr%2CDe).png"
+    },
+    {
+      "id": "ditto-consistency-patch-game-boy-advance",
+      "title": "Ditto Consistency Patch",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1784917423000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/ditto-consistency-patch-game-boy-advance"
+    },
+    {
+      "id": "donkey-kong-country-2-unused-music-restoration-game-boy-advance",
+      "title": "Donkey Kong Country 2 Unused Music Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1777990340000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Donkey Kong Country 2).",
+      "website": "https://romhackplaza.org/romhacks/donkey-kong-country-2-unused-music-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Donkey%20Kong%20Country%202%20(USA).png"
+    },
+    {
+      "id": "donkey-kong-country-palette-restoration-game-boy-advance-romhack",
+      "title": "Donkey Kong Country Palette Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1791445118000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Donkey Kong Country).",
+      "website": "https://romhackplaza.org/romhacks/donkey-kong-country-palette-restoration-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Donkey%20Kong%20Country%20(USA).png"
+    },
+    {
+      "id": "dorcas-emblem-game-boy-advance",
+      "title": "Dorcas Emblem",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701133804000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/dorcas-emblem-game-boy-advance"
+    },
+    {
+      "id": "double-dragon-advance-spanish-translation-game-boy-advance",
+      "title": "Double Dragon Advance Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1723088798000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Double Dragon Advance).",
+      "website": "https://romhackplaza.org/translations/double-dragon-advance-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Double%20Dragon%20Advance%20(USA).png"
+    },
+    {
+      "id": "dragon-ball-z-the-legacy-of-goku-ii-enhanced-game-boy-advance",
+      "title": "Dragon Ball Z The Legacy Of Goku II Enhanced",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1781363286000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Dragon Ball Z - The Legacy of Goku II).",
+      "website": "https://romhackplaza.org/romhacks/dragon-ball-z-the-legacy-of-goku-ii-enhanced-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Dragon%20Ball%20Z%20-%20The%20Legacy%20of%20Goku%20II%20(USA).png"
+    },
+    {
+      "id": "dynasty-warriors-advance-undub-game-boy-advance",
+      "title": "Dynasty Warriors Advance Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1734125826000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Dynasty Warriors Advance).",
+      "website": "https://romhackplaza.org/romhacks/dynasty-warriors-advance-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Dynasty%20Warriors%20Advance%20(USA).png"
+    },
+    {
+      "id": "emeraldultra-game-boy-advance",
+      "title": "Emeraldultra",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1755300347000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/emeraldultra-game-boy-advance"
+    },
+    {
+      "id": "european-backport-edition-game-boy-advance",
+      "title": "European Backport Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1784916998000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/european-backport-edition-game-boy-advance"
+    },
+    {
+      "id": "f-zero-climax-english-translation-game-boy-advance",
+      "title": "F Zero Climax English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1725421097000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (F-Zero - Climax).",
+      "website": "https://romhackplaza.org/translations/f-zero-climax-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/F-Zero%20-%20Climax%20(USA).png"
+    },
+    {
+      "id": "f-zero-climax-sand-storm-editor-game-boy-advance",
+      "title": "F Zero Climax Sand Storm Editor",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1734211420000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (F-Zero - Climax).",
+      "website": "https://romhackplaza.org/romhacks/f-zero-climax-sand-storm-editor-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/F-Zero%20-%20Climax%20(USA).png"
+    },
+    {
+      "id": "f-zero-gp-climax-game-boy-advance",
+      "title": "F Zero Gp Climax",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1729543450000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (F-Zero - Climax).",
+      "website": "https://romhackplaza.org/romhacks/f-zero-gp-climax-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/F-Zero%20-%20Climax%20(USA).png"
+    },
+    {
+      "id": "f-zero-vintage-velocity-ace-game-boy-advance",
+      "title": "F Zero Vintage Velocity Ace",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1773716705000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/f-zero-vintage-velocity-ace-game-boy-advance"
+    },
+    {
+      "id": "f-zero-vintage-velocity-i-game-boy-advance",
+      "title": "F Zero Vintage Velocity I",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1728666106000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/f-zero-vintage-velocity-i-game-boy-advance"
+    },
+    {
+      "id": "f-zero-vintage-velocity-ii-game-boy-advance",
+      "title": "F Zero Vintage Velocity II",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1728666073000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/f-zero-vintage-velocity-ii-game-boy-advance"
+    },
+    {
+      "id": "fe1-fe2-in-jp-the-sacred-stones-game-boy-advance",
+      "title": "Fe1 Fe2 In Jp The Sacred Stones",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701107462000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/fe1-fe2-in-jp-the-sacred-stones-game-boy-advance"
+    },
+    {
+      "id": "ffta-minor-tweak-pack-game-boy-advance",
+      "title": "Ffta Minor Tweak Pack",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/ffta-minor-tweak-pack-game-boy-advance"
+    },
+    {
+      "id": "final-fantasy-5-advance-no-abilities-game-boy-advance",
+      "title": "Final Fantasy 5 Advance No Abilities",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1731804934000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/final-fantasy-5-advance-no-abilities-game-boy-advance"
+    },
+    {
+      "id": "final-fantasy-iv-advance-color-improvement-and-restoration-game-boy-advance",
+      "title": "Final Fantasy IV Advance Color Improvement And Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1732068719000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Final Fantasy IV Advance).",
+      "website": "https://romhackplaza.org/romhacks/final-fantasy-iv-advance-color-improvement-and-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Final%20Fantasy%20IV%20Advance%20(USA).png"
+    },
+    {
+      "id": "final-fantasy-vi-advance-indonesian-translation-game-boy-advance",
+      "title": "Final Fantasy VI Advance Indonesian",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Indonesian",
+      "updatedAt": 1788191583000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Final Fantasy VI Advance).",
+      "website": "https://romhackplaza.org/translations/final-fantasy-vi-advance-indonesian-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Final%20Fantasy%20VI%20Advance%20(USA).png"
+    },
+    {
+      "id": "final-fight-one-redux-edition-game-boy-advance",
+      "title": "Final Fight One Redux Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782894781000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Final Fight One).",
+      "website": "https://romhackplaza.org/romhacks/final-fight-one-redux-edition-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Final%20Fight%20One%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "final-fight-one-spanish-translation-game-boy-advance",
+      "title": "Final Fight One Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1782911778000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Final Fight One).",
+      "website": "https://romhackplaza.org/translations/final-fight-one-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Final%20Fight%20One%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "final-fire-pro-wrestling-restoration-game-boy-advance",
+      "title": "Final Fire Pro Wrestling Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1792057118000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Pro Wrestling).",
+      "website": "https://romhackplaza.org/romhacks/final-fire-pro-wrestling-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Pro%20Wrestling%20(USA%2C%20Europe).png"
+    },
+    {
+      "id": "fire-emblem-a-sacred-dawn-dx-game-boy-advance",
+      "title": "Fire Emblem A Sacred Dawn Dx",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701105620000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-a-sacred-dawn-dx-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-accursed-fate-game-boy-advance",
+      "title": "Fire Emblem Accursed Fate",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701135488000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-accursed-fate-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-different-dimensions-the-ostian-princess-game-boy-advance",
+      "title": "Fire Emblem Different Dimensions The Ostian Princess",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-different-dimensions-the-ostian-princess-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-elibian-nights-game-boy-advance",
+      "title": "Fire Emblem Elibian Nights",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701134597000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-elibian-nights-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-fallen-king-game-boy-advance",
+      "title": "Fire Emblem Fallen King",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701132987000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-fallen-king-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-indonesian-translation-game-boy-advance",
+      "title": "Fire Emblem Indonesian",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Indonesian",
+      "updatedAt": 1701128675000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/translations/fire-emblem-indonesian-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-lyns-bizarre-adventure-game-boy-advance",
+      "title": "Fire Emblem Lyns Bizarre Adventure",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1729332352000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-lyns-bizarre-adventure-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-requiem-game-boy-advance",
+      "title": "Fire Emblem Requiem",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701130514000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-requiem-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-sealed-hope-game-boy-advance",
+      "title": "Fire Emblem Sealed Hope",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-sealed-hope-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-the-blazing-blade-game-boy-advance",
+      "title": "Fire Emblem The Blazing Blade",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-the-blazing-blade-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-the-road-to-ruin-game-boy-advance",
+      "title": "Fire Emblem The Road To Ruin",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701133455000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-the-road-to-ruin-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-emblem-the-sacred-stones-game-boy-advance",
+      "title": "Fire Emblem The Sacred Stones",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem - The Sacred Stones).",
+      "website": "https://romhackplaza.org/romhacks/fire-emblem-the-sacred-stones-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20-%20The%20Sacred%20Stones%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "fire-pro-wrestling-2-restoration-game-boy-advance",
+      "title": "Fire Pro Wrestling 2 Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1792057063000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Pro Wrestling 2).",
+      "website": "https://romhackplaza.org/romhacks/fire-pro-wrestling-2-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Pro%20Wrestling%202%20(USA).png"
+    },
+    {
+      "id": "fire-pro-wrestling-restoration-game-boy-advance",
+      "title": "Fire Pro Wrestling Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1792057087000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Pro Wrestling).",
+      "website": "https://romhackplaza.org/romhacks/fire-pro-wrestling-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Pro%20Wrestling%20(USA%2C%20Europe).png"
+    },
+    {
+      "id": "firered-leafgreen-ultra-game-boy-advance",
+      "title": "Firered Leafgreen Ultra",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/firered-leafgreen-ultra-game-boy-advance"
+    },
+    {
+      "id": "fix-exp-border-game-boy-advance",
+      "title": "Fix Exp Border",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1733680372000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/fix-exp-border-game-boy-advance"
+    },
+    {
+      "id": "gantz-patch--E3-82-AC-E3-83-B3-E3-83-84-E3-83-91-E3-83-83-E3-83-81-game-boy-advance",
+      "title": "Gantz Patch ガンツパッチ",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1781201619000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/gantz-patch-%E3%82%AC%E3%83%B3%E3%83%84%E3%83%91%E3%83%83%E3%83%81-game-boy-advance"
+    },
+    {
+      "id": "gantz-to-guntz-game-boy-advance",
+      "title": "Gantz To Guntz",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782895311000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/gantz-to-guntz-game-boy-advance"
+    },
+    {
+      "id": "gravity-change-game-boy-advance",
+      "title": "Gravity Change",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1722802199000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/gravity-change-game-boy-advance"
+    },
+    {
+      "id": "gravity-syluxs-crusade-game-boy-advance",
+      "title": "Gravity Syluxs Crusade",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1730306015000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/gravity-syluxs-crusade-game-boy-advance"
+    },
+    {
+      "id": "harmony-of-dissonance-localization-fix-game-boy-advance",
+      "title": "Harmony Of Dissonance Localization Fix",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1732257568000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/harmony-of-dissonance-localization-fix-game-boy-advance"
+    },
+    {
+      "id": "jazz-jackrabbit-french-translation-game-boy-advance",
+      "title": "Jazz Jackrabbit French",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "French",
+      "updatedAt": 1722628325000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Jazz Jackrabbit).",
+      "website": "https://romhackplaza.org/translations/jazz-jackrabbit-french-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Jazz%20Jackrabbit%20(USA%2C%20Europe).png"
+    },
+    {
+      "id": "kingdom-hearts-chain-of-memories-undub-game-boy-advance",
+      "title": "Kingdom Hearts Chain Of Memories Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1734112211000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Kingdom Hearts - Chain of Memories).",
+      "website": "https://romhackplaza.org/romhacks/kingdom-hearts-chain-of-memories-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Kingdom%20Hearts%20-%20Chain%20of%20Memories%20(USA).png"
+    },
+    {
+      "id": "klonoa-heroes-densetsu-no-star-medal-english-translation-game-boy-advance",
+      "title": "Klonoa Heroes Densetsu No Star Medal English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1736200597000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Klonoa Heroes - Densetsu no Star Medal).",
+      "website": "https://romhackplaza.org/translations/klonoa-heroes-densetsu-no-star-medal-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Klonoa%20Heroes%20-%20Densetsu%20no%20Star%20Medal%20(Japan).png"
+    },
+    {
+      "id": "lego-star-wars-ii-the-original-trilogy-bug-fixes-game-boy-advance-romhack",
+      "title": "Lego Star Wars II The Original Trilogy Bug Fixes",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1790708221000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (LEGO Star Wars II - The Original Trilogy).",
+      "website": "https://romhackplaza.org/romhacks/lego-star-wars-ii-the-original-trilogy-bug-fixes-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/LEGO%20Star%20Wars%20II%20-%20The%20Original%20Trilogy%20(USA).png"
+    },
+    {
+      "id": "links-voice-change-game-boy-advance",
+      "title": "Links Voice Change",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1722799009000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/links-voice-change-game-boy-advance"
+    },
+    {
+      "id": "magi-nation-english-translation-game-boy-advance",
+      "title": "Magi Nation English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1763793378000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Magi Nation).",
+      "website": "https://romhackplaza.org/translations/magi-nation-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Magi%20Nation%20(Japan).png"
+    },
+    {
+      "id": "mario-kart-r-advance-game-boy-advance",
+      "title": "Mario Kart R Advance",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1706119057000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mario Kart Advance).",
+      "website": "https://romhackplaza.org/romhacks/mario-kart-r-advance-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mario%20Kart%20Advance%20(Japan)%20(3DS%20Virtual%20Console).png"
+    },
+    {
+      "id": "mario-kart-super-circuit-korean-translation-game-boy-advance",
+      "title": "Mario Kart Super Circuit Korean",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Korean",
+      "updatedAt": 1784467637000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mario Kart - Super Circuit).",
+      "website": "https://romhackplaza.org/translations/mario-kart-super-circuit-korean-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mario%20Kart%20-%20Super%20Circuit%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mario-kart-super-circuit-mk64-yoshis-voice-game-boy-advance",
+      "title": "Mario Kart Super Circuit Mk64 Yoshis Voice",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1783106076000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mario Kart - Super Circuit).",
+      "website": "https://romhackplaza.org/romhacks/mario-kart-super-circuit-mk64-yoshis-voice-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mario%20Kart%20-%20Super%20Circuit%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mario-kart-super-circuit-snes-battle-course-restoration-game-boy-advance",
+      "title": "Mario Kart Super Circuit Snes Battle Course Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1706312514000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mario Kart - Super Circuit).",
+      "website": "https://romhackplaza.org/romhacks/mario-kart-super-circuit-snes-battle-course-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mario%20Kart%20-%20Super%20Circuit%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mario-vs-donkey-kong-portuguese-translation-game-boy-advance",
+      "title": "Mario Vs Donkey Kong Portuguese",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Portuguese",
+      "updatedAt": 1709837877000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mario vs. Donkey Kong).",
+      "website": "https://romhackplaza.org/translations/mario-vs-donkey-kong-portuguese-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mario%20vs.%20Donkey%20Kong%20(USA%2C%20Australia).png"
+    },
+    {
+      "id": "marvel-ultimate-alliance-spanish-translation-game-boy-advance",
+      "title": "Marvel Ultimate Alliance Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1724081698000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Marvel - Ultimate Alliance).",
+      "website": "https://romhackplaza.org/translations/marvel-ultimate-alliance-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Marvel%20-%20Ultimate%20Alliance%20(USA).png"
+    },
+    {
+      "id": "max-payne-spanish-translation-game-boy-advance",
+      "title": "Max Payne Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1734664149000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Max Payne).",
+      "website": "https://romhackplaza.org/translations/max-payne-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Max%20Payne%20(USA).png"
+    },
+    {
+      "id": "mega-man-bass-gba-new-controls-game-boy-advance",
+      "title": "Mega Man Bass Gba New Controls",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mega Man _ Bass).",
+      "website": "https://romhackplaza.org/romhacks/mega-man-bass-gba-new-controls-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mega%20Man%20_%20Bass%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mega-man-zero-3-e-reader-edition-game-boy-advance",
+      "title": "Mega Man Zero 3 E Reader Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1748546692000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mega Man Zero 3).",
+      "website": "https://romhackplaza.org/romhacks/mega-man-zero-3-e-reader-edition-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mega%20Man%20Zero%203%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mega-man-zero-3-omega-as-mmx1-zero-game-boy-advance",
+      "title": "Mega Man Zero 3 Omega As Mmx1 Zero",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mega Man Zero 3).",
+      "website": "https://romhackplaza.org/romhacks/mega-man-zero-3-omega-as-mmx1-zero-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mega%20Man%20Zero%203%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mega-man-zero-3-zero-as-mmx1-zero-omega-as-mmz-zero-game-boy-advance",
+      "title": "Mega Man Zero 3 Zero As Mmx1 Zero Omega As Mmz Zero",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mega Man Zero 3).",
+      "website": "https://romhackplaza.org/romhacks/mega-man-zero-3-zero-as-mmx1-zero-omega-as-mmz-zero-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mega%20Man%20Zero%203%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "megaman-zero--D1-83-D0-BA-D1-80-D0-B0-D1-97-D0-BD-D1-81-D1-8C-D0-BA-D0-B8-D0-B9--D0-BF-D0-B5-D1-80-D0-B5-D0-BA-D0-BB-D0-B0-D0-B4",
+      "title": "Megaman Zero Український Переклад Ukrainian",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Ukrainian",
+      "updatedAt": 1787907647000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Megaman Zero).",
+      "website": "https://romhackplaza.org/translations/megaman-zero-%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9-%D0%BF%D0%B5%D1%80%D0%B5%D0%BA%D0%BB%D0%B0%D0%B4-ukrainian-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Megaman%20Zero%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "metal-gun-slinger-english-translation-game-boy-advance",
+      "title": "Metal Gun Slinger English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1732875840000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Metalgun Slinger).",
+      "website": "https://romhackplaza.org/translations/metal-gun-slinger-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Metalgun%20Slinger%20(Japan).png"
+    },
+    {
+      "id": "metroid-castle-game-boy-advance",
+      "title": "Metroid Castle",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/metroid-castle-game-boy-advance"
+    },
+    {
+      "id": "metroid-engage-ridley-game-boy-advance",
+      "title": "Metroid Engage Ridley",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/metroid-engage-ridley-game-boy-advance"
+    },
+    {
+      "id": "metroid-fusion--D1-83-D0-BA-D1-80-D0-B0-D1-97-D0-BD-D1-81-D1-8C-D0-BA-D0-B8-D0-B9--D0-BF-D0-B5-D1-80-D0-B5-D0-BA-D0-BB-D0-B0-D0-",
+      "title": "Metroid Fusion Український Переклад Ukrainian",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Ukrainian",
+      "updatedAt": 1787907631000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Metroid Fusion).",
+      "website": "https://romhackplaza.org/translations/metroid-fusion-%D1%83%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B8%D0%B9-%D0%BF%D0%B5%D1%80%D0%B5%D0%BA%D0%BB%D0%B0%D0%B4-ukrainian-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Metroid%20Fusion%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "minish-nightmare-gameplay-demo-game-boy-advance",
+      "title": "Minish Nightmare Gameplay Demo",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1746838842000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/minish-nightmare-gameplay-demo-game-boy-advance"
+    },
+    {
+      "id": "mk404s-fire-emblem-the-blazing-blade-hack-game-boy-advance",
+      "title": "Mk404s Fire Emblem The Blazing Blade Hack",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1700143915000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Fire Emblem).",
+      "website": "https://romhackplaza.org/romhacks/mk404s-fire-emblem-the-blazing-blade-hack-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Fire%20Emblem%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "mother-3-censored-edition-game-boy-advance",
+      "title": "Mother 3 Censored Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1758991711000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mother 3).",
+      "website": "https://romhackplaza.org/romhacks/mother-3-censored-edition-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mother%203%20(USA).png"
+    },
+    {
+      "id": "mother-3-french-translation-game-boy-advance",
+      "title": "Mother 3 French",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "French",
+      "updatedAt": 1703195208000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mother 3).",
+      "website": "https://romhackplaza.org/translations/mother-3-french-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mother%203%20(USA).png"
+    },
+    {
+      "id": "mother-3-italian-translation-game-boy-advance",
+      "title": "Mother 3 Italian",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Italian",
+      "updatedAt": 1732223944000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mother 3).",
+      "website": "https://romhackplaza.org/translations/mother-3-italian-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mother%203%20(USA).png"
+    },
+    {
+      "id": "mr-driller-2-undub-game-boy-advance",
+      "title": "Mr Driller 2 Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1765785800000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Mr. Driller 2).",
+      "website": "https://romhackplaza.org/romhacks/mr-driller-2-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Mr.%20Driller%202%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "ojarudebug-game-boy-advance",
+      "title": "Ojarudebug",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1718998456000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/ojarudebug-game-boy-advance"
+    },
+    {
+      "id": "order-of-the-crimson-arm-game-boy-advance",
+      "title": "Order Of The Crimson Arm",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701134108000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/order-of-the-crimson-arm-game-boy-advance"
+    },
+    {
+      "id": "original-attack-speeches-of-cammy-dee-jay-game-boy-advance-romhack",
+      "title": "Original Attack Speeches Of Cammy Dee Jay",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782899294000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/original-attack-speeches-of-cammy-dee-jay-game-boy-advance-romhack"
+    },
+    {
+      "id": "original-sunset-wilds-title-card-sprites-game-boy-advance-romhack",
+      "title": "Original Sunset Wilds Title Card Sprites",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/original-sunset-wilds-title-card-sprites-game-boy-advance-romhack"
+    },
+    {
+      "id": "pac-man-collection-pac-attack-autoboot-game-boy-advance",
+      "title": "Pac Man Collection Pac Attack Autoboot",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1724253914000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Pac-Man Collection).",
+      "website": "https://romhackplaza.org/romhacks/pac-man-collection-pac-attack-autoboot-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pac-Man%20Collection%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "pokemon-fire-red-reignited-leaf-green-regrown-game-boy-advance",
+      "title": "Pokemon Fire Red Reignited Leaf Green Regrown",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Pokemon - FireRed Version).",
+      "website": "https://romhackplaza.org/romhacks/pokemon-fire-red-reignited-leaf-green-regrown-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20FireRed%20Version%20(USA).png"
+    },
+    {
+      "id": "F0-9F-97-9D-EF-B8-8F-pokemon-legends-kingdom-hearts-v1-5-darkness-expands-again-game-boy-advance",
+      "title": "Pokemon Legends Kingdom Hearts v1.5 Darkness Expands Again",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1773772521000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/%F0%9F%97%9D%EF%B8%8F-pokemon-legends-kingdom-hearts-v1-5-darkness-expands-again-game-boy-advance"
+    },
+    {
+      "id": "pokemon-legends-x-game-boy-advance",
+      "title": "Pokemon Legends X",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/pokemon-legends-x-game-boy-advance"
+    },
+    {
+      "id": "pokemon-legends-x-v2-7-game-boy-advance-2",
+      "title": "Pokemon Legends X v2.7",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1784825492000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/pokemon-legends-x-v2-7-game-boy-advance-2"
+    },
+    {
+      "id": "pokemon-ruby-european-font-game-boy-advance",
+      "title": "Pokemon Ruby European Font",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1704050745000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Pokemon - Ruby Version).",
+      "website": "https://romhackplaza.org/romhacks/pokemon-ruby-european-font-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20Ruby%20Version%20(USA).png"
+    },
+    {
+      "id": "pokemon-sapphire-european-font-game-boy-advance",
+      "title": "Pokemon Sapphire European Font",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1704050722000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Pokemon - Sapphire Version).",
+      "website": "https://romhackplaza.org/romhacks/pokemon-sapphire-european-font-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Pokemon%20-%20Sapphire%20Version%20(USA).png"
+    },
+    {
+      "id": "pokemon-symbiont-game-boy-advance",
+      "title": "Pokemon Symbiont",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1744328378000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/pokemon-symbiont-game-boy-advance"
+    },
+    {
+      "id": "pokemon-war-of-masters-v6-5-final-fantasy-tactics-inspired-crossover-game-boy-advance",
+      "title": "Pokemon War Of Masters v6.5 Final Fantasy Tactics Inspired Crossover",
+      "platform": "GBA",
+      "genre": "Pokémon",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/pokemon-war-of-masters-v6-5-final-fantasy-tactics-inspired-crossover-game-boy-advance"
+    },
+    {
+      "id": "puyo-pop-gba-soundful-edition-game-boy-advance",
+      "title": "Puyo Pop Gba Soundful Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1755747589000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Puyo Pop).",
+      "website": "https://romhackplaza.org/romhacks/puyo-pop-gba-soundful-edition-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Puyo%20Pop%20(USA)%20(En%2CJa).png"
+    },
+    {
+      "id": "puyo-pop-portuguese-translation-game-boy-advance",
+      "title": "Puyo Pop Portuguese",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Portuguese",
+      "updatedAt": 1792988361000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Puyo Pop).",
+      "website": "https://romhackplaza.org/translations/puyo-pop-portuguese-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Puyo%20Pop%20(USA)%20(En%2CJa).png"
+    },
+    {
+      "id": "riviera-the-promised-land-undub-game-boy-advance",
+      "title": "Riviera The Promised Land Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1735023774000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Riviera - The Promised Land).",
+      "website": "https://romhackplaza.org/romhacks/riviera-the-promised-land-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Riviera%20-%20The%20Promised%20Land%20(USA).png"
+    },
+    {
+      "id": "sonic-battle-undub-game-boy-advance",
+      "title": "Sonic Battle Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1734112161000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Sonic Battle).",
+      "website": "https://romhackplaza.org/romhacks/sonic-battle-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Sonic%20Battle%20(USA)%20(En%2CJa%2CFr%2CDe%2CEs%2CIt).png"
+    },
+    {
+      "id": "summon-night-swordcraft-story-2-undub-game-boy-advance",
+      "title": "Summon Night Swordcraft Story 2 Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1730598450000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Summon Night - Swordcraft Story 2).",
+      "website": "https://romhackplaza.org/romhacks/summon-night-swordcraft-story-2-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Summon%20Night%20-%20Swordcraft%20Story%202%20(USA).png"
+    },
+    {
+      "id": "super-ghouls-n-ghosts-knight-maiden-artoria-edition-gba-version-game-boy-advance",
+      "title": "Super Ghouls N Ghosts Knight Maiden Artoria Edition Gba Version",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1785196812000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Ghouls'n Ghosts).",
+      "website": "https://romhackplaza.org/romhacks/super-ghouls-n-ghosts-knight-maiden-artoria-edition-gba-version-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Ghouls'n%20Ghosts%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-ghoulsn-ghosts-restoration-gba-edition-game-boy-advance-romhack",
+      "title": "Super Ghoulsn Ghosts Restoration Gba Edition",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1792746501000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Ghouls'n Ghosts).",
+      "website": "https://romhackplaza.org/romhacks/super-ghoulsn-ghosts-restoration-gba-edition-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Ghouls'n%20Ghosts%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-advance-3-yoshis-island-colour-restoration-game-boy-advance",
+      "title": "Super Mario Advance 3 Yoshis Island Colour Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911778000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance 3 - Yoshi's Island).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-advance-3-yoshis-island-colour-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%203%20-%20Yoshi's%20Island%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-advance-4-cards-cape-feather-game-boy-advance",
+      "title": "Super Mario Advance 4 Cards Cape Feather",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1780879491000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-advance-4-cards-cape-feather-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-advance-boss-intro-restoration-game-boy-advance",
+      "title": "Super Mario Advance Boss Intro Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1725785281000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-advance-boss-intro-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-advance-music-pitch-correction-game-boy-advance",
+      "title": "Super Mario Advance Music Pitch Correction",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1725785568000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-advance-music-pitch-correction-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-advance-snes-color-restoration-game-boy-advance",
+      "title": "Super Mario Advance Snes Color Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1725784967000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-advance-snes-color-restoration-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-mario-world-advance-game-boy-advance",
+      "title": "Super Mario World Advance",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1772745156000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Mario Advance).",
+      "website": "https://romhackplaza.org/romhacks/super-mario-world-advance-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Mario%20Advance%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "super-robot-taisen-j-english-translation-game-boy-advance",
+      "title": "Super Robot Taisen J English",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "English",
+      "updatedAt": 1700301332000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Robot Taisen J).",
+      "website": "https://romhackplaza.org/translations/super-robot-taisen-j-english-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Robot%20Taisen%20J%20(Japan)%20%5BT-En%20by%20Kingcom%5D.png"
+    },
+    {
+      "id": "super-street-fighter-ii-turbo-revival-spanish-translation-game-boy-advance",
+      "title": "Super Street Fighter II Turbo Revival Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1791796396000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Super Street Fighter II Turbo - Revival).",
+      "website": "https://romhackplaza.org/translations/super-street-fighter-ii-turbo-revival-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Super%20Street%20Fighter%20II%20Turbo%20-%20Revival%20(USA)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "superstar-saga-color-improvement-game-boy-advance",
+      "title": "Superstar Saga Color Improvement",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1782911779000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/superstar-saga-color-improvement-game-boy-advance"
+    },
+    {
+      "id": "tak-and-the-power-of-juju-bug-fix-game-boy-advance-romhack",
+      "title": "Tak And The Power Of Juju Bug Fix",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1790702952000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Tak and the Power of Juju).",
+      "website": "https://romhackplaza.org/romhacks/tak-and-the-power-of-juju-bug-fix-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Tak%20and%20the%20Power%20of%20Juju%20(USA).png"
+    },
+    {
+      "id": "tales-of-phantasia-undub-game-boy-advance",
+      "title": "Tales Of Phantasia Undub",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1784179877000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Tales of Phantasia).",
+      "website": "https://romhackplaza.org/romhacks/tales-of-phantasia-undub-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Tales%20of%20Phantasia%20(USA%2C%20Australia).png"
+    },
+    {
+      "id": "tekken-advance-french-translation-game-boy-advance",
+      "title": "Tekken Advance French",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "French",
+      "updatedAt": 1722630310000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Tekken Advance).",
+      "website": "https://romhackplaza.org/translations/tekken-advance-french-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Tekken%20Advance%20(USA).png"
+    },
+    {
+      "id": "the-last-promise-game-boy-advance",
+      "title": "The Last Promise",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701130148000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/the-last-promise-game-boy-advance"
+    },
+    {
+      "id": "the-lost-vikings-palette-restoration-game-boy-advance-romhack",
+      "title": "The Lost Vikings Palette Restoration",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1791445115000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Lost Vikings, The).",
+      "website": "https://romhackplaza.org/romhacks/the-lost-vikings-palette-restoration-game-boy-advance-romhack",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Lost%20Vikings%2C%20The%20(USA).png"
+    },
+    {
+      "id": "the-sims-bustin-out-portuguese-translation-game-boy-advance",
+      "title": "The Sims Bustin Out Portuguese",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Portuguese",
+      "updatedAt": 1761868369000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Sims, The - Bustin' Out).",
+      "website": "https://romhackplaza.org/translations/the-sims-bustin-out-portuguese-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Sims%2C%20The%20-%20Bustin'%20Out%20(USA)%20(En%2CFr%2CDe%2CEs%2CIt%2CNl)%20(Rev%201).png"
+    },
+    {
+      "id": "unbreakable-items-game-boy-advance",
+      "title": "Unbreakable Items",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701134901000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/unbreakable-items-game-boy-advance"
+    },
+    {
+      "id": "wario-land-4-parallel-world-game-boy-advance",
+      "title": "Wario Land 4 Parallel World",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1700489390000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (Wario Land 4).",
+      "website": "https://romhackplaza.org/romhacks/wario-land-4-parallel-world-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/Wario%20Land%204%20(USA%2C%20Europe)%20(Virtual%20Console).png"
+    },
+    {
+      "id": "warioware-twisted-improved-no-tilt-game-boy-advance",
+      "title": "Warioware Twisted Improved No Tilt",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1727634790000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (WarioWare - Twisted!).",
+      "website": "https://romhackplaza.org/romhacks/warioware-twisted-improved-no-tilt-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/WarioWare%20-%20Twisted!%20(USA).png"
+    },
+    {
+      "id": "x-men-reign-of-apocalypse-spanish-translation-game-boy-advance",
+      "title": "X Men Reign Of Apocalypse Spanish",
+      "platform": "GBA",
+      "gameType": "translation",
+      "language": "Spanish",
+      "updatedAt": 1724176415000,
+      "description": "Fan translation for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts. Cover shows the original game (X-Men - Reign of Apocalypse).",
+      "website": "https://romhackplaza.org/translations/x-men-reign-of-apocalypse-spanish-translation-game-boy-advance",
+      "cover": "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/Named_Boxarts/X-Men%20-%20Reign%20of%20Apocalypse%20(USA%2C%20Europe).png"
+    },
+    {
+      "id": "yu-gi-oh-yuggidrasil-game-boy-advance-romhack",
+      "title": "Yu Gi Oh Yuggidrasil",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1794055957000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/yu-gi-oh-yuggidrasil-game-boy-advance-romhack"
+    },
+    {
+      "id": "yuri-tanakas-sidestory-game-boy-advance",
+      "title": "Yuri Tanakas Sidestory",
+      "platform": "GBA",
+      "gameType": "romhack",
+      "updatedAt": 1701079178000,
+      "description": "Fan-made ROM hack for Game Boy Advance, listed on Romhack Plaza. Romhack Plaza hosts the patch file: open the website, download the patch, then add it in Library → + together with your own clean Game Boy Advance ROM. Retra applies the patch when the game starts.",
+      "website": "https://romhackplaza.org/romhacks/yuri-tanakas-sidestory-game-boy-advance"
+    }
+  ]
+}

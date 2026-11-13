@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 @RunWith(AndroidJUnit4::class)
 class BrowseImageInstrumentedTest {
-    private val repo = "https://raw.githubusercontent.com/Layfate/Retra/repo/index.json"
+    private val repo = "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json"
     private val boxart = "https://raw.githubusercontent.com/libretro-thumbnails/Nintendo_-_Game_Boy_Advance/master/" +
         "Named_Boxarts/Harvest%20Moon%20-%20Friends%20of%20Mineral%20Town%20(USA).png"
 

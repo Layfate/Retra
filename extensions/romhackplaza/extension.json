@@ -1,0 +1,67 @@
+{
+  "apiVersion": 1,
+  "id": "org.retra.romhackplaza",
+  "versionCode": 2,
+  "sources": [
+    {
+      "id": "gb",
+      "name": "Romhack Plaza GB",
+      "platforms": [
+        "GB"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gb.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
+    },
+    {
+      "id": "gbc",
+      "name": "Romhack Plaza GBC",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
+    },
+    {
+      "id": "gba",
+      "name": "Romhack Plaza GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
+    },
+    {
+      "id": "official-gb",
+      "name": "Official GB Games",
+      "platforms": [
+        "GB"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gb.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gb.png"
+    },
+    {
+      "id": "official-gbc",
+      "name": "Official GBC Games",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gbc.png"
+    },
+    {
+      "id": "official-gba",
+      "name": "Official GBA Games",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gba.png"
+    }
+  ]
+}

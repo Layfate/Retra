@@ -1,7 +1,7 @@
 name: Retra extension repository
 
-# Rebuilds the extension repository published on the `repo` branch
-# (https://raw.githubusercontent.com/<owner>/<repo>/repo/index.json) so the
+# Rebuilds the extension repository published in `extensions/` on `main`
+# (https://raw.githubusercontent.com/<owner>/<repo>/main/extensions/index.json) so the
 # website catalogs pick up new games and artwork. The default index publishes
 # one extension containing PokéHarbor, PokeMundo and Roms Games sources.
 
@@ -24,12 +24,8 @@ jobs:
     steps:
       - name: Checkout builder
         uses: actions/checkout@v5
-
-      - name: Checkout published repository
-        uses: actions/checkout@v5
         with:
-          ref: repo
-          path: site
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -42,13 +38,12 @@ jobs:
         env:
           # Lifts the GitHub API rate limit for the libretro-thumbnails box art index.
           GITHUB_TOKEN: ${{ github.token }}
-        run: node tools/extension-repo/build-repo.cjs "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/repo/" site
+        run: node tools/extension-repo/build-repo.cjs "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/extensions/" extensions
 
       - name: Publish changes
         shell: bash
-        working-directory: site
         run: |
-          git add -A
+          git add -A -- extensions
           if git diff --cached --quiet; then
             echo "Catalogs unchanged"
             exit 0
@@ -56,4 +51,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh Retra extension catalogs"
-          git push origin HEAD:repo
+          git pull --rebase origin main
+          git push origin HEAD:main
