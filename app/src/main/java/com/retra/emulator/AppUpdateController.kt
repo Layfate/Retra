@@ -204,8 +204,8 @@ class AppUpdateController(
     )
 
     companion object {
-        private const val LATEST_RELEASE_API = "https://api.github.com/repos/lascent/Retra/releases/latest"
-        private const val OFFICIAL_RELEASES_URL = "https://github.com/lascent/Retra/releases/latest"
+        private const val LATEST_RELEASE_API = "https://api.github.com/repos/Layfate/Retra/releases/latest"
+        private const val OFFICIAL_RELEASES_URL = "https://github.com/Layfate/Retra/releases/latest"
         private val automaticCheckStartedThisProcess = AtomicBoolean(false)
         private const val CONNECT_TIMEOUT_MS = 6000
         private const val READ_TIMEOUT_MS = 7000

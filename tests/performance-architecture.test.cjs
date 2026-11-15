@@ -35,7 +35,8 @@ test('high-refresh policy is reapplied on resume and configuration changes', () 
 });
 
 test('WebView stays hardware accelerated and warm for responsive navigation', () => {
-  assert.match(webTuner, /LAYER_TYPE_HARDWARE/);
+  // The window is hardware accelerated; a forced layer only adds an offscreen copy.
+  assert.doesNotMatch(webTuner, /setLayerType\(/);
   assert.match(webTuner, /offscreenPreRaster = true/);
   assert.match(webTuner, /RENDERER_PRIORITY_IMPORTANT/);
   assert.match(webController, /WebUiPerformanceTuner\.apply\(this\)/);

@@ -88,12 +88,3 @@ main,
   content-visibility: auto;
   contain-intrinsic-size: auto 250px;
 }
-
-/* Scroll itself must never animate layout or shadows. These declarations only
-   affect the active scrolling state installed by scroll-performance.js. */
-html.retra-scrolling .cover-card,
-html.retra-scrolling .history-item,
-html.retra-scrolling .playtime-item,
-html.retra-scrolling #detailEntries .entry-item {
-  transition-duration: 0ms !important;
-}

@@ -251,6 +251,37 @@ button.browse-item-main:active{background:var(--m3-state-press)}
 .browse-extension-hero .browse-item-copy strong{font-size:20px;white-space:normal;overflow-wrap:anywhere}
 .browse-extension-hero .browse-item-copy small{white-space:normal}
 .browse-surface .detail-list{margin-bottom:8px}
+
+/* Detail lists (Information, Sources) run edge to edge like Settings detail
+   lists. Those only match `.settings-detail-page > .detail-list`; Browse nests
+   its list inside #catalogDetails / #extensionDetails, so it needs its own rule.
+   The bleed cancels main's horizontal padding (gutter, or the system inset when
+   larger) and the rows put it back so text still lines up with the headings. */
+#catalogDetailsPage,
+#extensionDetailsPage{
+  --browse-bleed-left:var(--content-gutter);
+  --browse-bleed-right:var(--content-gutter);
+}
+html[data-retra-runtime="android"] #catalogDetailsPage,
+html[data-retra-runtime="android"] #extensionDetailsPage{
+  --browse-bleed-left:max(var(--content-gutter), var(--device-safe-left));
+  --browse-bleed-right:max(var(--content-gutter), var(--device-safe-right));
+}
+#catalogDetailsPage .detail-list,
+#extensionDetailsPage .detail-list{
+  width:calc(100% + var(--browse-bleed-left) + var(--browse-bleed-right));
+  max-width:none;
+  margin-left:calc(-1 * var(--browse-bleed-left));
+  margin-right:calc(-1 * var(--browse-bleed-right));
+  border-left:0;
+  border-right:0;
+  border-radius:0;
+}
+#catalogDetailsPage .detail-list .detail-row,
+#extensionDetailsPage .detail-list .detail-row{
+  padding-left:var(--browse-bleed-left);
+  padding-right:var(--browse-bleed-right);
+}
 .browse-surface .detail-row span{overflow-wrap:anywhere}
 .browse-surface a.browse-link{color:inherit;text-decoration:none}
 

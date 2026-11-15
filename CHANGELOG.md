@@ -1,3 +1,13 @@
+## Retra v1.0.1 — Smoothness and polish
+
+- Browse game/extension details: the Information list runs edge to edge like Settings detail pages.
+- Web fonts load from `font-loader.js` instead of a render-blocking `<link>`, so the first screen paints immediately.
+- Removed the forced `LAYER_TYPE_HARDWARE` on the interface WebView (extra offscreen composite per frame).
+- Scroll tracking no longer toggles a class on `<html>` (whole-document style recalc at scroll start/stop).
+- `setUiPreference` saves with `apply()` instead of a blocking `commit()`.
+- Update check and Help Center link point to `Layfate/Retra` (the old `lascent/Retra` URL returned 404).
+- `versionName 1.0.1`, `versionCode 452`.
+
 ## v1.0.4 — SmoothTurbo frame/audio hardening
 
 - Promoted the hardened SmoothTurbo pipeline to the v1.0.4 stable release metadata (`versionName 1.0.4`, `versionCode 451`).

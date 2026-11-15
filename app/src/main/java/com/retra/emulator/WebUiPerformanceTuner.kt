@@ -7,9 +7,9 @@ import android.webkit.WebView
 /** Lightweight WebView rendering policy for Retra's always-warm UI shell. */
 object WebUiPerformanceTuner {
     fun apply(webView: WebView) {
-        // Android normally hardware-accelerates WebView, but being explicit
-        // prevents accidental software fallback after future UI changes.
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        // No forced view layer: WebView already draws through the hardware-
+        // accelerated window. A HARDWARE layer renders it into an extra
+        // full-screen offscreen texture that is then composited again.
         webView.overScrollMode = View.OVER_SCROLL_NEVER
         webView.isVerticalScrollBarEnabled = false
         webView.isHorizontalScrollBarEnabled = false

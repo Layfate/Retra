@@ -9,10 +9,10 @@
   let idleTimer = 0;
   let lastScrollAt = 0;
 
+  // State lives in JS only. Toggling a class on <html> here forced a
+  // whole-document style recalc at the start and end of every scroll gesture.
   function setScrolling(active) {
-    if (scrolling === active) return;
     scrolling = active;
-    document.documentElement.classList.toggle('retra-scrolling', active);
   }
 
   function settleScrollState() {

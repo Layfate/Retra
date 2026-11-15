@@ -1147,8 +1147,9 @@ class MainActivity : AppCompatActivity() {
             prefs.getString("ui_${fileOps.sanitizeFileName(key)}", "") ?: ""
 
         @JavascriptInterface
-        fun setUiPreference(key: String, value: String): Boolean =
-            prefs.edit().putString("ui_${fileOps.sanitizeFileName(key)}", value).commit()
+        fun setUiPreference(key: String, value: String): Boolean = true.also { // apply(): commit() blocked the JS thread on disk
+            prefs.edit().putString("ui_${fileOps.sanitizeFileName(key)}", value).apply()
+        }
 
         @JavascriptInterface
         fun getRomSaveStates(romId: String): String = saveStates.listJson(romId)

@@ -8,7 +8,7 @@
 
 An open-source emulator powered by [mGBA](https://mgba.io/), with a game library, customizable controls, and built-in source browsing.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0-E0457B)](https://github.com/Layfate/Retra/releases/latest)
+[![Version](https://img.shields.io/badge/version-v1.0.1-E0457B)](https://github.com/Layfate/Retra/releases/latest)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](#download-and-install)
 [![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
@@ -21,7 +21,7 @@ An open-source emulator powered by [mGBA](https://mgba.io/), with a game library
 
 ## Download and install
 
-1. Download **Retra-v1.0.0.apk** from the [latest release](https://github.com/Layfate/Retra/releases/latest).
+1. Download **Retra-v1.0.1.apk** from the [latest release](https://github.com/Layfate/Retra/releases/latest).
 2. Open it on your Android device and allow installation from that source if prompted.
 3. Launch Retra, tap **+** in Library, and select your games.
 

@@ -10,7 +10,7 @@ const webUiController = fs.readFileSync(path.join(root, 'app/src/main/java/com/r
 
 test('Help Center opens the Retra troubleshooting guide', () => {
   assert.match(indexHtml, /data-action="Open help center"[^>]*>Open help center<\/button>/);
-  assert.match(settingsUi, /const RETRA_HELP_CENTER_URL = 'https:\/\/github\.com\/lascent\/Retra\/blob\/main\/TROUBLESHOOTING\.md';/);
+  assert.match(settingsUi, /const RETRA_HELP_CENTER_URL = 'https:\/\/github\.com\/Layfate\/Retra\/blob\/main\/TROUBLESHOOTING\.md';/);
   assert.match(settingsUi, /btn\.dataset\.action === 'Open help center'/);
   assert.match(settingsUi, /window\.location\.href = RETRA_HELP_CENTER_URL/);
 });
