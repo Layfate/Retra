@@ -4,10 +4,10 @@
   "extensions": [
     {
       "id": "org.retra.romhackplaza",
-      "name": "Romhack Plaza",
-      "publisher": "Retra contributors (index of romhackplaza.org and official releases)",
-      "versionCode": 2,
-      "versionName": "2.0",
+      "name": "PokéHarbor · PokeMundo · Roms Games",
+      "publisher": "Retra contributors (independent website catalogs)",
+      "versionCode": 3,
+      "versionName": "3.0",
       "format": "retra.catalog",
       "apiMin": 1,
       "apiMax": 1,
@@ -17,8 +17,8 @@
         "GBA"
       ],
       "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/extension.json",
-      "sha256": "75de11940f44b3a8fd2558e818a67c794555564984878db44f86ce60f9634af7",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
+      "sha256": "cd096f06b5eeb2de572228a8057950e34c3e825ef9a795f1dae15fd36b771e9b",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokeharbor.png"
     }
   ]
 }

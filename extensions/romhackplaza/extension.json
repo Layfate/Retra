@@ -1,67 +1,91 @@
 {
   "apiVersion": 1,
   "id": "org.retra.romhackplaza",
-  "versionCode": 2,
+  "versionCode": 3,
   "sources": [
     {
-      "id": "gb",
-      "name": "Romhack Plaza GB",
-      "platforms": [
-        "GB"
-      ],
-      "latest": true,
-      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gb.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
-    },
-    {
-      "id": "gbc",
-      "name": "Romhack Plaza GBC",
-      "platforms": [
-        "GBC"
-      ],
-      "latest": true,
-      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gbc.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
-    },
-    {
-      "id": "gba",
-      "name": "Romhack Plaza GBA",
+      "id": "pokeharbor-gba",
+      "name": "PokéHarbor GBA",
       "platforms": [
         "GBA"
       ],
       "latest": true,
-      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/gba.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/icon.png"
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokeharbor-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokeharbor.png",
+      "website": "https://www.pokeharbor.com/",
+      "searchUrl": "https://www.pokeharbor.com/?s={query}"
+    },
+    {
+      "id": "pokeharbor-gbc",
+      "name": "PokéHarbor GBC",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokeharbor-gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokeharbor.png",
+      "website": "https://www.pokeharbor.com/",
+      "searchUrl": "https://www.pokeharbor.com/?s={query}"
+    },
+    {
+      "id": "pokemundo-gba",
+      "name": "PokeMundo GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokemundo-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokemundo.png",
+      "website": "https://pokemundo.com/en/",
+      "searchUrl": "https://pokemundo.com/en/?s={query}"
+    },
+    {
+      "id": "pokemundo-gbc",
+      "name": "PokeMundo GBC",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokemundo-gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/pokemundo.png",
+      "website": "https://pokemundo.com/en/",
+      "searchUrl": "https://pokemundo.com/en/?s={query}"
     },
     {
       "id": "official-gb",
-      "name": "Official GB Games",
+      "name": "Roms Games GB",
       "platforms": [
         "GB"
       ],
       "latest": true,
       "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gb.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gb.png"
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/romsgames.png",
+      "website": "https://www.romsgames.net/roms/gameboy/",
+      "searchUrl": "https://www.romsgames.net/search/?q={query}"
     },
     {
       "id": "official-gbc",
-      "name": "Official GBC Games",
+      "name": "Roms Games GBC",
       "platforms": [
         "GBC"
       ],
       "latest": true,
       "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gbc.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gbc.png"
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/romsgames.png",
+      "website": "https://www.romsgames.net/roms/gameboy-color/",
+      "searchUrl": "https://www.romsgames.net/search/?q={query}"
     },
     {
       "id": "official-gba",
-      "name": "Official GBA Games",
+      "name": "Roms Games GBA",
       "platforms": [
         "GBA"
       ],
       "latest": true,
       "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gba.json",
-      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/official-gba.png"
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/romhackplaza/romsgames.png",
+      "website": "https://www.romsgames.net/roms/gameboy-advance/",
+      "searchUrl": "https://www.romsgames.net/search/?q={query}"
     }
   ]
 }
