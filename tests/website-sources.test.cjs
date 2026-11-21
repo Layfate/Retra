@@ -95,8 +95,8 @@ test('default repository publishes Retra Sources with the requested websites and
     }
     if (url.hostname === 'api.github.com') return Response.json({tree:[{type:'blob', mode:'100644', path:'Named_Boxarts/Harvest Moon (USA).png'}]});
     if (url.pathname.endsWith('.dat')) return new Response('game (\n name "Harvest Moon (USA)"\n rom ( name "Harvest Moon (USA).gb" )\n)\n');
-    if (url.pathname.endsWith('/categories')) return Response.json([{id:1, count:101, slug:url.searchParams.get('slug').split(',')[0]},
-      {id:2, count:1, slug:'gbc'}]);
+    if (url.pathname.endsWith('/categories')) return Response.json(url.searchParams.get('slug').split(',')
+      .map((slug, i) => ({id:i + 1, count:i ? 1 : 101, slug})));
     if (url.pathname.endsWith('/posts')) {
       const page = Number(url.searchParams.get('page'));
       const count = url.searchParams.get('categories') === '1' && page === 1 ? 100 : 1;
@@ -118,19 +118,20 @@ test('default repository publishes Retra Sources with the requested websites and
     const ext = index.extensions[0];
     // Same extension ID, so installed copies update in place and saved source keys keep working.
     assert.equal(ext.id, 'org.retra.romhackplaza');
-    assert.equal(ext.versionCode, 4);
+    assert.equal(ext.versionCode, 5);
     assert.equal(ext.name, 'Retra Sources');
     assert.doesNotMatch([ext.name, ext.publisher, ext.packageUrl, ext.icon].join(' '), /romhack ?plaza/i);
     assert.equal(ext.sha256, createHash('sha256').update(read('sources/extension.json')).digest('hex'));
     const sources = JSON.parse(read('sources/extension.json')).sources;
-    assert.deepEqual(sources.map(source => source.id), ['pokeharbor-gba', 'pokeharbor-gbc', 'operationidroid-gba', 'operationidroid-gbc',
+    assert.deepEqual(sources.map(source => source.id), ['pokeharbor-gba', 'pokeharbor-gbc', 'pokemundo-gba', 'pokemundo-gbc',
+      'pokecoders-gba', 'pokecoders-gbc', 'operationidroid-gba', 'operationidroid-gbc',
       'romhacking', 'hackdex', 'official-gb', 'official-gbc', 'official-gba']);
     assert.ok(sources.every(source => !/romhack ?plaza/i.test(source.name + source.catalogUrl + source.icon)));
     assert.equal(fs.existsSync(path.join(dir, 'homebrewhub')), false);
     assert.equal(fs.existsSync(path.join(dir, 'romhackplaza')), false);
-    assert.ok(!requests.some(url => /pokemundo|romhackplaza|romhacking\.net|hackdex/.test(url)), 'bot-protected sites are never fetched');
+    assert.ok(!requests.some(url => /romhackplaza|romhacking\.net|hackdex/.test(url)), 'bot-protected sites are never fetched');
     const hosts = new Set(sources.map(source => new URL(source.website).hostname));
-    for (const host of ['www.romsgames.net', 'www.pokeharbor.com', 'www.romhacking.net', 'www.hackdex.app', 'operationidroid.com']) assert.ok(hosts.has(host), host);
+    for (const host of ['www.romsgames.net', 'www.pokeharbor.com', 'pokemundo.com', 'www.pokemoncoders.com', 'www.romhacking.net', 'www.hackdex.app', 'operationidroid.com']) assert.ok(hosts.has(host), host);
     for (const source of sources) {
       if (source.searchUrl) assert.ok(source.searchUrl.includes('{query}'));
       assert.ok(source.website.startsWith('https://'));

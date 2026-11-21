@@ -1,11 +1,13 @@
 # Retra website sources
 
-The default index contains one extension, **Retra Sources** (4.0). It replaces the former Romhack Plaza package and keeps its extension ID (`org.retra.romhackplaza`), so installed copies update in place and saved Library links keep working. The Homebrew Hub and sample extensions are omitted from the default index.
+The default index contains one extension, **Retra Sources** (5.0). It replaces the former Romhack Plaza package and keeps its extension ID (`org.retra.romhackplaza`), so installed copies update in place and saved Library links keep working. The Homebrew Hub and sample extensions are omitted from the default index.
 
 | Source | Platforms | How it is built |
 |---|---|---|
 | Roms Games | GB, GBC, GBA | Official releases from the No-Intro lists, with available libretro box art. A game's website button opens a title search on Roms Games; listing a release does not guarantee that website has it. |
 | PokéHarbor | GBC, GBA | Hack catalogs from its public WordPress API, including featured artwork. |
+| PokeMundo | GBC, GBA | Hack catalogs from its public WordPress API, including featured artwork. |
+| PokéCoders | GBC, GBA | Hack catalogs (its GBA and GBC ROM Hacks categories) from its public WordPress API, including featured artwork. |
 | Operation iDroid | GBC, GBA | Hack pages from its sitemap, read from each page's schema.org JSON-LD (title, platform, author, version, cover). NDS hacks are skipped. |
 | Romhacking.net | GB, GBC, GBA | Website source with an empty catalog. The site is behind a Cloudflare bot check, so the builder does not fetch it. |
 | Hackdex | GB, GBC, GBA | Website source with an empty catalog. The site is behind a Vercel bot check, so the builder does not fetch it. |

@@ -8,9 +8,9 @@ https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 
 ## Extensions
 
-- **Retra Sources**: Roms Games, PokéHarbor, Romhacking.net, Hackdex and Operation iDroid: searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.
+- **Retra Sources**: Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid, Romhacking.net and Hackdex: searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.
 
-Retra Sources 4.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.
+Retra Sources 5.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.
 
 ## Sources
 
@@ -18,6 +18,8 @@ Retra Sources 4.0 replaces the former Romhack Plaza extension and updates it in 
 |---|---|---|
 | Roms Games | GB, GBC, GBA | Official releases (No-Intro) with box art; each game opens a Roms Games title search |
 | PokéHarbor | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
+| PokeMundo | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
+| PokéCoders | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
 | Operation iDroid | GBC, GBA | Hack catalog from its sitemap and page data, with artwork; NDS hacks are skipped |
 | Romhacking.net | GB, GBC, GBA | Website source: search and download in the in-app browser |
 | Hackdex | GB, GBC, GBA | Website source: browse and download in the in-app browser |

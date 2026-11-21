@@ -6,8 +6,8 @@
       "id": "org.retra.romhackplaza",
       "name": "Retra Sources",
       "publisher": "Retra contributors (independent website catalogs)",
-      "versionCode": 4,
-      "versionName": "4.0",
+      "versionCode": 5,
+      "versionName": "5.0",
       "format": "retra.catalog",
       "apiMin": 1,
       "apiMax": 1,
@@ -17,7 +17,7 @@
         "GBA"
       ],
       "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/extension.json",
-      "sha256": "db34c6c4d4e1139fa18874e4a4735bdcb699d14f445142d27c4b7a581600063b",
+      "sha256": "0b661d19ddf29529a6003b1ca3cf4132f06fb66f5df372479c11e133d5fc7da1",
       "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokeharbor.png"
     }
   ]

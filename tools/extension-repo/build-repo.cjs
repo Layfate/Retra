@@ -2,8 +2,8 @@
 //
 //   node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir>
 //
-// The default extension, Retra Sources, bundles Roms Games, PokéHarbor, Operation iDroid, Romhacking.net
-// and Hackdex sources.
+// The default extension, Retra Sources, bundles Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid,
+// Romhacking.net and Hackdex sources.
 // Optional --homebrew extensions:
 //   * Retra Homebrew Sample  - the CC0 Retra Pad cartridge (samples/catalog-extension).
 //   * Homebrew Hub           - every GB, GBC and GBA entry of the gbdev Homebrew Hub
@@ -172,7 +172,15 @@ const SITES = [
   {id:'pokeharbor', name:'PokéHarbor', website:'https://www.pokeharbor.com/',
     api:'https://www.pokeharbor.com/wp-json/wp/v2/', searchUrl:'https://www.pokeharbor.com/?s={query}',
     icon:'https://www.pokeharbor.com/wp-content/uploads/2021/04/cropped-pokeharbor-favicon-192x192.png',
-    categories:{GBA:'gba', GBC:'gbc'}}
+    categories:{GBA:'gba', GBC:'gbc'}},
+  {id:'pokemundo', name:'PokeMundo', website:'https://pokemundo.com/en/',
+    api:'https://pokemundo.com/en/wp-json/wp/v2/', searchUrl:'https://pokemundo.com/en/?s={query}',
+    icon:'https://pokemundo.com/wp-content/uploads/2020/08/cropped-pikachu_icon-icons.com_67535-192x192.png',
+    categories:{GBA:'hack-roms-pokemon-gba', GBC:'gbc'}, perPage:20},
+  {id:'pokecoders', name:'PokéCoders', website:'https://www.pokemoncoders.com/',
+    api:'https://www.pokemoncoders.com/wp-json/wp/v2/', searchUrl:'https://www.pokemoncoders.com/?s={query}',
+    icon:'https://static.pokemoncoders.com/wp-content/uploads/2018/05/cropped-icon-amp-google.png',
+    categories:{GBA:'gba-rom-hacks', GBC:'gbc-rom-hacks'}}
 ];
 const ROMSGAMES = {name:'Roms Games', website:'https://www.romsgames.net/',
   searchUrl:'https://www.romsgames.net/search/?q={query}', icon:'https://www.romsgames.net/image/apple-touch-icon.png'};
@@ -188,7 +196,7 @@ const WEB_ONLY = [
     searchUrl:'https://www.romhacking.net/?page=hacks&title={query}&hacksearch=Go', colors:[[214,40,40],[255,255,255]]},
   {id:'hackdex', name:'Hackdex', website:'https://www.hackdex.app/', colors:[[40,92,214],[255,214,0]]}
 ];
-const EXTENSION = {id:'org.retra.romhackplaza', name:'Retra Sources', versionCode:4, versionName:'4.0'};
+const EXTENSION = {id:'org.retra.romhackplaza', name:'Retra Sources', versionCode:5, versionName:'5.0'};
 const GAME_PLATFORM = {'game boy advance':'GBA', 'game boy color':'GBC', 'game boy':'GB'};
 function plainText(value){
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|eacute);/gi, (all, entity) => {
@@ -219,8 +227,9 @@ async function websiteCatalogs(site){
     assert(category && category.count > 0, site.name + ' category missing: ' + slug);
     const posts = [];
     // Category counts bound pagination; fail a rebuild if the API stops returning its games.
-    for (let page = 1; page <= Math.ceil(category.count / 100); page++) {
-      const query = new URLSearchParams({categories:category.id, per_page:100, page, orderby:'id', order:'asc',
+    const perPage = site.perPage || 100; // Slow servers time out on 100 posts with embedded artwork.
+    for (let page = 1; page <= Math.ceil(category.count / perPage); page++) {
+      const query = new URLSearchParams({categories:category.id, per_page:perPage, page, orderby:'id', order:'asc',
         _embed:'wp:featuredmedia', _fields:'id,link,title,excerpt,modified_gmt,_links,_embedded'});
       const batch = await fetchRetry(site.api + 'posts?' + query);
       assert(Array.isArray(batch) && batch.length, site.name + ' returned an empty page');
@@ -432,11 +441,13 @@ function readme(base, extensions){
   return `# Retra extension repository\n\nCatalog extensions for Retra (extension API 1). Add this URL in Retra under ` +
     `**Browse → Extensions → ⋮ → Extension repos → Add**:\n\n\`\`\`\n${url}\n\`\`\`\n\n## Extensions\n\n` +
     extensions.map(ext => `- **${ext.name}**: ${ext.summary}`).join('\n') +
-    '\n\nRetra Sources 4.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.\n\n' +
+    '\n\nRetra Sources 5.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.\n\n' +
     '## Sources\n\n' +
     '| Source | Platforms | In Retra |\n|---|---|---|\n' +
     '| Roms Games | GB, GBC, GBA | Official releases (No-Intro) with box art; each game opens a Roms Games title search |\n' +
     '| PokéHarbor | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
+    '| PokeMundo | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
+    '| PokéCoders | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
     '| Operation iDroid | GBC, GBA | Hack catalog from its sitemap and page data, with artwork; NDS hacks are skipped |\n' +
     '| Romhacking.net | GB, GBC, GBA | Website source: search and download in the in-app browser |\n' +
     '| Hackdex | GB, GBC, GBA | Website source: browse and download in the in-app browser |\n\n' +
@@ -515,7 +526,7 @@ async function build(base, out, {homebrew = false} = {}){
     publisher:'Retra contributors (independent website catalogs)', versionCode:EXTENSION.versionCode, versionName:EXTENSION.versionName,
     format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
     packageUrl:base + folder + '/extension.json', sha256, icon:base + folder + '/pokeharbor.png'});
-  summaries.push({name:EXTENSION.name, summary:'Roms Games, PokéHarbor, Romhacking.net, Hackdex and Operation iDroid: ' +
+  summaries.push({name:EXTENSION.name, summary:'Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid, Romhacking.net and Hackdex: ' +
     'searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.'});
 
   if (homebrew) await buildHomebrew(base, out, cache, extensions, summaries);
