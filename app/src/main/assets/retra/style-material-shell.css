@@ -51,8 +51,21 @@ html[data-retra-runtime="android"] .main-header{
   padding-left:max(16px, var(--device-safe-left));
   padding-right:max(4px, var(--device-safe-right));
 }
-body[data-translucent="true"] .main-header{
-  background:var(--m3-surface);
+/* Translucent: the page shows the shell's layered background (a white wash over the shell
+   gradient), so a flat --m3-surface bar reads as a darker band. Top bars and pinned rows paint
+   the same layers, sized to the full-screen shell and offset to where they sit, so they match
+   the page exactly in light and dark mode. */
+body[data-translucent="true"] :is(.main-header, #catalogTop, .browse-tabs, #libraryPage .library-chips){
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)),
+    linear-gradient(180deg, var(--shell-start) 0%, var(--shell-end) 100%);
+  background-size:100% 100dvh;
+  background-repeat:no-repeat;
+  background-position:0 0;
+}
+/* These rows sit directly under the main top bar. */
+body[data-translucent="true"] :is(.browse-tabs, #libraryPage .library-chips){
+  background-position:0 calc(-1 * var(--header-total-height));
 }
 .main-header h1{
   font-size:22px;

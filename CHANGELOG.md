@@ -2,6 +2,7 @@
 
 - Browse: new Downloads tab lists ROMs and patches downloaded in Retra (play, open details, remove, clear all); history is kept in the Browse store (`downloadlog`, newest 200).
 - Scrolling: drop blur(0px) backdrop filters on cards, rows and buttons when Translucent is off (and on repeated list items always on Android); reserve cover-art GPU layers only in multi-select; content-visibility on catalog cards. Median frame on a 120 Hz phone: 65 ms -> 10 ms while swiping a source grid.
+- Translucent mode: the main top bar, source page header and Browse/Library tab rows paint the shell's layered background (sized to the shell, offset to their position) instead of flat --m3-surface, so they match the page.
 - Browse/Library: sticky tab rows pin at the very top (top:-10px), so content no longer shows through main's top padding.
 - Browse: the source page header, search field and Popular / Latest / Filter chips stay pinned while scrolling (`#catalogTop`, sticky with main's top padding measured at runtime).
 - Browse: the Search tab is replaced by Downloads; game search across all sources now runs from the Sources search field.
