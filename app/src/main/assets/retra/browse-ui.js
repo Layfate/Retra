@@ -568,6 +568,19 @@
     $('catalogView').innerHTML = msIcon(list ? icons.grid : icons.list);
     storage.set('retraBrowseList', String(list));
   }
+  // Pinned source header: it pulls up over main's top padding (which varies with orientation and
+  // insets) so it also covers the status bar, and shows a divider once games scroll under it.
+  function catalogScroller(){ return root.appMain || document.getElementById('appMain'); }
+  function syncCatalogTop(){
+    const scroller = catalogScroller(); const top = $('catalogTop');
+    if (!scroller || !top) return;
+    top.style.setProperty('--catalog-pad-top', getComputedStyle(scroller).paddingTop);
+    top.classList.toggle('scrolled', activePageId() === 'catalogPage' && scroller.scrollTop > 4);
+  }
+  catalogScroller()?.addEventListener('scroll', () => {
+    if (activePageId() === 'catalogPage') $('catalogTop').classList.toggle('scrolled', catalogScroller().scrollTop > 4);
+  }, {passive:true});
+  root.addEventListener?.('resize', () => { if (activePageId() === 'catalogPage') syncCatalogTop(); });
   let suppressFilterReset = false;
   function openSource(row, mode = 'popular', query = ''){
     source = row; rememberSource(row.key);
@@ -578,6 +591,7 @@
     suppressFilterReset = true; $('catalogFilters').reset(); suppressFilterReset = false;
     syncCatalogColumns();
     openSubPage('catalogPage');
+    syncCatalogTop();
     renderSources();
     return loadCatalog(true, false, mode);
   }

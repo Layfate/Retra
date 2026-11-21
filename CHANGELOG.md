@@ -1,6 +1,7 @@
 ## Retra v1.0.2 — Downloads tab and more sources
 
 - Browse: new Downloads tab lists ROMs and patches downloaded in Retra (play, open details, remove, clear all); history is kept in the Browse store (`downloadlog`, newest 200).
+- Browse: the source page header, search field and Popular / Latest / Filter chips stay pinned while scrolling (`#catalogTop`, sticky with main's top padding measured at runtime).
 - Browse: the Search tab is replaced by Downloads; game search across all sources now runs from the Sources search field.
 - Game details: "Download on website" is now "Download"; the File row explains that the page opens inside Retra.
 - Website sources: an empty catalog shows Open <site>, and a search without matches offers Search <site> for the query.

@@ -418,3 +418,25 @@ html[data-retra-runtime="android"] #extensionDetailsPage{
 .browse-downloads-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .browse-downloads-head .browse-section-title{margin-right:auto}
 #browseGlobal{margin-top:8px}
+
+/* Source page: the top app bar, search field and Popular / Latest / Filter chips stay pinned
+   while the game grid scrolls (Mihon). --catalog-pad-top mirrors main's top padding (set from
+   JS, since it changes with orientation and insets), so the block also covers the status bar. */
+#catalogTop{
+  position:sticky;
+  /* Sticky offsets are measured inside main's padding, so pull up by the same amount to pin at the very top. */
+  top:calc(-1 * var(--catalog-pad-top, 18px));
+  z-index:7;
+  margin:calc(-1 * var(--catalog-pad-top, 18px)) calc(-1 * var(--content-gutter)) 8px;
+  padding:var(--catalog-pad-top, 18px) var(--content-gutter) 0;
+  background:var(--m3-surface);
+  transition:box-shadow .15s ease;
+}
+html[data-retra-runtime="android"] #catalogTop{
+  margin-left:calc(-1 * max(var(--content-gutter), var(--device-safe-left)));
+  margin-right:calc(-1 * max(var(--content-gutter), var(--device-safe-right)));
+  padding-left:max(var(--content-gutter), var(--device-safe-left));
+  padding-right:max(var(--content-gutter), var(--device-safe-right));
+}
+#catalogTop .browse-chips{margin-bottom:0}
+#catalogTop.scrolled{box-shadow:0 1px 0 var(--line)}
