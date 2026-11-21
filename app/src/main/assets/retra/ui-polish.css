@@ -86,6 +86,12 @@ body.library-selection-mode .cover-card .library-selection-check {
               box-shadow 110ms var(--interaction-easing),
               transform 110ms var(--interaction-easing),
               filter 110ms var(--interaction-easing);
+}
+/* Reserve GPU layers for cover art only while multi-select can animate it. A permanent
+   will-change gave every cover in a 1,000-game grid its own layer, which dropped
+   scrolling to ~16 fps on a 120 Hz phone (measured with dumpsys gfxinfo). */
+body.library-selection-mode .cover-card > img,
+body.library-selection-mode .cover-card .cover-art-placeholder {
   will-change: border-color, transform;
 }
 body.library-selection-mode .cover-card.library-selected,

@@ -136,7 +136,8 @@ svg.ms,
    Deliberately no full-width divider under the header or tabs. */
 #libraryPage .library-chips{
   position:sticky;
-  top:0;
+  /* Sticky offsets start inside main's 10px top padding; pin at the very top so covers can't show through. */
+  top:-10px;
   z-index:6;
   gap:0;
   margin:-10px calc(-1 * var(--content-gutter)) 10px;

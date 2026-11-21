@@ -88,3 +88,36 @@ main,
   content-visibility: auto;
   contain-intrinsic-size: auto 250px;
 }
+
+/* v1.0.2 scroll pass (measured on a 120 Hz phone with dumpsys gfxinfo while swiping a
+   1,000-game source grid: median frame 65 ms -> 10 ms, janky frames 100% -> <1%).
+
+   The appearance layer applies backdrop-filter: blur(var(--glass-blur)) to every card, row
+   and button. With Translucent off, --glass-blur is 0px, but blur(0px) is still a backdrop
+   filter: Chromium gives each element its own render surface and re-reads the backdrop on
+   every scroll frame. Drop it whenever the glass effect is off. */
+body:not([data-translucent="true"]) :is(.icon-btn, .back-btn, .small-icon-btn, .chip, .cover-card,
+  .history-item, .more-item, .settings-item, .detail-row, .detail-range-row, .stats-panel,
+  .entry-item, .genre-chip, .layout-card, .search-panel, .sheet-drawer, .category-row,
+  .about-panel, .modal-btn, .category-modal-card, .confirm-card, .rom-action, .resume-fab,
+  .big-fab, .detail-fab, .library-overflow-menu, .rom-overflow-menu) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* With Translucent on, keep the glass on floating surfaces (menus, sheets, buttons, FABs)
+   but not on repeated list and grid items, where it only blurs the flat page background
+   and multiplies the per-frame cost by the number of items. */
+html[data-retra-runtime="android"] :is(.chip, .cover-card, .history-item, .detail-row,
+  .detail-range-row, .stats-panel, .entry-item, .genre-chip, .layout-card, .category-row,
+  .rom-action) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Source catalogs hold up to 10,000 games: skip painting off-screen cards, as Library does. */
+.browse-catalog-grid .cover-card,
+.browse-strip .cover-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 250px;
+}

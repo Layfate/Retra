@@ -12,7 +12,8 @@
 /* ---------- Tabs: text tabs with an accent indicator under the label ---------- */
 .browse-tabs{
   position:sticky;
-  top:0;
+  /* Sticky offsets start inside main's 10px top padding; pin at the very top so rows can't show through. */
+  top:-10px;
   z-index:6;
   display:flex;
   margin:-10px calc(-1 * var(--content-gutter)) 4px;
