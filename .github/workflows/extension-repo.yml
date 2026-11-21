@@ -3,7 +3,7 @@ name: Retra extension repository
 # Rebuilds the extension repository published in `extensions/` on `main`
 # (https://raw.githubusercontent.com/<owner>/<repo>/main/extensions/index.json) so the
 # website catalogs pick up new games and artwork. The default index publishes
-# one extension containing PokéHarbor, PokeMundo and Roms Games sources.
+# one extension, Retra Sources: Roms Games, PokéHarbor, Operation iDroid, Romhacking.net and Hackdex.
 
 on:
   schedule:

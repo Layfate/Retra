@@ -70,8 +70,16 @@
   function gameDownloadAction(game){
     return isAuthorizedDownload(game.download) ? 'direct' : /^https:\/\//i.test(game.website || '') ? 'website' : '';
   }
+  /** An empty catalog page of a source with a website offers that website instead (website-only sources, or no match). */
+  function emptyCatalogAction(row, query, filtered, shown){
+    if (shown || !/^https:\/\//i.test(row?.website || '')) return null;
+    if (query && row.searchUrl) return {text:`No catalog games match "${query}".`, button:`Search ${row.name} for "${query}"`};
+    if (filtered) return null;
+    return {text:`${row.name} is browsed on its website. Search it inside Retra; supported ROM, ZIP and patch downloads go to Library.`,
+      button:`Open ${row.name}`};
+  }
 
-  const helpers = {filterSources, extensionStatus, sourceSections, extensionRows, extensionSections, pendingUpdates, isAuthorizedDownload, gameDownloadAction};
+  const helpers = {filterSources, extensionStatus, sourceSections, extensionRows, extensionSections, pendingUpdates, isAuthorizedDownload, gameDownloadAction, emptyCatalogAction};
   if (typeof module === 'object' && module.exports) { module.exports = helpers; return; }
 
   // ---------- Bridge ----------
@@ -580,6 +588,7 @@
     }
     catalog.loading = true; catalog.failed = false;
     $('catalogMore').hidden = true;
+    $('catalogWebsiteOpen').hidden = true;
     $('catalogPopular').setAttribute('aria-pressed', String(catalog.mode === 'popular'));
     $('catalogLatest').setAttribute('aria-pressed', String(catalog.mode === 'latest'));
     $('catalogFilter').setAttribute('aria-pressed', String(Object.keys(catalog.filters).length > 0));
@@ -594,8 +603,11 @@
       result.games.forEach(game => fragment.append(gameCard(game)));
       grid.append(fragment);
       const filtered = catalog.query || Object.keys(catalog.filters).length;
-      $('catalogStatus').textContent = !grid.children.length ? (filtered ? 'No games match your search or filters.' : 'This source has no games yet.') :
+      const empty = emptyCatalogAction(source, catalog.query, filtered, grid.children.length);
+      $('catalogStatus').textContent = empty ? empty.text : !grid.children.length ? (filtered ? 'No games match your search or filters.' : 'This source has no games yet.') :
         (result.offline ? 'Offline. Showing the cached catalog.' : '');
+      $('catalogWebsiteOpen').textContent = empty ? empty.button : '';
+      $('catalogWebsiteOpen').hidden = !empty;
     } catch (error) {
       if (generation !== catalog.generation) return;
       catalog.failed = true;
@@ -863,6 +875,7 @@
     $('catalogOverflowMenu').classList.remove('open');
     run(() => request('openSourceWebsite', {source:source.key, query:$('catalogQuery').value.trim()}));
   });
+  $('catalogWebsiteOpen').addEventListener('click', () => run(() => request('openSourceWebsite', {source:source.key, query:catalog.query})));
   $('catalogSourceInfo').addEventListener('click', () => {
     $('catalogOverflowMenu').classList.remove('open');
     if (source) openConfirmModal(source.name, `Source ID: ${source.key}\nPlatforms: ${source.platforms.join(', ')}\nCatalog: ${source.catalogUrl}`, () => {});

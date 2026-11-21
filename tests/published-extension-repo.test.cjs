@@ -33,7 +33,8 @@ test('published extension packages match their checksums and all sources resolve
       assert.equal(publishedFile(source.icon).readUInt32BE(0), 0x89504e47);
       const catalog = JSON.parse(publishedFile(source.catalogUrl));
       assert.equal(catalog.apiVersion, 1);
-      assert.ok(catalog.games.length > 0, `${source.id} must retain its games`);
+      // Website sources (sites behind a bot check) have no catalog; Retra opens the website instead.
+      if (!source.website || catalog.games.length) assert.ok(catalog.games.length > 0, `${source.id} must retain its games`);
       assert.ok(catalog.games.every(game => source.platforms.includes(game.platform)));
     }
   }

@@ -1,0 +1,173 @@
+{
+  "apiVersion": 1,
+  "games": [
+    {
+      "id": "pokemon-black-white-3-genesis",
+      "title": "Pokémon Black & White 3 Genesis",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Azure_Keys",
+      "updatedAt": 1678406400000,
+      "description": "Base game: Pokémon Crystal. Version 1.2.. Pokemon Black and White 3: Genesis is a stunning technical achievement — a complete demake of Unova rebuilt inside the Game Boy Color's Pokemon Crystal engine. Set after the events of Black 2 and White 2, you play as a trainer from Humilau City on a journey through a Unova that feels unmistakably Gen 5 despite running on GBC hardware. The hack includes 252 Pokémon drawn from the first five generations, 255 moves, a physical/special split, Fairy type with updated type chart, reusable TMs, and demade versions of the iconic Unova music. Every major character from Black, White, Black 2, and White 2 makes an appearance, and Team Plasma returns as the central threat. Version 1.2 is the complete, polished final release. For players who love Gen 5 aesthetics but prefer the faster pace of GBC games, or for anyone who wants to experience Unova in a completely new way, BW3 Genesis is an essential download in 2025.",
+      "cover": "https://operationidroid.com/images/pokemon_blackandwhite3genesis_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-black-white-3-genesis"
+    },
+    {
+      "id": "pokemon-brown",
+      "title": "Pokemon Brown",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Koolboyman",
+      "updatedAt": 1732982400000,
+      "description": "Base game: Pokémon Gold. Version 6.1.2. Pokemon Brown is one of the oldest and most historically significant ROM hacks in existence, originally created in 2004 by Koolboyman. Set in the Rijon Region — located south of Johto — it was one of the first hacks to feature a completely custom region with original maps, a new Pokédex layout, and five new Elemental Types not found in the official games. The 2009 remake expanded the Pokédex from 151 to 224 Pokémon, and the 2014 remake added Sylveon to bring the count to 225. Each revision refined the game while preserving the spirit of the original. Version 5.4 is the current polished release. Pokemon Brown is the spiritual precursor to Pokemon Prism — Koolboyman's later masterpiece is set in the same Rijon universe. Playing Brown first gives you context for Prism and lets you explore the region that started it all. For anyone interested in the history of GBA/GBC ROM hacking, Brown is a foundational text.",
+      "cover": "https://operationidroid.com/images/pokemon_brown_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-brown"
+    },
+    {
+      "id": "pokemon-christmas",
+      "title": "Pokemon Christmas 2012",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Mateo",
+      "updatedAt": 1420070400000,
+      "description": "Base game: Pokémon Gold. Version Complete. Pokemon Christmas 2012 is Mateo's beloved seasonal Johto hack — positioned as an \"alternate Crystal\" set in winter, after the events of Gold, Silver, and Crystal. The Radio Tower takeover, the Magikarp forced evolution, and all the summer drama have already happened. Now it's winter in Johto, and a holiday-themed adventure begins. The game is part of what Mateo calls the \"Johto Legacy\" — a fan continuity that treats these hacks as alternate third versions alongside Crystal. Snowy aesthetics, holiday events, and winter-themed towns replace the familiar summer palette. The structure is still classic Johto — 8 badges, Elite Four — but the mood is distinctly festive and cozy. For fans of Gen 2 who want a seasonal, atmospheric experience, Christmas 2012 is a charming and unique adventure. It's a complete hack and remains one of the most beloved themed GBC ROM hacks ever made.",
+      "cover": "https://operationidroid.com/images/pokemon_christmas_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-christmas"
+    },
+    {
+      "id": "pokemon-coral",
+      "title": "Pokemon Coral Version",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "coraldev",
+      "updatedAt": 1514764800000,
+      "description": "Base game: Pokémon Crystal. Version Demo 2.2. Pokemon Coral Version is a Crystal hack that recaptures the feel of playing Gold, Silver, and Crystal for the very first time. Set in the original Onwa Region, the game strips away modern complexity and focuses on what made Gen 2 special: interesting characters, a sense of exploration, and a world that feels genuinely alive. The story is deliberately simple — collect 8 Onwa League badges, explore diverse towns, and uncover the activities of a group of ruffians abusing Pokémon for profit. It's a classic structure executed with care, and the Onwa Region's custom maps and locations give it enough freshness to justify the familiar formula. Currently at Demo 2.2, Pokemon Coral Version is in active development. The available content is polished and substantial, making it worth playing even before the final release. For fans of the Gen 2 aesthetic who want a new adventure in that style, Coral is an excellent choice.",
+      "cover": "https://operationidroid.com/images/pokemon_coral_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-coral"
+    },
+    {
+      "id": "pokemon-crystal-clear",
+      "title": "Pokemon Crystal Clear",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "ShockSlayer",
+      "updatedAt": 1732982400000,
+      "description": "Base game: Pokémon Crystal. Version 2.5.10. Pokemon Crystal Clear is the definitive open-world take on Generation 2. Developed by ShockSlayer, it transforms Crystal's linear structure into a completely nonlinear adventure — you pick your starter, choose your starting region (Kanto or Johto), customize your character, and then do whatever you want in whatever order you choose. All 16 badges are collectable, all 251 Pokémon are catchable, gyms can be re-challenged, the Elite Four has been revamped, and new locations have been added to fill out the world. Crucially, Crystal Clear introduces no new moves, stat changes, or new species — it is pure Gen 2 as you've always known it, just liberated from its original structure. Crystal Clear is widely considered one of the best ROM hacks ever made for any platform. The freedom it grants transforms a beloved game into something endlessly replayable. If you've beaten Crystal before and want a reason to play it again, Crystal Clear is the answer.",
+      "cover": "https://operationidroid.com/images/pokemon_crystalclear_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-crystal-clear"
+    },
+    {
+      "id": "pokemon-crystal-inheritance",
+      "title": "Pokemon Crystal Inheritance",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "DWG",
+      "updatedAt": 1781222400000,
+      "description": "Base game: Pokémon Crystal. Version 1.0.5. Pokemon Crystal Inheritance reimagines Pokemon Crystal as a time-travel story set generations before the events of the original game. Instead of working your way through eight gyms in the familiar order, you find yourself in an older version of Johto and must help unite its six regional leaders against a force that threatens the region's future. The framing gives every gym battle a different feel, since these leaders and their teams were built specifically for this earlier era of the story. The hack's choices ripple all the way to the credits — Crystal Inheritance features two distinct endings depending on the decisions you make over the course of the adventure, giving completionists a reason to play through more than once. On the Pokemon side, the dex has been expanded to 254 species (285 including alternate forms), pulling in Hisuian regional variants alongside a set of new \"Ancient Forms\" created for this hack. A new Apricorn Crafting system lets you turn Apricorns into specialized ",
+      "cover": "https://operationidroid.com/images/pokemon_crystal_inheritance_coverart.webp",
+      "website": "https://operationidroid.com/hacks/pokemon-crystal-inheritance"
+    },
+    {
+      "id": "pokemon-dark-energy",
+      "title": "Pokemon Dark Energy",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "miksy91",
+      "updatedAt": 1546300800000,
+      "description": "Base game: Pokémon Silver. Version 5.0.1. Pokemon Dark Energy is a Silver hack set in the ancient world of Suden, circa year 1571 — a thousand years after a great war called The Crisis. An era of long peace is shattered when a shadowy figure named Maxime begins collecting mysterious Elemental Orbs that nobody else seems to know exist. When archaeologists uncover writings about the same orbs, your character and a classmate are pulled into an epic, hazardous adventure. Dark Energy stands out for its completely original setting and tone. Suden feels nothing like Johto — it's a medieval-esque world with its own history, politics, and mythology. The Elemental Orbs serve as the game's central MacGuffin, and the story builds steadily toward a genuinely epic conclusion. Version 5.0.1 is the final, polished release after years of development. Pokemon Dark Energy is one of the most ambitious GBC hacks ever created and a must-play for fans who want a completely fresh Pokémon experience on the Game Boy Color platform.",
+      "cover": "https://operationidroid.com/images/pokemon_darkenergy_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-dark-energy"
+    },
+    {
+      "id": "pokemon-fools-gold",
+      "title": "Pokemon Fool's Gold",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "celadonk",
+      "updatedAt": 1757635200000,
+      "description": "Base game: Pokémon Crystal. Version 1.3.2. Pokemon Fool's Gold is one of the most creative concept hacks in the GBC library. Every single Pokémon has been reworked with new types, redesigned sprites, updated movesets, and revised locations — think Alolan and Galarian regional forms, but applied to all 251 original Pokémon at once. The Johto you know is still there, but nothing plays the way you expect. The rethinking is comprehensive: if Pidgey is now a Water type, its location, moves, and stats all reflect that change. The result is a Crystal playthrough that feels simultaneously nostalgic and completely fresh. All 251 Pokémon are available without trading, trainer rosters are updated to match the new type assignments, and there are new areas to explore as well. Version 1.2.1 is the final polished release. For players who've run through Crystal dozens of times and want something genuinely different, Fool's Gold delivers a surprising and delightful experience without completely abandoning what made Gen 2 great.",
+      "cover": "https://operationidroid.com/images/pokemon_foolsgold_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-fools-gold"
+    },
+    {
+      "id": "pokemon-grape",
+      "title": "Pokemon Grape",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "80C",
+      "updatedAt": 1577836800000,
+      "description": "Base game: Pokémon Red. Version Complete. Pokemon Grape is a Red hack set in 1999 in the Frejo Region — a land on the verge of war with the neighboring Kelgo Region. You play as a retired baseball player forced into a high-stakes competition for ownership of the Pokémon League, the outcome of which could prevent (or trigger) all-out conflict between the two regions. Adding to the chaos: Team Rocket survivors who fled Kanto after the failed Silph Coup have migrated to Frejo and joined a secret cult planning to exploit the competition for their own agenda. The result is a plot-dense adventure with dozens of secrets, a mature tone, and a world that feels meaningfully different from standard Pokémon settings. Created by 80C, Pokemon Grape is fully complete and widely respected as one of the most ambitious original-Game Boy ROM hacks ever made. The challenge level is high — befitting a hack aimed at experienced players — and the secrets are numerous enough to reward multiple playthroughs.",
+      "cover": "https://operationidroid.com/images/pokemon_grape_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-grape"
+    },
+    {
+      "id": "pokemon-polished-crystal",
+      "title": "Pokemon Polished Crystal",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Rangi",
+      "updatedAt": 1764518400000,
+      "description": "Base game: Pokémon Crystal. Version 3.2.3. Pokemon Polished Crystal is exactly what it sounds like: Crystal Version buffed to a shine. Created by Rangi, it keeps the beloved Johto storyline intact — New Bark Town, 8 Johto badges, the Kanto post-game, the Elite Four, Red — but layers in new Pokémon, new moves, new mechanics, new maps, new events, new trainers, new items, and a post-game that goes beyond Red himself. Polished Crystal is deeply respectful of what made Gen 2 special while addressing its shortcomings. The quality-of-life improvements are numerous — better bag sorting, improved move displays, updated type charts — and the difficulty is modestly increased to give the game more bite without becoming frustrating. Version 3.2.3 is a complete, thoroughly tested release that has become the definitive way to play Crystal for many fans. If you love Johto and want the best possible version of that adventure, Polished Crystal is the answer.",
+      "cover": "https://operationidroid.com/images/pokemon_polishedcrystal_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-polished-crystal"
+    },
+    {
+      "id": "pokemon-prism",
+      "title": "Pokemon Prism",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Koolboyman",
+      "updatedAt": 1690819200000,
+      "description": "Base game: Pokémon Gold. Version 0.95. Pokemon Prism is a legendary GBC hack — one of the most ambitious and beloved fan-made Pokémon games ever created. You play as the child of Lance, who ends up in the developing Naljo region after a runaway mine cart accident. Naljo is bent on rapid industrialization, and arriving with a lost Larvitar, you set out to collect 8 badges while uncovering what's corrupting the region. Developed over more than a decade by Koolboyman, Prism pushed the GBC engine further than anyone thought possible. It features custom minigames, a crafting system, unique \"field moves\" tied to your Pokémon's typing, multiple regions to explore (Naljo and Rijon), and over 250 Pokémon with moves from later generations. The scope is staggering for a Game Boy Color hack. Version 0.94 is the most complete public release. Pokemon Prism is essential for any serious ROM hack player — it represents years of loving craftsmanship and remains one of the defining achievements of the fan game community.",
+      "cover": "https://operationidroid.com/images/pokemon_prism_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-prism"
+    },
+    {
+      "id": "pokemon-spaceworld",
+      "title": "Pokemon Spaceworld",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "TSK",
+      "updatedAt": 1640995200000,
+      "description": "Base game: Pokémon Crystal. Version Beta 4.1. Pokemon Spaceworld Crystal is a hack built around one of the most exciting leaks in Pokémon history — the 1997 Space World Demo, which revealed dozens of cut Pokémon and pre-release designs that were never officially released. This hack integrates those lost Pokémon into a full Crystal playthrough. In 1997, Nintendo showed a Gold and Silver demo at Space World that featured 40+ Pokémon that were eventually cut or heavily redesigned before the final release. The leak of that demo in 2018 sent the community into a frenzy, and TSK quickly turned it into a playable Crystal hack. For Pokémon historians and fans fascinated by beta content, Spaceworld Crystal is a dream come true — a chance to actually use those legendary cut Pokémon in a real game. Beta 3.1 is the most complete and polished version available.",
+      "cover": "https://operationidroid.com/images/pokemon_spaceworld_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-spaceworld"
+    },
+    {
+      "id": "pokemon-team-rocket-edition",
+      "title": "Pokemon Team Rocket Edition",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "PokeGlitch",
+      "updatedAt": 1199145600000,
+      "description": "Base game: Pokémon Red. Version Complete. Pokemon Team Rocket Edition is a classic Red hack that puts you on the wrong side of the law. Giovanni is selecting his successor to lead Team Rocket — and the competition is between you and your sister. To prove yourself worthy, you must defeat all 8 gyms and the Elite Four while operating under Team Rocket's banner. One of the earliest and most enduring villain-perspective hacks, Team Rocket Edition is a concise, clever reskin of Red that changes the context of every battle and encounter. The lean scope — a tight narrative built on the existing Red structure — means there's no bloat, just a fresh angle on a beloved classic. As one of the few complete GBC hacks from 2008, Team Rocket Edition is a piece of ROM hacking history. It's short, punchy, and perfect for players who want a quick antagonist-perspective adventure. Fully playable on any Game Boy emulator.",
+      "cover": "https://operationidroid.com/images/pokemon_tre_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-team-rocket-edition"
+    },
+    {
+      "id": "pokemon-xy-naturia",
+      "title": "Pokemon XY Naturia",
+      "platform": "GBC",
+      "gameType": "romhack",
+      "genre": "Pokémon",
+      "developer": "Chamber",
+      "updatedAt": 1640995200000,
+      "description": "Base game: Pokémon Gold. Version Beta 0.4.1. Pokemon XY Naturia is a Gold hack that brings 138 Pokémon from Generation 6 and earlier into the GBC era with an increased difficulty curve. The hack replaces the standard Johto roster with specially selected Pokémon including many fan favorites introduced in X and Y, with a new starter lineup to kick things off. The increased difficulty is the defining feature: trainer levels are elevated, gym leaders are more aggressive, and the game demands a more thoughtful approach to team building than vanilla Gold. It's targeted at players who have fond memories of Gen 2 but find the original games too easy on replays. Version 0.1.4 represents a solid, playable build of the hack. While development has been slow, XY Naturia delivers a genuinely fresh take on Gold for fans of Gen 6 Pokémon who want to experience them in a Gen 2 setting with a real challenge.",
+      "cover": "https://operationidroid.com/images/pokemon_naturia_coverart.jpg",
+      "website": "https://operationidroid.com/hacks/pokemon-xy-naturia"
+    }
+  ]
+}
