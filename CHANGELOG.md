@@ -1,3 +1,12 @@
+## Retra v1.0.2 — Downloads tab and more sources
+
+- Browse: new Downloads tab lists ROMs and patches downloaded in Retra (play, open details, remove, clear all); history is kept in the Browse store (`downloadlog`, newest 200).
+- Browse: the Search tab is replaced by Downloads; game search across all sources now runs from the Sources search field.
+- Game details: "Download on website" is now "Download"; the File row explains that the page opens inside Retra.
+- Website sources: an empty catalog shows Open <site>, and a search without matches offers Search <site> for the query.
+- Extension repo: Retra Sources 5.0 (Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid, Romhacking.net, Hackdex) replaces Romhack Plaza.
+- `versionName 1.0.2`, `versionCode 453`.
+
 ## Retra v1.0.1 — Smoothness and polish
 
 - Browse game/extension details: the Information list runs edge to edge like Settings detail pages.

@@ -413,3 +413,8 @@ html[data-retra-runtime="android"] #extensionDetailsPage{
   .browse-sentinel.loading::after{animation-duration:2.4s}
   .browse-tab-label::after{transition:none}
 }
+
+/* Browse → Downloads: count and Clear all on one row */
+.browse-downloads-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.browse-downloads-head .browse-section-title{margin-right:auto}
+#browseGlobal{margin-top:8px}

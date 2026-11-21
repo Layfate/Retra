@@ -233,7 +233,7 @@
 <div class="browse-tabs" role="tablist" aria-label="Browse">
 <button aria-controls="browseSources" aria-selected="true" class="browse-tab" id="sourcesTab" role="tab" type="button"><span class="browse-tab-label">Sources</span></button>
 <button aria-controls="browseExtensions" aria-selected="false" class="browse-tab" id="extensionsTab" role="tab" type="button"><span class="browse-tab-label">Extensions<span class="browse-tab-badge" id="extensionsBadge" hidden></span></span></button>
-<button aria-controls="browseGlobal" aria-selected="false" class="browse-tab" id="searchTab" role="tab" type="button"><span class="browse-tab-label">Search</span></button>
+<button aria-controls="browseDownloads" aria-selected="false" class="browse-tab" id="downloadsTab" role="tab" type="button"><span class="browse-tab-label">Downloads</span></button>
 </div>
 <section class="search-panel browse-search" id="browseSearchPanel">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
@@ -242,7 +242,8 @@
 <p aria-live="polite" class="browse-status" id="browseStatus" role="status"></p>
 <div aria-labelledby="sourcesTab" class="browse-rows" id="browseSources" role="tabpanel"></div>
 <div aria-labelledby="extensionsTab" class="browse-rows" hidden id="browseExtensions" role="tabpanel"></div>
-<div aria-labelledby="searchTab" aria-live="polite" class="browse-global" hidden id="browseGlobal" role="tabpanel"></div>
+<div aria-live="polite" class="browse-global" hidden id="browseGlobal"></div>
+<div aria-labelledby="downloadsTab" class="browse-rows" hidden id="browseDownloads" role="tabpanel"></div>
 </section>
 <!-- EXTENSION REPOS -->
 <section class="page settings-detail-page browse-surface" id="repositoriesPage">
@@ -582,7 +583,7 @@
 <svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
 </button>
 </div>
-<div class="version" id="settingsVersionLabel">Retra v1.0.1</div>
+<div class="version" id="settingsVersionLabel">Retra v1.0.2</div>
 </section>
 <!-- APPEARANCE -->
 <section class="page settings-detail-page" id="appearanceSettingsPage">
@@ -1184,10 +1185,10 @@
 <div class="about-panel">
 <img alt="Retra logo" class="about-logo" src="assets/branding/retra-logo.png"/>
 <h3>Retra</h3>
-<p class="about-version" data-retra-version-label>Retra v1.0.1</p>
+<p class="about-version" data-retra-version-label>Retra v1.0.2</p>
 <div class="about-update-list">
   <div class="about-update-row about-version-row">
-    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.1</span></div>
+    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.2</span></div>
   </div>
   <button class="about-update-row about-update-button" data-check-updates type="button">
     <div><strong>Check for updates</strong><span data-update-status>Automatically checked in the background</span></div>
@@ -1208,7 +1209,7 @@
 </div>
 <div class="about-panel privacy-policy-panel">
 <h3>Retra Privacy Policy</h3>
-<p class="about-version">Effective for Retra v1.0.1</p>
+<p class="about-version">Effective for Retra v1.0.2</p>
 <p class="disclaimer"><strong>Local game data.</strong> Retra stores your library metadata, settings, save files, save states, cheats, controller layouts, artwork preferences, and play statistics on your device. Retra does not include ROMs or copyrighted game software.</p>
 <p class="disclaimer"><strong>Network features.</strong> Internet access is used for features such as automatic artwork lookup, optional Google Drive synchronization, Wi-Fi Remote Link, and the lightweight GitHub Releases update check. Update checks contact Retra's official GitHub repository and do not include your ROMs, saves, or library contents. Bluetooth access is used only for Bluetooth Remote Link.</p>
 <p class="disclaimer"><strong>Google Drive.</strong> If you enable automatic Drive backup or explicitly choose Restore from Google Drive, Retra uses the authorization granted by you to synchronize supported saves, save states, library metadata, statistics, and portable settings with your own Drive storage. ROM and BIOS files are not uploaded. Drive backup can be disabled at any time.</p>
@@ -1366,10 +1367,10 @@
 <div class="about-panel">
 <img alt="Retra logo" class="about-logo" src="assets/branding/retra-logo.png"/>
 <h3>Retra</h3>
-<p class="about-version" data-retra-version-label>Retra v1.0.1</p>
+<p class="about-version" data-retra-version-label>Retra v1.0.2</p>
 <div class="about-update-list">
   <div class="about-update-row about-version-row">
-    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.1</span></div>
+    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.2</span></div>
   </div>
   <button class="about-update-row about-update-button" data-check-updates type="button">
     <div><strong>Check for updates</strong><span data-update-status>Automatically checked in the background</span></div>

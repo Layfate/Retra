@@ -6,13 +6,13 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 
-test('v1.0.1 is upgrade-safe and Android offers keep-data uninstall recovery', () => {
+test('v1.0.2 is upgrade-safe and Android offers keep-data uninstall recovery', () => {
   const gradle = read('app/build.gradle.kts');
   const manifest = read('app/src/main/AndroidManifest.xml');
   const backupRules = read('app/src/main/res/xml/backup_rules.xml');
   const extractionRules = read('app/src/main/res/xml/data_extraction_rules.xml');
-  assert.match(gradle, /versionCode = 452/);
-  assert.match(gradle, /versionName = "1.0.1"/);
+  assert.match(gradle, /versionCode = 453/);
+  assert.match(gradle, /versionName = "1.0.2"/);
   assert.match(manifest, /android:allowBackup="true"/);
   assert.match(manifest, /android:hasFragileUserData="true"/);
   assert.match(manifest, /android:dataExtractionRules="@xml\/data_extraction_rules"/);

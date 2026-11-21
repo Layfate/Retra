@@ -16,8 +16,8 @@ android {
         applicationId = "com.retra.emulator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 452
-        versionName = "1.0.1"
+        versionCode = 453
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {

@@ -86,7 +86,7 @@
   const $ = id => document.getElementById(id);
   const pending = new Map();
   let sequence = 0;
-  let snapshot = {sources:[], repositories:[], installed:[], downloads:[]};
+  let snapshot = {sources:[], repositories:[], installed:[], downloads:[], downloadLog:[]};
   let loaded = false;
   let tab = 'sources';
   let source = null;
@@ -270,10 +270,10 @@
       throw error;
     }
   }
-  function renderAll(){ renderSources(); renderExtensions(); renderRepositories(); renderExtensionDetails(); if (tab === 'search') renderGlobal(); }
-  function searchQuery(){ return tab !== 'search' && $('browseSearchPanel').classList.contains('open') ? $('browseSearchInput').value.trim() : ''; }
+  function renderAll(){ renderSources(); renderExtensions(); renderRepositories(); renderExtensionDetails(); renderGlobal(); renderDownloads(); }
+  function searchQuery(){ return $('browseSearchPanel').classList.contains('open') ? $('browseSearchInput').value.trim() : ''; }
 
-  // ---------- Global search (every enabled source, like Mihon) ----------
+  // ---------- Game search across every enabled source (like Mihon), from the Sources search field ----------
   let globalQuery = '';
   let globalRan = '';
   let globalGeneration = 0;
@@ -281,19 +281,15 @@
   function renderGlobal(force = false){
     const container = $('browseGlobal');
     if (!loaded) return;
-    const query = globalQuery.trim();
+    const query = tab === 'sources' ? globalQuery.trim() : '';
     const sources = snapshot.sources.filter(row => row.enabled !== false)
       .sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || a.name.localeCompare(b.name));
-    if (!sources.length) {
-      globalRan = ''; container.replaceChildren();
-      emptyState(container, '(・o・;)', 'No sources installed. Install a Retra catalog extension to search games.', 'Browse extensions', () => selectTab('extensions'));
-      return;
-    }
-    if (query.length < 2) { globalRan = ''; container.replaceChildren(); emptyState(container, '', 'Type at least two letters to search every installed source.'); return; }
+    container.hidden = query.length < 2 || !sources.length;
+    if (container.hidden) { globalRan = ''; globalGeneration++; container.replaceChildren(); return; }
     if (!force && query === globalRan) return;
     globalRan = query;
     const generation = ++globalGeneration;
-    container.replaceChildren();
+    container.replaceChildren(sectionTitle(`Games matching "${query}"`));
     const sections = sources.map(row => {
       const section = element('section', 'browse-search-section');
       const head = element('button', 'browse-search-head');
@@ -331,26 +327,58 @@
     return Promise.all([worker(), worker(), worker()]);
   }
   function selectTab(next){
-    const previous = tab;
+    if (next !== tab) { $('browseSearchInput').value = ''; globalQuery = ''; $('browseSearchPanel').classList.remove('open'); }
     tab = next;
-    for (const [id, name] of [['sourcesTab', 'sources'], ['extensionsTab', 'extensions'], ['searchTab', 'search']]) $(id).setAttribute('aria-selected', String(tab === name));
-    $('browseSources').hidden = tab !== 'sources'; $('browseExtensions').hidden = tab !== 'extensions'; $('browseGlobal').hidden = tab !== 'search';
-    $('browseFilterBtn').hidden = tab !== 'sources'; $('browseMoreBtn').hidden = tab !== 'extensions'; $('browseSearchBtn').hidden = tab === 'search';
+    for (const [id, name] of [['sourcesTab', 'sources'], ['extensionsTab', 'extensions'], ['downloadsTab', 'downloads']]) $(id).setAttribute('aria-selected', String(tab === name));
+    $('browseSources').hidden = tab !== 'sources'; $('browseExtensions').hidden = tab !== 'extensions'; $('browseDownloads').hidden = tab !== 'downloads';
+    $('browseFilterBtn').hidden = tab !== 'sources'; $('browseMoreBtn').hidden = tab !== 'extensions'; $('browseSearchBtn').hidden = tab === 'downloads';
     $('browseOverflowMenu').classList.remove('open');
-    const label = {sources:'Search sources', extensions:'Search extensions', search:'Search all sources'}[tab];
+    const label = {sources:'Search sources and games', extensions:'Search extensions', downloads:'Search downloads'}[tab];
     $('browseSearchBtn').setAttribute('aria-label', label);
     $('browseSearchInput').setAttribute('aria-label', label);
     $('browseSearchInput').placeholder = `${label}...`;
-    if (tab === 'search') {
-      // Global search keeps its own query; the field is always shown on this tab.
-      $('browseSearchInput').value = globalQuery;
-      $('browseSearchPanel').classList.add('open');
-      renderGlobal();
-      requestAnimationFrame(() => $('browseSearchInput').focus({preventScroll:true}));
-    } else if (previous === 'search') {
-      $('browseSearchInput').value = ''; $('browseSearchPanel').classList.remove('open');
+    renderSources(); renderExtensions(); renderGlobal(); renderDownloads();
+  }
+
+  // ---------- Downloads: ROMs and patches downloaded into Library ----------
+  function downloadRows(){ return Array.isArray(snapshot?.downloadLog) ? snapshot.downloadLog : []; }
+  function renderDownloads(){
+    const container = $('browseDownloads');
+    if (!loaded || tab !== 'downloads') return;
+    container.replaceChildren();
+    const rows = downloadRows();
+    if (!rows.length) {
+      emptyState(container, '(￣▽￣)', 'No downloads yet. Open a game in Sources and tap Download. Finished downloads show up here and in your Library.',
+        'Browse sources', () => selectTab('sources'));
+      return;
     }
-    renderSources(); renderExtensions();
+    const head = element('div', 'browse-downloads-head');
+    head.append(sectionTitle(`${rows.length} download${rows.length === 1 ? '' : 's'}`),
+      textButton('Clear all', () => openConfirmModal('Clear download history?', 'Downloaded games stay in your Library.', () => run(() => state('clearDownloads'))), 'Clear download history'));
+    container.append(head);
+    for (const row of rows) {
+      const failed = row.status === 'failed';
+      const playable = !failed && row.romId;
+      const trailing = [];
+      if (playable) trailing.push(iconButton(`Play ${row.title}`, 'M8 5v14l11-7z',
+        () => launchNativeRom({dataset:{romId:row.romId, title:row.title, fileName:row.fileName, system:row.platform}})));
+      trailing.push(iconButton(`Remove ${row.title} from downloads`, icons.remove, () => state('removeDownload', {id:row.id})));
+      container.append(listRow({iconUrl:row.cover || snapshot.sources.find(source => source.key === row.source)?.icon,
+        title:row.title,
+        subtitle:[{text:failed ? `Failed: ${row.error || 'Import failed'}` : 'In Library', tone:failed ? 'error' : 'accent'},
+          {text:row.sourceName}, {text:row.platform}, {text:row.size ? formatSize(row.size) : ''}, {text:downloadTime(row.at)}],
+        onOpen:row.source && row.gameId && snapshot.sources.some(source => source.key === row.source) ? () => openDetails(row.source, row.gameId, 'browsePage') : null,
+        trailing}));
+    }
+  }
+  function formatSize(bytes){ return bytes >= 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`; }
+  function downloadTime(at){
+    if (!at) return '';
+    const minutes = Math.round((Date.now() - at) / 60000);
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes} min ago`;
+    if (minutes < 1440) return `${Math.round(minutes / 60)} h ago`;
+    return new Date(at).toLocaleDateString();
   }
   function lastUsedSource(){ return storage.get('retraBrowseLastSource', ''); }
 
@@ -365,6 +393,8 @@
     const sections = sourceSections(snapshot.sources, {query:searchQuery(), platform:sourcePrefs.platform, sort:sourcePrefs.sort, lastUsed:lastUsedSource()});
     if (!sections.length) {
       const allDisabled = snapshot.sources.every(row => row.enabled === false);
+      // A game title rarely matches a source name; the game results below the list are what the user wants then.
+      if (!allDisabled && searchQuery().length >= 2) return;
       emptyState(container, '', allDisabled ? 'Every source is turned off. Turn sources on from the extension settings.' : 'No sources match your search or filter.');
       return;
     }
@@ -676,7 +706,7 @@
     }, Boolean(library?.inLibrary)));
     actions.append(tile('Import ROM', strokeIcons.importRom, () => request('import', detailArgs())));
     const action = gameDownloadAction(game);
-    const downloadTile = tile(action === 'website' ? 'Download on website' : 'Download', strokeIcons.download, () => action === 'website' ? request('website', detailArgs()) : openConfirmModal('Download this game?',
+    const downloadTile = tile('Download', strokeIcons.download, () => action === 'website' ? request('website', detailArgs()) : openConfirmModal('Download this game?',
       `${download.fileName}\nLicense: ${download.license}\nRights: ${download.rightsUrl}\nSize: ${Math.ceil(download.size / 1024)} KiB\n\nThe source states this file may be distributed. Continue only if that is true for you.`,
       () => run(async () => { const result = await request('download', detailArgs()); detail.downloadId = result.id; renderProgress(); })));
     downloadTile.disabled = !action;
@@ -709,7 +739,7 @@
     const info = element('div', 'detail-list');
     [['Source', sourceName], ['Source game ID', game.id], ['Developer', game.developer], ['Publisher', game.publisher],
       ['Release year', game.year], ['Platform', game.platform],
-      ['File', authorized ? `Authorized download • ${download.license}` : action === 'website' ? 'Open the website inside Retra and choose a supported ROM, ZIP or patch download.' : 'Catalog only. Get the file from the developer, then use Import ROM.'],
+      ['File', authorized ? `Authorized download • ${download.license}` : action === 'website' ? 'Download opens the game page inside Retra. Tap its download link: GB, GBC, GBA, ZIP and patch files go to your Library and Browse → Downloads.' : 'Catalog only. Get the file from the developer, then use Import ROM.'],
       ['Local ROM', installed ? library.fileName : 'Not installed']].forEach(([label, value]) => info.append(detailRow(label, value)));
     // External pages use an isolated browser with supported downloads back into Library.
     if (/^https:\/\//i.test(game.website || '')) {
@@ -757,6 +787,13 @@
     if (activePageId() === 'catalogDetailsPage') run(updateDetail);
   };
   root.retraBrowseImportError = json => message(new Error(JSON.parse(json).error));
+  root.retraBrowseDownloadLog = json => {
+    const row = JSON.parse(json);
+    if (!snapshot) return;
+    snapshot.downloadLog = [row, ...downloadRows().filter(item => item.id !== row.id)];
+    if (row.status === 'complete') showToast(`${row.title} downloaded. Find it in Library or Browse → Downloads.`);
+    renderDownloads();
+  };
 
   // ---------- Sheets, menus and Android back ----------
   function openSheet(sheet){ sheet.classList.add('open'); sheet.setAttribute('aria-hidden', 'false'); }
@@ -791,31 +828,30 @@
   const previousBack = root.retraHandleAndroidBack;
   root.retraHandleAndroidBack = function(){
     for (const [selector, close] of closables()) if (document.querySelector(selector)) { close(); return true; }
-    if (activePageId() === 'browsePage' && tab !== 'search' && $('browseSearchPanel').classList.contains('open')) { toggleBrowseSearch(false); return true; }
+    if (activePageId() === 'browsePage' && $('browseSearchPanel').classList.contains('open')) { toggleBrowseSearch(false); return true; }
     return typeof previousBack === 'function' ? previousBack() : false;
   };
   function toggleBrowseSearch(open = !$('browseSearchPanel').classList.contains('open')){
     $('browseSearchPanel').classList.toggle('open', open);
     if (open) requestAnimationFrame(() => $('browseSearchInput').focus({preventScroll:true}));
-    else { $('browseSearchInput').value = ''; $('browseSearchInput').blur(); }
-    renderSources(); renderExtensions();
+    else { $('browseSearchInput').value = ''; $('browseSearchInput').blur(); globalQuery = ''; }
+    renderSources(); renderExtensions(); renderGlobal();
   }
 
   // ---------- Wiring ----------
   $('sourcesTab').addEventListener('click', () => selectTab('sources'));
   $('extensionsTab').addEventListener('click', () => selectTab('extensions'));
   $('browseSearchBtn').addEventListener('click', () => toggleBrowseSearch());
-  $('searchTab').addEventListener('click', () => selectTab('search'));
+  $('downloadsTab').addEventListener('click', () => selectTab('downloads'));
   $('browseSearchInput').addEventListener('input', () => {
-    if (tab === 'search') {
+    if (tab === 'sources') {
       globalQuery = $('browseSearchInput').value;
       clearTimeout(globalTimer); globalTimer = setTimeout(() => renderGlobal(), 450);
-      return;
     }
     renderSources(); renderExtensions();
   });
   $('browseSearchInput').addEventListener('keydown', event => {
-    if (event.key !== 'Enter' || tab !== 'search') return;
+    if (event.key !== 'Enter' || tab !== 'sources') return;
     clearTimeout(globalTimer); globalQuery = event.target.value; renderGlobal(true); event.target.blur();
   });
   $('browseFilterBtn').addEventListener('click', event => { event.stopPropagation(); updateSourceSheet(); setSourceSheetTab('filter'); openSheet($('browseFilterSheet')); });

@@ -61,6 +61,25 @@ class BrowseController(private val activity: MainActivity) {
         .put("installed", JSONArray(store.all("installed")))
         .put("sources", JSONArray(repository.sources()))
         .put("downloads", JSONArray(store.all("download")))
+        .put("downloadLog", JSONArray(downloadLog()))
+
+    /** Downloads tab history: ROMs and patches downloaded into Library (newest first). */
+    private fun downloadLog() = store.all(DOWNLOAD_LOG).sortedByDescending { it.optLong("at") }
+    private fun logDownload(entry: JSONObject) {
+        store.put(DOWNLOAD_LOG, entry.getString("id"), entry.put("at", System.currentTimeMillis()))
+        downloadLog().drop(MAX_DOWNLOAD_LOG).forEach { store.delete(DOWNLOAD_LOG, it.getString("id")) }
+        emit("retraBrowseDownloadLog", entry)
+    }
+    private fun downloadEntry(source: String?, game: JSONObject?, fileName: String?): JSONObject {
+        val sourceName = source?.let { key -> runCatching { repository.source(key).optString("name") }.getOrNull() }
+        val extension = fileName?.substringAfterLast('.', "")?.uppercase().orEmpty()
+        return JSONObject().put("id", java.util.UUID.randomUUID().toString())
+            .put("title", game?.optString("title")?.ifBlank { null } ?: fileName?.substringBeforeLast('.') ?: "Download")
+            .put("fileName", fileName.orEmpty())
+            .put("platform", game?.optString("platform")?.ifBlank { null } ?: extension.takeIf { it in setOf("GB", "GBC", "GBA") }.orEmpty())
+            .put("source", source.orEmpty()).put("sourceName", sourceName ?: source?.substringAfter('/').orEmpty())
+            .put("gameId", game?.optString("id").orEmpty()).put("cover", game?.optString("cover").orEmpty())
+    }
 
     private suspend fun execute(action: String, args: JSONObject): JSONObject {
         when (action) {
@@ -96,6 +115,8 @@ class BrowseController(private val activity: MainActivity) {
                 store.put("pending", "import", JSONObject().put("source", source.getString("key")))
                 openWebsite(url, source)
             }
+            "removeDownload" -> store.delete(DOWNLOAD_LOG, args.getString("id"))
+            "clearDownloads" -> store.all(DOWNLOAD_LOG).forEach { store.delete(DOWNLOAD_LOG, it.getString("id")) }
             "details", "addLibrary", "import", "download", "website" -> {
                 val source = args.getString("source")
                 val gameId = args.getString("gameId")
@@ -126,7 +147,9 @@ class BrowseController(private val activity: MainActivity) {
                         val job = scope.launch(start = CoroutineStart.LAZY) {
                             try {
                                 val file = repository.download(source, game) { emit("retraBrowseProgress", it) }
-                                associate(source, game, Uri.fromFile(file))
+                                val romId = associate(source, game, Uri.fromFile(file))
+                                logDownload(downloadEntry(source, game.json, game.json.optJSONObject("download")?.optString("fileName"))
+                                    .put("status", "complete").put("romId", romId).put("size", file.length()))
                                 repository.completeDownload(source, gameId)
                                 file.delete()
                                 store.get("download", key)?.let { emit("retraBrowseProgress", it) }
@@ -190,27 +213,37 @@ class BrowseController(private val activity: MainActivity) {
             emit("retraBrowseImportError", JSONObject().put("error", "Downloaded file unavailable. Please retry."))
             return
         }
-        importResult(Uri.fromFile(file), deleteAfter = true, fileName = data.getStringExtra("fileName"))
+        importResult(Uri.fromFile(file), deleteAfter = true, fileName = data.getStringExtra("fileName"), website = true)
     }
-    fun importResult(uri: Uri?, deleteAfter: Boolean = false, fileName: String? = null) {
+    /** Imports a picked file, or (website = true) a file downloaded in SourceBrowserActivity, which is also logged in Downloads. */
+    fun importResult(uri: Uri?, deleteAfter: Boolean = false, fileName: String? = null, website: Boolean = false) {
         scope.launch {
             val pending = store.get("pending", "import")
             store.delete("pending", "import")
             if (uri == null) return@launch
+            val entry = if (website) downloadEntry(pending?.optString("source")?.ifBlank { null }, pending?.optJSONObject("game"), fileName)
+                .put("size", File(uri.path.orEmpty()).length()) else null
             try {
-                if (pending?.has("game") == true) associate(pending.getString("source"), GameMetadata(pending.getJSONObject("game")), uri)
+                val romId = if (pending?.has("game") == true) associate(pending.getString("source"), GameMetadata(pending.getJSONObject("game")), uri)
                 else {
                     val item = activity.importUri(uri, forcedTitle = fileName?.substringBeforeLast('.'))
                     activity.persistNativeItem(item)
                     activity.runOnUiThread { activity.notifyWebImported(item) }
+                    item.id
                 }
+                entry?.let { logDownload(it.put("status", "complete").put("romId", romId)) }
                 libraryChanged()
             }
-            catch (error: Exception) { emit("retraBrowseImportError", JSONObject().put("error", error.message ?: "Import failed")) }
+            catch (error: Exception) {
+                val reason = error.message ?: "Import failed"
+                entry?.let { logDownload(it.put("status", "failed").put("error", reason)) }
+                emit("retraBrowseImportError", JSONObject().put("error", reason))
+            }
             finally { if (deleteAfter) File(uri.path.orEmpty()).delete() }
         }
     }
-    internal suspend fun associate(source: String, game: GameMetadata, uri: Uri) = mutations.withLock {
+    /** Imports a file for a catalog game and returns its Library ROM id. */
+    internal suspend fun associate(source: String, game: GameMetadata, uri: Uri): String = mutations.withLock {
         val extension = activity.fileOps.queryDisplayName(uri)?.substringAfterLast('.')?.uppercase()
         val archive = extension in setOf("ZIP", "MGBA")
         val patch = extension in setOf("IPS", "UPS", "BPS")
@@ -227,6 +260,7 @@ class BrowseController(private val activity: MainActivity) {
         store.put("library", key, row.put("romId", item.id).put("romUri", item.launchPath?.let { Uri.fromFile(File(it)).toString() } ?: uri.toString()))
         mergePlaceholder(oldId, item.id)
         activity.runOnUiThread { activity.notifyWebImported(item) }
+        item.id
     }
     /** Called only from native Room hydration; source strings are rendered as text by the UI. */
     fun metadata(romId: String): JSONObject? = store.all("library").firstOrNull { it.optString("romId") == romId }
@@ -265,5 +299,10 @@ class BrowseController(private val activity: MainActivity) {
         }).distinct()
         activity.romIdentityStore.updateLibraryMetadata(romId, old.favorite || current.favorite, JSONArray(categories).toString())
         activity.romIdentityStore.setArchived(oldId, true)
+    }
+
+    private companion object {
+        const val DOWNLOAD_LOG = "downloadlog"
+        const val MAX_DOWNLOAD_LOG = 200
     }
 }

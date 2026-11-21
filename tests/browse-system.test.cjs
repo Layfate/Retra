@@ -65,8 +65,9 @@ test('Extensions list groups updates, installed, then available by repository; b
 
 test('Browse UI reuses Retra shell components: Material icons, two tabs, no glyph icons or header dividers', () => {
   const page = html.match(/<section class="page browse-surface" id="browsePage">[\s\S]*?<\/section>\s*<!-- EXTENSION REPOS -->/)[0];
-  assert.deepEqual([...page.matchAll(/class="browse-tab" id="(\w+)"/g)].map(m => m[1]),['sourcesTab','extensionsTab','searchTab']);
-  assert.match(page,/id="browseGlobal" role="tabpanel"/);
+  assert.deepEqual([...page.matchAll(/class="browse-tab" id="(\w+)"/g)].map(m => m[1]),['sourcesTab','extensionsTab','downloadsTab']);
+  assert.match(page,/id="browseDownloads" role="tabpanel"/);
+  assert.match(page,/class="browse-global" hidden id="browseGlobal"/);
   assert.match(page,/class="search-panel browse-search"/);
   const header = html.match(/<header class="main-header" id="browseHeader">[\s\S]*?<\/header>/)[0];
   assert.match(header,/class="library-overflow-menu"/);

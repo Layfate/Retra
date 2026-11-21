@@ -66,10 +66,10 @@ class BrowseImageInstrumentedTest {
             waitFor(scenario, "document.querySelectorAll('#catalogGames .cover-card > img').length > 0", 60)
             assertTrue(javascript(scenario, "document.querySelector('#catalogGames .cover-card > img').naturalWidth > 0") == "true")
 
-            // 4. Global search: every installed source answers in its own row.
+            // 4. Game search from the Sources search field: every installed source answers in its own row.
             javascript(scenario, "document.querySelector('#catalogPage .back-btn').click()")
             waitFor(scenario, "document.getElementById('browsePage').classList.contains('active')")
-            javascript(scenario, "document.getElementById('searchTab').click()")
+            javascript(scenario, "document.getElementById('sourcesTab').click(); document.getElementById('browseSearchBtn').click()")
             javascript(scenario, "(function(){ const i = document.getElementById('browseSearchInput'); i.value = 'pokemon'; i.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter', bubbles:true})); })()")
             waitFor(scenario, "document.querySelectorAll('#browseGlobal .browse-search-section').length > 0 && !document.querySelector('#browseGlobal .browse-spinner')", 60)
             assertTrue("Global search returned no games", javascript(scenario, "document.querySelectorAll('#browseGlobal .browse-game').length > 0") == "true")

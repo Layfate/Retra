@@ -8,7 +8,7 @@
 
 An open-source emulator powered by [mGBA](https://mgba.io/), with a game library, customizable controls, and built-in source browsing.
 
-[![Version](https://img.shields.io/badge/version-v1.0.1-E0457B)](https://github.com/Layfate/Retra/releases/latest)
+[![Version](https://img.shields.io/badge/version-v1.0.2-E0457B)](https://github.com/Layfate/Retra/releases/latest)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)](#download-and-install)
 [![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
@@ -21,7 +21,7 @@ An open-source emulator powered by [mGBA](https://mgba.io/), with a game library
 
 ## Download and install
 
-1. Download **Retra-v1.0.1.apk** from the [latest release](https://github.com/Layfate/Retra/releases/latest).
+1. Download **Retra-v1.0.2.apk** from the [latest release](https://github.com/Layfate/Retra/releases/latest).
 2. Open it on your Android device and allow installation from that source if prompted.
 3. Launch Retra, tap **+** in Library, and select your games.
 
@@ -35,7 +35,7 @@ Retra does not include ROMs or BIOS files. Use games and files you are legally a
 |---|---|
 | **Play** | Run GB, GBC, and GBA games with up to 16× fast-forward, slow motion, cheats, ROM patches, and shaders. |
 | **Organize** | Manage your library with cover art, categories, search, sorting, history, and playtime statistics. |
-| **Browse** | Add source extensions, search catalogs, view game details, and open download websites inside Retra. |
+| **Browse** | Add source extensions, search catalogs, view game details, download games inside Retra, and find them in the Downloads tab. |
 | **Save** | Use battery saves, save states, auto-resume, `.sav` / `.srm` import, portable `.retra` backups, and optional Google Drive backup and restore. |
 | **Customize** | Edit button positions, sizes, and opacity with separate portrait and landscape layouts. |
 | **Connect** | Use Local Link, Single-Pak / Multiboot, or Remote Link over Wi-Fi or Bluetooth. |
@@ -54,7 +54,7 @@ https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 
 If you used the old `repo` branch URL, uninstall its extension and remove that repository before adding this URL and reinstalling the extension.
 
-Search across enabled sources from the **Search** tab. See the [source guide](tools/extension-repo/README.md) for supported websites and download behavior.
+Search games across enabled sources with the search icon on the **Sources** tab. ROMs you download appear in the **Downloads** tab and in Library. See the [source guide](tools/extension-repo/README.md) for supported websites and download behavior.
 
 ## Build from source
 
