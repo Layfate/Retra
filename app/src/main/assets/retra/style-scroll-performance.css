@@ -105,12 +105,14 @@ body:not([data-translucent="true"]) :is(.icon-btn, .back-btn, .small-icon-btn, .
   backdrop-filter: none !important;
 }
 
-/* With Translucent on, keep the glass on floating surfaces (menus, sheets, buttons, FABs)
+/* With Translucent on, keep the glass on floating surfaces (menus, sheets, dialogs, FABs)
    but not on repeated list and grid items, where it only blurs the flat page background
-   and multiplies the per-frame cost by the number of items. */
+   and multiplies the per-frame cost by the number of items. Buttons and search fields sit
+   on opaque bars or rows, so their 18px blur is invisible but was re-run every frame
+   (Browse list in light Translucent: 27 ms -> 11 ms median, 56% -> 1.5% janky). */
 html[data-retra-runtime="android"] :is(.chip, .cover-card, .history-item, .detail-row,
   .detail-range-row, .stats-panel, .entry-item, .genre-chip, .layout-card, .category-row,
-  .rom-action) {
+  .rom-action, .icon-btn, .back-btn, .small-icon-btn, .modal-btn, .search-panel) {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }

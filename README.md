@@ -19,6 +19,13 @@ Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art libr
 
 *Requires Android 8.0 or higher.*
 
+## Screenshots
+
+<img src="docs/images/screenshots/browse-dark.webp" alt="Browse sources, dark theme" width="200"/>
+<img src="docs/images/screenshots/catalog-dark.webp" alt="Source catalog with pinned header, dark theme" width="200"/>
+<img src="docs/images/screenshots/catalog-light.webp" alt="Source catalog, light theme" width="200"/>
+<img src="docs/images/screenshots/settings-light.webp" alt="Settings, light theme" width="200"/>
+
 ## Features
 
 <div align="left">
@@ -32,6 +39,38 @@ Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art libr
 * Local Link, Single-Pak / Multiboot and Remote Link over Wi-Fi or Bluetooth.
 * Light, dark and translucent themes.
 * Plus much more...
+
+</div>
+
+## Performance
+
+<div align="left">
+
+Measured on a **Redmi Note 13** (Snapdragon 685, 120 Hz display, Android 15) with a release build. Scrolling uses the same nine swipes per run, three runs per scenario; Android reports each frame's time with `dumpsys gfxinfo`. At 120 Hz a frame has 8.3 ms, so a median around 10 ms with few late frames tracks your finger smoothly.
+
+| Scenario | Before the v1.0.2 performance pass | v1.0.2 |
+|---|---|---|
+| Scroll a 1,089-game source catalog: median frame | 61 ms (about 16 fps) | **10–11 ms** |
+| Scroll a 1,089-game source catalog: late frames | 100% | **2–4%** |
+| Scroll the Browse source list: median frame | 23 ms | **10–11 ms** |
+| Scroll the Browse source list: late frames | 45% | **1–3%** |
+| Cold start to first frame (median of 5) | | **0.74 s** |
+| APK size | | **12.5 MB** |
+
+<details>
+<summary>Reproduce</summary>
+
+```bash
+adb shell dumpsys gfxinfo com.retra.emulator reset
+# Open a source in Browse, then swipe the list a few times
+adb shell input swipe 540 1900 540 500 220
+adb shell dumpsys gfxinfo com.retra.emulator   # see "50th percentile" and "Janky frames"
+
+adb shell am force-stop com.retra.emulator
+adb shell am start -W -n com.retra.emulator/.MainActivity   # see "TotalTime"
+```
+
+</details>
 
 </div>
 

@@ -369,3 +369,21 @@ body[data-resolved-mode="light"] #detailEntries .entry-download:focus:not(:focus
   background:color-mix(in srgb, var(--accent-soft) 92%, var(--light-surface,#fff) 8%);
   color:var(--accent);
 }
+
+/* Game action tiles (Add to library, Import ROM, Download, Play) take their outline and fill
+   from white at 3%, which disappears on a light page. Use the theme's ink instead so the tiles
+   keep their outlines, with labels that stay readable. Active tiles keep their accent styling. */
+body[data-resolved-mode="light"] .rom-action:not(.active):not(#resumeAction){
+  background:color-mix(in srgb, var(--m3-on-surface) 3%, transparent);
+  border-color:color-mix(in srgb, var(--m3-on-surface) 14%, transparent);
+  color:var(--m3-on-surface-variant);
+}
+
+/* Browse game details show dark text on the light page (no hero image behind it), so the
+   hero's white-text shadows only smear the title and info lines there. */
+body[data-resolved-mode="light"] #catalogDetails :is(.rom-meta h2, .meta-line){
+  text-shadow:none;
+}
+body[data-resolved-mode="light"] #catalogDetails .meta-line{
+  color:var(--m3-on-surface-variant);
+}
