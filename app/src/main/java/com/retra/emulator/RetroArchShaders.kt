@@ -195,7 +195,7 @@ internal object RetroArchShaders {
 
     private fun readText(file: File): String {
         require(file.length() <= MAX_SOURCE_BYTES) { "${file.name} is too large" }
-        return file.readText(Charsets.UTF_8).removePrefix("﻿")
+        return file.readText(Charsets.UTF_8).removePrefix("\uFEFF")
     }
 
     // ---------------------------------------------------------------- pipeline
