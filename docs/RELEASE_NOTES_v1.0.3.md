@@ -12,6 +12,13 @@ One-tap downloads for ROM hack sources, RetroArch shaders, and a proper game pag
 
 ## Install
 
-Download **Retra-v1.0.3.apk** and open it on your Android device (Android 8.0 or newer). It installs over v1.0.2 and keeps your library, saves and settings.
+**v1.0.3 is signed with a new release key, so it cannot install over v1.0.2.** Before updating:
+
+1. In v1.0.2, open Settings → Backup, restore, storage → **Create backup** and save the `.retra` file somewhere outside the app (Downloads, a PC, or cloud storage you open yourself).
+2. Uninstall v1.0.2.
+3. Download **Retra-v1.0.3.apk** and open it on your Android device (Android 8.0 or newer).
+4. In v1.0.3, choose **Restore backup** and pick the `.retra` file.
+
+Google Drive backup in v1.0.3 needs the new signing key registered with Retra's Google Cloud project first; use a local `.retra` backup to move your data. Future updates install over v1.0.3 normally.
 
 Version: `1.0.3` / Android versionCode `454`.

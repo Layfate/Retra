@@ -6,6 +6,7 @@
 - Video shaders: import RetroArch `.slangp` / `.glslp` presets from a `.zip`, a folder or a single `.slang` / `.glsl` file. Multi-pass renderer (`RetroArchShaderRenderer`) with aliases, PassOutput/PassFeedback, OriginalHistory/Prev, LUTs, float/sRGB framebuffers, mipmapped inputs and parameters. Slang is converted with glslang + SPIRV-Cross (`libretra_shaders`, pinned in `third_party/shader-tools.lock`, fetched by `tools/prepare_shader_tools.py`), with a text converter fallback. The GL view requests OpenGL ES 3 when available.
 - History: games added from Browse show their source cover art (catalog cover via `RetraBrowse.loadCover`) instead of a blank placeholder.
 - Shader picker: packs are grouped with a search field and Remove; shader pickers moved to `ShaderImportLaunchers`.
+- Release signing: new release key (v1.0.2 key was lost), so v1.0.3 needs a backup / uninstall / restore. `app/build.gradle.kts` signs release builds from a properties file named by `retra.signing` in the git-ignored `local.properties`.
 - `versionName 1.0.3`, `versionCode 454`.
 
 ## Retra v1.0.2 — Downloads tab and more sources

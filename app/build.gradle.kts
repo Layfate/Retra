@@ -1,7 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+}
+
+// Release signing stays outside the repository: local.properties (git-ignored) may set
+// retra.signing=<path to a properties file with storeFile, storePassword, keyAlias, keyPassword>.
+// Without it, release builds are unsigned as before.
+val retraSigning = Properties().apply {
+    val local = rootProject.file("local.properties")
+    val path = if (local.isFile) Properties().apply { local.inputStream().use { load(it) } }.getProperty("retra.signing") else null
+    val file = path?.let { File(it) }
+    if (file != null && file.isFile) file.inputStream().use { load(it) }
 }
 
 android {
@@ -27,8 +39,20 @@ android {
         }
     }
 
+    signingConfigs {
+        if (retraSigning.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = file(retraSigning.getProperty("storeFile"))
+                storePassword = retraSigning.getProperty("storePassword")
+                keyAlias = retraSigning.getProperty("keyAlias")
+                keyPassword = retraSigning.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             optimization {
                 enable = true
             }
