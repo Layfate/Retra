@@ -46,28 +46,24 @@ Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art libr
 
 <div align="left">
 
-Measured on a **Redmi Note 13** (Snapdragon 685, 120 Hz display, Android 15) with a release build. Scrolling uses the same nine swipes per run, three runs per scenario; Android reports each frame's time with `dumpsys gfxinfo`. At 120 Hz a frame has 8.3 ms, so a median around 10 ms with few late frames tracks your finger smoothly.
+Retra v1.0.3 at a glance.
 
-| Scenario | Before the v1.0.2 performance pass | v1.0.2 | v1.0.3 |
-|---|---|---|---|
-| Scroll a 1,089-game source catalog: median frame | 61 ms (about 16 fps) | **10–11 ms** | |
-| Scroll a 1,089-game source catalog: late frames | 100% | **2–4%** | |
-| Scroll the Browse source list: median frame | 23 ms | **10–11 ms** | |
-| Scroll the Browse source list: late frames | 45% | **1–3%** | |
-| Cold start to first frame (median of 5) | | **0.74 s** | |
-| APK size | | 12.5 MB | **31.5 MB** |
+| | |
+|---|---|
+| **Game speed** | Runs at the real Game Boy Advance rate of **59.73 fps**. On 60 Hz and 120 Hz screens Retra picks the refresh mode that divides evenly into that rate, so every game frame is shown for the same time and motion doesn't stutter. |
+| **Fast-forward and slow motion** | **0.2×, 0.5×, 2×, 4×, 8× and 16×**, each held at its exact speed. At 8× and 16× Retra skips drawing some frames, never game logic, and shows up to 165 frames per second on fast screens. If a phone can't keep up, it skips more drawing instead of slowing the game down. |
+| **Audio** | One 32-tap resampler converts the console's sound to the phone's rate without clipping or crackle. It starts with a 32 ms buffer and an 80 ms device buffer, and only grows the buffer (up to 112 ms) after a real dropout. Changing speed clears old audio, so sound doesn't lag behind the picture. |
+| **Shaders** | RetroArch `.slang` shaders are compiled on the phone and run on the GPU. |
+| **Interface** | Library, Browse and settings follow the screen's refresh rate, up to 120 Hz. |
+| **Cold start** | **0.74 s** to first frame* |
+| **APK size** | **31.5 MB**, including native code for all four CPU types (arm64, 32-bit ARM, x86 and x86_64) |
 
-v1.0.3 is larger because it bundles the native libraries for RetroArch shaders for all four CPU types (arm64, 32-bit ARM, x86 and x86_64). Frame times and cold start were measured on v1.0.2.
+\* Measured on a **Redmi Note 13** (Snapdragon 685, 120 Hz display, Android 15), release build, median of 5 launches, on v1.0.2.
 
 <details>
 <summary>Reproduce</summary>
 
 ```bash
-adb shell dumpsys gfxinfo com.retra.emulator reset
-# Open a source in Browse, then swipe the list a few times
-adb shell input swipe 540 1900 540 500 220
-adb shell dumpsys gfxinfo com.retra.emulator   # see "50th percentile" and "Janky frames"
-
 adb shell am force-stop com.retra.emulator
 adb shell am start -W -n com.retra.emulator/.MainActivity   # see "TotalTime"
 ```
