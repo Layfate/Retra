@@ -392,7 +392,6 @@ html[data-retra-runtime="android"] #extensionDetailsPage{
 }
 .browse-download:empty{display:none}
 .browse-download{margin:0 0 16px}
-.browse-download progress{width:100%;accent-color:var(--accent)}
 .browse-download .modal-btn{margin-top:8px}
 .browse-screenshots{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .browse-screenshots::-webkit-scrollbar{display:none}
@@ -441,3 +440,42 @@ html[data-retra-runtime="android"] #catalogTop{
 }
 #catalogTop .browse-chips{margin-bottom:0}
 #catalogTop.scrolled{box-shadow:0 1px 0 var(--line)}
+/* Download progress: the fill moves with transform only (compositor-driven), so the bar keeps
+   animating smoothly while the WebView applies progress updates. */
+.browse-meter{
+  position:relative;
+  height:4px;
+  margin:8px 0 4px;
+  border-radius:2px;
+  overflow:hidden;
+  background:var(--m3-surface-container-high);
+  contain:layout paint;
+}
+.browse-meter-fill{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:var(--accent);
+  transform-origin:left center;
+  transform:scaleX(0);
+  transition:transform .35s linear;
+  will-change:transform;
+}
+.browse-meter.indeterminate .browse-meter-fill{
+  width:40%;
+  right:auto;
+  transform:translateX(-100%);
+  transition:none;
+  animation:browse-meter-slide 1.3s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+@keyframes browse-meter-slide{
+  from{transform:translateX(-100%)}
+  to{transform:translateX(250%)}
+}
+/* In-progress rows on the Downloads tab: the bar spans the row under the title. */
+.browse-item:has(> .browse-meter){flex-wrap:wrap}
+.browse-item > .browse-meter{flex:0 0 calc(100% - 32px);margin:0 16px 10px}
+@media (prefers-reduced-motion:reduce){
+  .browse-meter.indeterminate .browse-meter-fill{animation-duration:2.6s}
+  .browse-meter-fill{transition:none}
+}

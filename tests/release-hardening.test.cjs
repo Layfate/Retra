@@ -12,8 +12,8 @@ const shaderRepo = fs.readFileSync(path.join(__dirname, '../app/src/main/java/co
 const shaderView = fs.readFileSync(path.join(__dirname, '../app/src/main/java/com/retra/emulator/ShaderGameView.kt'), 'utf8');
 
 test('release metadata and optimization are enabled', () => {
-  assert.match(gradle, /versionCode = 453/);
-  assert.match(gradle, /versionName = "1.0.2"/);
+  assert.match(gradle, /versionCode = 454/);
+  assert.match(gradle, /versionName = "1.0.3"/);
   assert.match(gradle, /optimization \{\s*enable = true\s*\}/s);
 });
 
@@ -29,8 +29,8 @@ test('WebView uses appassets HTTPS origin and blocks universal file URL access',
 test('GLSL custom shader importer is functional and exposed through the optimized renderer', () => {
   assert.match(html, /id="glslShaderBtn"/);
   assert.match(html, /id="glslShaderModal"/);
-  assert.match(html, /id="installGlslShaderBtn"[^>]*>Import custom</);
-  assert.match(shaderRepo, /fun install\(uri: Uri\): Option/);
+  assert.match(html, /id="installGlslShaderBtn"[^>]*>Import file</);
+  assert.match(shaderRepo, /fun install\(uri: Uri\): InstallResult/);
   assert.match(shaderRepo, /id = "lcd-grid"/);
   assert.match(shaderRepo, /id = "crt-lite"/);
   assert.match(shaderRepo, /id = "none"[\s\S]*label = "Off"/);

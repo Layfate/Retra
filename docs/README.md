@@ -4,7 +4,8 @@ This directory contains release, architecture, validation, and historical engine
 
 ## Current release
 
-- [Retra v1.0.2 on GitHub Releases](https://github.com/Layfate/Retra/releases/tag/v1.0.2) — current stable release and downloadable APK assets
+- [Retra v1.0.3 on GitHub Releases](https://github.com/Layfate/Retra/releases/tag/v1.0.3) — current stable release and downloadable APK assets
+- [`RELEASE_NOTES_v1.0.3.md`](RELEASE_NOTES_v1.0.3.md) — user-facing release notes for Retra v1.0.3
 - [`RELEASE_NOTES_v1.0.2.md`](RELEASE_NOTES_v1.0.2.md) — user-facing release notes for Retra v1.0.2
 - [`RELEASE_NOTES_v1.0.1.md`](RELEASE_NOTES_v1.0.1.md) — user-facing release notes for Retra v1.0.1
 - [`RELEASE_NOTES_v1.0.4.md`](RELEASE_NOTES_v1.0.4.md) — user-facing release notes for Retra v1.0.0

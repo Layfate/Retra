@@ -115,6 +115,20 @@ window.addEventListener('online', () => {
   scheduleAutomaticCoverLookups(false);
 });
 
+/** Installed games open the ROM page (Resume, Recent saves); catalog games without a file open
+ * the Browse details page, where they can be downloaded or imported. */
+function openLibraryRom(rom, article){
+  const installed = rom.fileAvailable !== false;
+  if (rom.catalogSource && !installed && window.RetraBrowse) {
+    window.RetraBrowse.openDetails(rom.catalogSource, rom.catalogGameId, 'libraryPage');
+    return;
+  }
+  openRomDetail(article);
+  if (rom.catalogSource && window.RetraBrowse?.describeRomDetail) {
+    window.RetraBrowse.describeRomDetail(rom.catalogSource, rom.catalogGameId, article);
+  }
+}
+
 function createRomCard(rom){
   const article = document.createElement('article');
   article.className = 'cover-card';
@@ -205,15 +219,13 @@ function createRomCard(rom){
       toggleLibraryRomSelection(rom.id, article);
       return;
     }
-    if (rom.catalogSource && window.RetraBrowse) window.RetraBrowse.openDetails(rom.catalogSource, rom.catalogGameId, 'libraryPage');
-    else openRomDetail(article);
+    openLibraryRom(rom, article);
   });
   article.addEventListener('keydown', event => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
     if (isLibrarySelectionMode()) toggleLibraryRomSelection(rom.id, article);
-    else if (rom.catalogSource && window.RetraBrowse) window.RetraBrowse.openDetails(rom.catalogSource, rom.catalogGameId, 'libraryPage');
-    else openRomDetail(article);
+    else openLibraryRom(rom, article);
   });
   if (!cover) {
     applyFallbackArtwork(article, rom);
@@ -1336,6 +1348,12 @@ async function hydrateHistoryCover(row, rom, nativeAlreadyChecked = false){
   if (!cover && rom.coverCached) {
     const blob = await getStoredRomCoverBlob(rom.id);
     if (blob) cover = setRomCoverObjectUrl(rom.id, blob);
+  }
+  if (!cover && row.isConnected && rom.catalogCover && window.RetraBrowse?.loadCover) {
+    // Games added from Browse use the source's cover art, like their Library card.
+    const coverWrap = row.querySelector('.history-cover');
+    if (coverWrap) window.RetraBrowse.loadCover(coverWrap, rom.catalogCover, rom.title || 'ROM');
+    return;
   }
   if (!cover || !row.isConnected) return;
 

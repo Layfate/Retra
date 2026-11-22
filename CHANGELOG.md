@@ -1,3 +1,13 @@
+## Retra v1.0.3 — One-tap ROM hack downloads and RetroArch shaders
+
+- Browse: Download resolves the file behind a ROM hack page (`WebsiteDownloadResolver`): ranks the page's download buttons, follows MediaFire (including dkey pages), MEGA (API + AES-CTR decryption), Google Drive, GitHub releases and direct links, probes each candidate and falls back to mirrors. Catalogs of commercial ("official") games keep opening the website.
+- Browse: downloads in progress show in the Downloads tab and on the game page with an in-place, compositor-driven progress bar; native progress reports are throttled to ~5/s and applied once per frame.
+- Library: installed catalog games open the Library ROM page (Resume, Recent saves); Import ROM and Download are hidden for installed games.
+- Video shaders: import RetroArch `.slangp` / `.glslp` presets from a `.zip`, a folder or a single `.slang` / `.glsl` file. Multi-pass renderer (`RetroArchShaderRenderer`) with aliases, PassOutput/PassFeedback, OriginalHistory/Prev, LUTs, float/sRGB framebuffers, mipmapped inputs and parameters. Slang is converted with glslang + SPIRV-Cross (`libretra_shaders`, pinned in `third_party/shader-tools.lock`, fetched by `tools/prepare_shader_tools.py`), with a text converter fallback. The GL view requests OpenGL ES 3 when available.
+- History: games added from Browse show their source cover art (catalog cover via `RetraBrowse.loadCover`) instead of a blank placeholder.
+- Shader picker: packs are grouped with a search field and Remove; shader pickers moved to `ShaderImportLaunchers`.
+- `versionName 1.0.3`, `versionCode 454`.
+
 ## Retra v1.0.2 — Downloads tab and more sources
 
 - Browse: new Downloads tab lists ROMs and patches downloaded in Retra (play, open details, remove, clear all); history is kept in the Browse store (`downloadlog`, newest 200).

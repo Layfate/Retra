@@ -18,7 +18,7 @@ assert(view.includes('applyPendingFragmentShaderIfNeeded()'), 'Compilation must 
 assert(view.includes('ensureFragmentPrecision'), 'Fragment precision must be normalized for GLES compatibility');
 assert(view.includes('compatibility-mode'), 'Renderer must provide a raw-source compatibility fallback');
 assert(view.includes('Shader compile failed on this GPU'), 'Blank OEM compiler logs must get a useful fallback message');
-assert(html.includes('>Import custom<'), 'Custom file import must be clearly separated from built-in presets');
+assert(html.includes('>Import file<'), 'Custom file import must be clearly separated from built-in presets');
 assert(!html.includes('>INSTALL SHADER</button>'), 'Built-in shaders should not look like separately installed packages');
 
 console.log('shader lazy-activation compatibility regression: ok');

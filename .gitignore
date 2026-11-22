@@ -27,8 +27,9 @@ build/
 mapping.txt
 captures/
 
-# Downloaded third-party source prepared by tools/prepare_mgba.py
+# Downloaded third-party source prepared by tools/prepare_mgba.py and tools/prepare_shader_tools.py
 /third_party/mgba/
+/third_party/shader-tools/
 
 # Signing material and local secrets
 *.jks

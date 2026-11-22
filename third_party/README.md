@@ -27,3 +27,18 @@ new lock.
 mGBA is a separate upstream project distributed under the Mozilla Public License 2.0
 (MPL-2.0). Keep the upstream `LICENSE` file and notices with the exact mGBA revision used
 for builds and redistribution. See the repository-root `THIRD_PARTY_NOTICES.md`.
+
+# RetroArch shader tools (glslang + SPIRV-Cross)
+
+`libretra_shaders` converts RetroArch `.slang` shaders to OpenGL ES GLSL at import time, the
+same way RetroArch's GL core driver does. Its sources are pinned in
+`third_party/shader-tools.lock` (Vulkan SDK 1.4.357.0 tags) and fetched with:
+
+```bash
+python3 tools/prepare_shader_tools.py
+```
+
+The script uses a sparse checkout (upstream test fixtures are large and exceed Windows path
+limits). The library is optional: without the checkout CMake skips it, and Retra falls back to
+its built-in text converter, which handles far fewer slang shaders. Release builds should
+include it.

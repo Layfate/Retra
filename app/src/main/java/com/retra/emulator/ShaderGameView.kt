@@ -27,10 +27,13 @@ class ShaderGameView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : GLSurfaceView(context, attrs) {
-    private val rendererImpl = GameRenderer()
+    /** OpenGL ES 3 is needed for RetroArch .slang shaders; ES 2 shaders keep working in an ES 3 context. */
+    internal val supportsEs3: Boolean = (context.getSystemService(Context.ACTIVITY_SERVICE) as? android.app.ActivityManager)
+        ?.deviceConfigurationInfo?.reqGlEsVersion?.let { it >= 0x30000 } == true
+    private val rendererImpl = GameRenderer(supportsEs3)
 
     init {
-        setEGLContextClientVersion(2)
+        setEGLContextClientVersion(if (supportsEs3) 3 else 2)
         setRenderer(rendererImpl)
         renderMode = RENDERMODE_WHEN_DIRTY
         preserveEGLContextOnPause = true
@@ -95,7 +98,13 @@ class ShaderGameView @JvmOverloads constructor(
         requestRender()
     }
 
-    private class GameRenderer : GLSurfaceView.Renderer {
+    /** Runs a RetroArch preset pipeline instead of a single fragment shader. */
+    internal fun setRetroArchPipeline(pipeline: RetroArchShaders.Pipeline, onResult: (Boolean, String?) -> Unit) {
+        rendererImpl.stagePipeline(pipeline) { ok, detail -> post { onResult(ok, detail) } }
+        requestRender()
+    }
+
+    private class GameRenderer(private val es3: Boolean) : GLSurfaceView.Renderer {
         @Volatile
         private var frameMailbox: GameplayFrameMailbox? = null
         private val reusableMailboxFrame = GameplayFrameMailbox.RenderFrame()
@@ -118,6 +127,10 @@ class ShaderGameView @JvmOverloads constructor(
         private val shaderRequestLock = Any()
         private var pendingFragmentSource: String? = null
         private var pendingFragmentResult: ((Boolean, String?) -> Unit)? = null
+        private var pendingPipeline: RetroArchShaders.Pipeline? = null
+        /** Active RetroArch pipeline; kept so it can be rebuilt after the EGL context is recreated. */
+        private var activePipeline: RetroArchShaders.Pipeline? = null
+        private var pipelineRenderer: RetroArchShaderRenderer? = null
         private var positionLocation = -1
         private var texCoordLocation = -1
         private var textureLocation = -1
@@ -195,6 +208,14 @@ class ShaderGameView @JvmOverloads constructor(
             textureId = createTexture()
             program = buildCompatibleProgram(fragmentSource).first
             cacheProgramLocations()
+            appliedTextureFilter = -1
+            textureWidth = 0
+            textureHeight = 0
+            // A new context invalidates every GL object of the old pipeline: rebuild, never release.
+            pipelineRenderer = activePipeline?.let { pipeline ->
+                RetroArchShaderRenderer(pipeline, es3).takeIf { it.init() == null }
+            }
+            if (pipelineRenderer == null) activePipeline = null
         }
 
         override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -210,6 +231,10 @@ class ShaderGameView @JvmOverloads constructor(
 
             uploadLatestFrameIfNeeded()
             val bitmap = frameBitmap ?: return
+            pipelineRenderer?.let { pipeline ->
+                drawPipeline(pipeline, bitmap)
+                return
+            }
 
             GLES20.glUseProgram(program)
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
@@ -277,6 +302,29 @@ class ShaderGameView @JvmOverloads constructor(
             GLES20.glDisableVertexAttribArray(tex)
         }
 
+        private fun drawPipeline(pipeline: RetroArchShaderRenderer, bitmap: Bitmap) {
+            var width = viewportWidth
+            var height = viewportHeight
+            if (!stretch) {
+                val sourceAspect = bitmap.width.toFloat() / bitmap.height.coerceAtLeast(1).toFloat()
+                val outputAspect = viewportWidth.toFloat() / viewportHeight.toFloat()
+                if (outputAspect > sourceAspect) width = (viewportHeight * sourceAspect).toInt().coerceAtLeast(1)
+                else height = (viewportWidth / sourceAspect).toInt().coerceAtLeast(1)
+            }
+            pipeline.draw(textureId, bitmap.width, bitmap.height, (viewportWidth - width) / 2, (viewportHeight - height) / 2,
+                width, height, viewportWidth, viewportHeight, linearFiltering)
+            // The pipeline changes the input texture's sampling; re-apply ours next time.
+            appliedTextureFilter = -1
+        }
+
+        fun stagePipeline(pipeline: RetroArchShaders.Pipeline, onResult: (Boolean, String?) -> Unit) {
+            synchronized(shaderRequestLock) {
+                pendingPipeline = pipeline
+                pendingFragmentSource = null
+                pendingFragmentResult = onResult
+            }
+        }
+
         fun stagePassthrough(onResult: (Boolean, String?) -> Unit) {
             stageFragmentShader(PASSTHROUGH_FRAGMENT, onResult)
         }
@@ -287,20 +335,42 @@ class ShaderGameView @JvmOverloads constructor(
                 // picker immediately, so replacing an older uncompiled request
                 // prevents unnecessary GPU work when users tap presets quickly.
                 pendingFragmentSource = source
+                pendingPipeline = null
                 pendingFragmentResult = onResult
             }
         }
 
         private fun applyPendingFragmentShaderIfNeeded() {
+            var pipeline: RetroArchShaders.Pipeline? = null
             val request = synchronized(shaderRequestLock) {
-                val source = pendingFragmentSource ?: return
+                pipeline = pendingPipeline
+                val source = pendingFragmentSource
+                if (source == null && pipeline == null) return
                 val callback = pendingFragmentResult
                 pendingFragmentSource = null
+                pendingPipeline = null
                 pendingFragmentResult = null
                 source to callback
             }
+            val requested = pipeline
+            if (requested != null) {
+                val next = RetroArchShaderRenderer(requested, es3)
+                val error = next.init()
+                if (error == null) {
+                    pipelineRenderer?.release()
+                    pipelineRenderer = next
+                    activePipeline = requested
+                }
+                request.second?.invoke(error == null, error)
+                return
+            }
 
-            val result = replaceFragmentShader(request.first)
+            val result = replaceFragmentShader(request.first ?: return)
+            if (result.first) {
+                pipelineRenderer?.release()
+                pipelineRenderer = null
+                activePipeline = null
+            }
             request.second?.invoke(result.first, result.second)
         }
 

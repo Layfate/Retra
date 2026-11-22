@@ -212,3 +212,40 @@ target_link_options(
         "-Wl,--exclude-libs,ALL"
         "-Wl,--gc-sections"
 )
+
+# ============================================================
+# RETROARCH SLANG SHADERS (optional)
+# ============================================================
+#
+# libretra_shaders compiles RetroArch .slang shaders (Vulkan GLSL) to SPIR-V with glslang and
+# emits GLSL ES 3.00 with SPIRV-Cross, like RetroArch's own GL core driver. The sources are
+# pinned in third_party/shader-tools.lock; run tools/prepare_shader_tools.py to fetch them.
+# Without them the app still builds and falls back to its smaller text converter.
+set(RETRA_SHADER_TOOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../third_party/shader-tools"
+    CACHE PATH "Folder holding the locked glslang and SPIRV-Cross checkouts")
+set(RETRA_GLSLANG_DIR "${RETRA_SHADER_TOOLS_DIR}/glslang")
+set(RETRA_SPIRV_CROSS_DIR "${RETRA_SHADER_TOOLS_DIR}/SPIRV-Cross")
+if(EXISTS "${RETRA_GLSLANG_DIR}/CMakeLists.txt" AND EXISTS "${RETRA_SPIRV_CROSS_DIR}/spirv_glsl.cpp")
+    set(ENABLE_OPT OFF CACHE BOOL "" FORCE)
+    set(ENABLE_HLSL OFF CACHE BOOL "" FORCE)
+    set(ENABLE_GLSLANG_BINARIES OFF CACHE BOOL "" FORCE)
+    set(GLSLANG_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLSLANG_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+    set(BUILD_EXTERNAL OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${RETRA_GLSLANG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/glslang" EXCLUDE_FROM_ALL)
+
+    add_library(retra_spirv_cross STATIC
+            "${RETRA_SPIRV_CROSS_DIR}/spirv_cross.cpp"
+            "${RETRA_SPIRV_CROSS_DIR}/spirv_parser.cpp"
+            "${RETRA_SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp"
+            "${RETRA_SPIRV_CROSS_DIR}/spirv_cfg.cpp"
+            "${RETRA_SPIRV_CROSS_DIR}/spirv_glsl.cpp")
+    target_include_directories(retra_spirv_cross PUBLIC "${RETRA_SPIRV_CROSS_DIR}")
+
+    add_library(retra_shaders SHARED slang_compiler.cpp slang_jni.cpp)
+    target_include_directories(retra_shaders PRIVATE "${RETRA_GLSLANG_DIR}")
+    target_link_libraries(retra_shaders glslang glslang-default-resource-limits retra_spirv_cross)
+    message(STATUS "Retra slang shader compiler: enabled")
+else()
+    message(STATUS "Retra slang shader compiler: disabled (run tools/prepare_shader_tools.py)")
+endif()

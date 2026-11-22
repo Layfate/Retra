@@ -173,10 +173,11 @@
     node.addEventListener('click', event => { event.stopPropagation(); run(action, node); });
     return node;
   }
-  function tile(label, markup, action, active = false){
+  function tile(label, markup, action, active = false, ownsDisabled = false){
     const node = element('button', `rom-action${active ? ' active' : ''}`);
     node.type = 'button'; node.innerHTML = strokeIcon(markup); node.append(element('span', '', label));
-    node.addEventListener('click', () => run(action, node));
+    // ownsDisabled: the caller keeps the button state in sync (e.g. disabled while a download runs).
+    node.addEventListener('click', () => run(action, ownsDisabled ? null : node));
     return node;
   }
   function spinner(label){
@@ -216,7 +217,7 @@
       const img = element('img'); img.alt = holder.dataset.imageAlt || ''; img.decoding = 'async';
       img.addEventListener('load', () => {
         if (!holder.isConnected) return;
-        const placeholder = holder.querySelector(':scope > .cover-art-placeholder, :scope > svg');
+        const placeholder = holder.querySelector(':scope > .cover-art-placeholder, :scope > .history-cover-placeholder, :scope > svg');
         if (placeholder) placeholder.replaceWith(img); else holder.prepend(img);
         holder.classList.remove('no-cover');
       }, {once:true});
@@ -347,10 +348,31 @@
     if (!loaded || tab !== 'downloads') return;
     container.replaceChildren();
     const rows = downloadRows();
-    if (!rows.length) {
+    const active = activeDownloadRows();
+    if (!rows.length && !active.length) {
       emptyState(container, '(￣▽￣)', 'No downloads yet. Open a game in Sources and tap Download. Finished downloads show up here and in your Library.',
         'Browse sources', () => selectTab('sources'));
       return;
+    }
+    if (active.length) {
+      container.append(sectionTitle(`In progress (${active.length})`));
+      for (const row of active) {
+        const running = row.status === 'downloading';
+        const trailing = [running
+          ? iconButton(`Pause ${row.title || 'download'}`, 'M6 5h4v14H6zm8 0h4v14h-4z', () => request('cancelDownload', {id:row.id}))
+          : row.status === 'interrupted'
+            ? iconButton(`Remove ${row.title || 'download'}`, icons.remove, () => state('dismissDownload', {id:row.id}))
+            : null].filter(Boolean);
+        const item = listRow({iconUrl:row.cover || snapshot.sources.find(source => source.key === row.source)?.icon,
+          title:row.title || 'Download',
+          subtitle:[{text:progressText(row), tone:row.status === 'interrupted' ? 'error' : 'accent'}, {text:row.sourceName}, {text:row.platform}],
+          onOpen:row.source && row.gameId && snapshot.sources.some(source => source.key === row.source) ? () => openDetails(row.source, row.gameId, 'browsePage') : null,
+          trailing});
+        item.dataset.downloadId = row.id; item.dataset.status = row.status;
+        if (row.status !== 'interrupted') { const meter = progressMeter(row.title); updateMeter(meter, row); item.append(meter); }
+        container.append(item);
+      }
+      if (!rows.length) return;
     }
     const head = element('div', 'browse-downloads-head');
     head.append(sectionTitle(`${rows.length} download${rows.length === 1 ? '' : 's'}`),
@@ -718,20 +740,24 @@
         }));
       } else { await request('addLibrary', detailArgs()); await updateDetail(); showToast('Added to Library'); }
     }, Boolean(library?.inLibrary)));
-    actions.append(tile('Import ROM', strokeIcons.importRom, () => request('import', detailArgs())));
     const action = gameDownloadAction(game);
-    const downloadTile = tile('Download', strokeIcons.download, () => action === 'website' ? request('website', detailArgs()) : openConfirmModal('Download this game?',
-      `${download.fileName}\nLicense: ${download.license}\nRights: ${download.rightsUrl}\nSize: ${Math.ceil(download.size / 1024)} KiB\n\nThe source states this file may be distributed. Continue only if that is true for you.`,
-      () => run(async () => { const result = await request('download', detailArgs()); detail.downloadId = result.id; renderProgress(); })));
-    downloadTile.disabled = !action;
-    if (!action) downloadTile.setAttribute('aria-label', 'Download unavailable: no file or website');
-    actions.append(downloadTile);
-    const play = tile('Play', strokeIcons.play, () => launchNativeRom({dataset:{romId:library.romId, title:game.title, fileName:library.fileName, system:game.platform}}));
+    // An installed game only needs Library and Play: importing or downloading it again is pointless.
+    if (!installed) {
+      actions.append(tile('Import ROM', strokeIcons.importRom, () => request('import', detailArgs())));
+      const downloadTile = tile('Download', strokeIcons.download, () => action === 'website' ? startWebsiteDownload() : openConfirmModal('Download this game?',
+        `${download.fileName}\nLicense: ${download.license}\nRights: ${download.rightsUrl}\nSize: ${Math.ceil(download.size / 1024)} KiB\n\nThe source states this file may be distributed. Continue only if that is true for you.`,
+        () => run(startDownload)), false, true);
+      downloadTile.id = 'browseDownloadTile'; downloadTile.dataset.available = action ? 'true' : 'false';
+      if (!action) downloadTile.setAttribute('aria-label', 'Download unavailable: no file or website');
+      actions.append(downloadTile);
+    }
+    const canResume = installed && typeof nativeHasResumeState === 'function' && nativeHasResumeState(library.romId);
+    const play = tile(canResume ? 'Resume' : 'Play', strokeIcons.play, () => launchNativeRom({dataset:{romId:library.romId, title:game.title, fileName:library.fileName, system:game.platform}}, canResume));
     play.disabled = !installed; actions.append(play);
     container.append(actions);
 
     const progress = element('div', 'browse-download'); progress.id = 'browseDownloadProgress'; progress.setAttribute('role', 'status');
-    container.append(progress); renderProgress();
+    container.append(progress); renderProgress(); syncDownloadTile();
 
     container.append(element('p', 'browse-description', game.description || 'No description provided.'));
     const chips = element('div', 'chip-row');
@@ -753,7 +779,7 @@
     const info = element('div', 'detail-list');
     [['Source', sourceName], ['Source game ID', game.id], ['Developer', game.developer], ['Publisher', game.publisher],
       ['Release year', game.year], ['Platform', game.platform],
-      ['File', authorized ? `Authorized download • ${download.license}` : action === 'website' ? 'Download opens the game page inside Retra. Tap its download link: GB, GBC, GBA, ZIP and patch files go to your Library and Browse → Downloads.' : 'Catalog only. Get the file from the developer, then use Import ROM.'],
+      ['File', authorized ? `Authorized download • ${download.license}` : action === 'website' ? 'Download fetches the file linked on the game page straight into your Library. Progress shows in Browse → Downloads.' : 'Catalog only. Get the file from the developer, then use Import ROM.'],
       ['Local ROM', installed ? library.fileName : 'Not installed']].forEach(([label, value]) => info.append(detailRow(label, value)));
     // External pages use an isolated browser with supported downloads back into Library.
     if (/^https:\/\//i.test(game.website || '')) {
@@ -767,34 +793,129 @@
     container.append(info);
   }
   function detailArgs(){ return {source:detail.source, gameId:detail.gameId}; }
+  function activeDownload(sourceKey, gameId){
+    return snapshot.downloads.find(item => item.source === sourceKey && item.gameId === gameId && ['downloading', 'importing'].includes(item.status));
+  }
+  function downloadActive(){ return Boolean(detail && activeDownload(detail.source, detail.gameId)); }
+  /** Game whose download link is being looked up (before native reports any progress). */
+  let resolving = null;
+  function isResolving(sourceKey, gameId){ return Boolean(resolving && resolving.source === sourceKey && resolving.gameId === gameId); }
+  function syncDownloadTile(){
+    const button = $('browseDownloadTile'); if (!button || !detail) return;
+    button.disabled = button.dataset.available !== 'true' || downloadActive() || isResolving(detail.source, detail.gameId);
+  }
+  async function startDownload(){
+    const args = detailArgs();
+    const result = await request('download', args);
+    if (detail?.source === args.source && detail?.gameId === args.gameId) detail.downloadId = result.id;
+    showToast('Downloading. Follow it in Browse → Downloads.');
+  }
+  /** Website games download in the background; if the page has no usable link, fall back to opening it. */
+  async function startWebsiteDownload(){
+    const args = detailArgs();
+    resolving = args; renderProgress(); syncDownloadTile();
+    try { await startDownload(); }
+    catch (error) {
+      showToast(`${error.message || 'Automatic download unavailable'}. Opening the website instead.`, 'error', 5000);
+      await request('website', args);
+    } finally {
+      if (resolving === args) resolving = null;
+      renderProgress(); syncDownloadTile();
+    }
+  }
   async function updateDetail(){
     if (!detail) return;
     const active = detail; const result = await request('details', detailArgs());
     if (detail === active) { Object.assign(detail, result); renderDetails(); }
   }
+  function detailProgressRow(){
+    const row = snapshot.downloads.find(item => item.source === detail.source && item.gameId === detail.gameId);
+    if (row && row.status !== 'complete' && (row.status !== 'interrupted' || !isResolving(detail.source, detail.gameId))) return row;
+    return isResolving(detail.source, detail.gameId) ? {status:'resolving', total:0, bytes:0} : null;
+  }
+  /** Updates the details page progress in place so the bar animates continuously instead of restarting. */
   function renderProgress(){
     const container = $('browseDownloadProgress'); if (!container || !detail) return;
-    container.replaceChildren();
-    const row = snapshot.downloads.find(item => item.source === detail.source && item.gameId === detail.gameId);
-    if (!row || row.status === 'complete') return;
-    const labels = {downloading:'Downloading', importing:'Adding to Library', interrupted:'Paused'};
-    container.append(element('p', 'browse-note', `${labels[row.status] || row.status} • ${Math.round((row.bytes || 0) / 1024)} / ${Math.round(row.total / 1024)} KiB${row.error ? ` • ${row.error}` : ''}`));
-    if (['downloading', 'importing'].includes(row.status)) {
-      const bar = element('progress'); bar.max = row.total; bar.value = row.bytes || 0; bar.setAttribute('aria-label', 'ROM download progress');
-      container.append(bar);
-      if (row.status === 'downloading') {
-        const pause = element('button', 'modal-btn secondary', 'Pause'); pause.type = 'button';
-        pause.addEventListener('click', () => run(() => request('cancelDownload', {id:row.id}), pause)); container.append(pause);
+    const row = detailProgressRow();
+    if (!row) { if (container.firstChild) container.replaceChildren(); return; }
+    let note = container.querySelector(':scope > .browse-note');
+    if (!note) { note = element('p', 'browse-note'); container.prepend(note); }
+    const text = progressText(row); if (note.textContent !== text) note.textContent = text;
+    let meter = container.querySelector(':scope > .browse-meter');
+    if (['resolving', 'downloading', 'importing'].includes(row.status)) {
+      if (!meter) { meter = progressMeter(row.title || detail.game?.title); note.after(meter); }
+      updateMeter(meter, row);
+    } else meter?.remove();
+    let pause = container.querySelector(':scope > .browse-pause');
+    if (row.status === 'downloading') {
+      if (!pause) {
+        pause = element('button', 'modal-btn secondary browse-pause', 'Pause'); pause.type = 'button';
+        pause.addEventListener('click', () => run(() => request('cancelDownload', {id:pause.dataset.id}), pause));
+        container.append(pause);
       }
-    }
+      pause.dataset.id = row.id;
+    } else pause?.remove();
+  }
+  function progressText(row){
+    const labels = {resolving:'Finding the download…', downloading:'Downloading', importing:'Adding to Library', interrupted:'Paused'};
+    const bytes = row.bytes || 0;
+    const amount = row.total > 0 ? `${formatSize(bytes)} / ${formatSize(row.total)}` : bytes ? formatSize(bytes) : '';
+    return [labels[row.status] || row.status, amount, row.error].filter(Boolean).join(' • ');
+  }
+  /** Compositor-only progress bar: the fill moves with transform, so it stays smooth while the page works. */
+  function progressMeter(title){
+    const meter = element('div', 'browse-meter indeterminate');
+    meter.setAttribute('role', 'progressbar'); meter.setAttribute('aria-label', `${title || 'ROM'} download progress`);
+    meter.append(element('span', 'browse-meter-fill'));
+    return meter;
+  }
+  function updateMeter(meter, row){
+    const known = row.status === 'downloading' && row.total > 0;
+    meter.classList.toggle('indeterminate', !known);
+    const fill = meter.firstChild;
+    if (known) {
+      const fraction = Math.max(0, Math.min(1, (row.bytes || 0) / row.total));
+      fill.style.transform = `scaleX(${fraction.toFixed(4)})`;
+      meter.setAttribute('aria-valuenow', String(Math.round(fraction * 100)));
+    } else { fill.style.transform = ''; meter.removeAttribute('aria-valuenow'); }
+  }
+  /** Downloads still running or paused, for the top of the Downloads tab. */
+  function activeDownloadRows(){
+    return (Array.isArray(snapshot?.downloads) ? snapshot.downloads : [])
+      .filter(row => ['downloading', 'importing', 'interrupted'].includes(row.status));
+  }
+  /** Same-status progress on the Downloads tab touches only the row's text and bar. */
+  function updateDownloadRow(row){
+    if (tab !== 'downloads') return true;
+    const item = [...document.querySelectorAll('#browseDownloads [data-download-id]')].find(node => node.dataset.downloadId === row.id);
+    if (!item || item.dataset.status !== row.status) return false;
+    const label = item.querySelector('.browse-item-copy small > span');
+    const text = progressText(row); if (label && label.textContent !== text) label.textContent = text;
+    const meter = item.querySelector(':scope > .browse-meter'); if (meter) updateMeter(meter, row);
+    return true;
   }
 
   // ---------- Native callbacks ----------
+  // Progress can arrive many times per second: apply at most one DOM update per frame.
+  const pendingProgress = new Map();
+  let progressFrame = 0;
+  function flushProgress(){
+    progressFrame = 0;
+    const rows = [...pendingProgress.values()]; pendingProgress.clear();
+    let fullDownloads = false;
+    for (const row of rows) {
+      const previous = snapshot.downloads.find(item => item.id === row.id)?.status;
+      snapshot.downloads = snapshot.downloads.filter(item => item.id !== row.id).concat(row);
+      if (previous !== row.status || !updateDownloadRow(row)) fullDownloads = true;
+      if (row.status === 'complete') { showToast('Download complete'); run(updateDetail); }
+    }
+    renderProgress(); syncDownloadTile();
+    if (fullDownloads) renderDownloads();
+  }
   root.retraBrowseProgress = json => {
     const row = JSON.parse(json);
-    snapshot.downloads = snapshot.downloads.filter(item => item.id !== row.id).concat(row);
-    renderProgress();
-    if (row.status === 'complete') { showToast('Download complete'); run(updateDetail); }
+    pendingProgress.set(row.id, row);
+    if (!progressFrame) progressFrame = requestAnimationFrame(flushProgress);
   };
   root.retraBrowseLibraryChanged = () => {
     hydrateLibraryFromNativeRoom(); renderLibraryFromStorage({force:true});
@@ -941,7 +1062,22 @@
     }, {root:document.getElementById('appMain'), rootMargin:'0px 0px 600px 0px'}).observe($('catalogSentinel'));
   }
 
-  root.RetraBrowse = {...helpers, openDetails, loadCover};
+  /** Fills the Library ROM page of an installed catalog game with its developer and genre chips. */
+  async function describeRomDetail(sourceKey, gameId, card){
+    try {
+      const {game} = await request('details', {source:sourceKey, gameId});
+      if (typeof currentRomCard === 'undefined' || currentRomCard !== card || !game) return;
+      if (game.developer) $('detailAuthor').textContent = game.developer;
+      const chips = $('detailChips');
+      if (chips) {
+        const existing = new Set([...chips.children].map(chip => chip.textContent.trim().toLowerCase()));
+        [game.genre, game.gameType].filter(Boolean).flatMap(value => String(value).split(','))
+          .map(value => value.trim()).filter(value => value && !existing.has(value.toLowerCase()))
+          .forEach(value => { existing.add(value.toLowerCase()); chips.append(element('span', 'genre-chip', value)); });
+      }
+    } catch (_) { /* Offline or source removed: the Library page still works without catalog text. */ }
+  }
+  root.RetraBrowse = {...helpers, openDetails, loadCover, describeRomDetail};
   selectTab('sources');
   updateSourceSheet();
   if (libraryRoms.some(rom => rom.catalogSource)) renderLibraryFromStorage({force:true});

@@ -17,15 +17,46 @@ import kotlin.coroutines.coroutineContext
 
 /** Bounded HTTPS transport shared by repository indexes, data packages and ROM downloads. */
 open class BrowseHttp(private val headers: (String) -> Map<String, String> = { emptyMap() }) {
+    private fun requirePublic(endpoint: URL) = require(InetAddress.getAllByName(endpoint.host).all { address ->
+        !address.isAnyLocalAddress && !address.isLoopbackAddress && !address.isLinkLocalAddress &&
+            !address.isSiteLocalAddress && !address.isMulticastAddress &&
+            (address.address.size != 16 || (address.address[0].toInt() and 0xfe) != 0xfc)
+    }) { "Repository URLs must use public internet addresses" }
+
+    /** Small JSON POST (file host APIs such as MEGA's); no redirects followed. */
+    open fun post(url: String, body: String, limit: Int): ByteArray {
+        val endpoint = URL(BrowseProtocol.https(url))
+        requirePublic(endpoint)
+        val connection = endpoint.openConnection() as HttpURLConnection
+        try {
+            connection.connectTimeout = 15000
+            connection.readTimeout = 20000
+            connection.instanceFollowRedirects = false
+            connection.requestMethod = "POST"
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/json")
+            headers(url).forEach { (name, value) -> connection.setRequestProperty(name, value) }
+            connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+            require(connection.responseCode == 200) { "HTTP ${connection.responseCode}" }
+            return connection.inputStream.use { input ->
+                val result = ByteArrayOutputStream()
+                val buffer = ByteArray(8192)
+                while (true) {
+                    val read = input.read(buffer)
+                    if (read < 0) break
+                    require(result.size() + read <= limit) { "Response too large" }
+                    result.write(buffer, 0, read)
+                }
+                result.toByteArray()
+            }
+        } finally { connection.disconnect() }
+    }
+
     open fun open(url: String, offset: Long = 0): HttpURLConnection {
         var target = BrowseProtocol.https(url)
         repeat(6) {
             val endpoint = URL(target)
-            require(InetAddress.getAllByName(endpoint.host).all { address ->
-                !address.isAnyLocalAddress && !address.isLoopbackAddress && !address.isLinkLocalAddress &&
-                    !address.isSiteLocalAddress && !address.isMulticastAddress &&
-                    (address.address.size != 16 || (address.address[0].toInt() and 0xfe) != 0xfc)
-            }) { "Repository URLs must use public internet addresses" }
+            requirePublic(endpoint)
             val connection = endpoint.openConnection() as HttpURLConnection
             connection.connectTimeout = 15000
             connection.readTimeout = 20000
@@ -74,6 +105,8 @@ class BrowseRepository(
     val store: BrowseStore = BrowseStore(BrowseDatabase.get(context).documents()),
     private val http: BrowseHttp = BrowseHttp()
 ) {
+    /** Game pages and file hosts serve their download links only to browser-like clients. */
+    private val pageHttp = BrowseHttp { mapOf("User-Agent" to BROWSER_AGENT) }
     val imageDir = File(context.filesDir, "browse/images").apply { mkdirs() }
     private val downloadDir = File(context.filesDir, "browse/downloads").apply { mkdirs() }
 
@@ -229,8 +262,7 @@ class BrowseRepository(
         require(BrowseProtocol.authorized(file)) { "No authorized distributable file" }
         val spec = requireNotNull(file)
         val key = downloadKey(source, game.id)
-        val state = JSONObject().put("id", key).put("source", source).put("gameId", game.id)
-            .put("total", spec.getLong("size")).put("status", "downloading")
+        val state = downloadState(key, source, game).put("total", spec.getLong("size")).put("status", "downloading")
         val part = File(downloadDir, "$key.part")
         val expected = spec.getLong("size")
         val prior = store.get("download", key)
@@ -255,7 +287,7 @@ class BrowseRepository(
                         FileOutputStream(part, append).use { output ->
                             val buffer = ByteArray(32768)
                             var count = if (append) part.length() else 0L
-                            var reported = count
+                            var reportedAt = 0L
                             while (true) {
                                 coroutineContext.ensureActive()
                                 val read = input.read(buffer)
@@ -263,7 +295,7 @@ class BrowseRepository(
                                 count += read
                                 require(count <= expected) { "Download exceeds published size" }
                                 output.write(buffer, 0, read)
-                                if (count - reported >= 262144) { report("downloading"); reported = count }
+                                if (System.nanoTime() - reportedAt >= PROGRESS_INTERVAL_NS) { report("downloading"); reportedAt = System.nanoTime() }
                             }
                             output.fd.sync()
                         }
@@ -294,9 +326,99 @@ class BrowseRepository(
             throw error
         }
     }
+    /** Fields the Downloads tab needs to show a transfer that is still running. */
+    private fun downloadState(key: String, source: String, game: GameMetadata) = JSONObject().put("id", key)
+        .put("source", source).put("gameId", game.id).put("title", game.json.optString("title"))
+        .put("platform", game.platform.name).put("cover", game.json.optString("cover"))
+        .put("sourceName", runCatching { this.source(source).optString("name") }.getOrNull() ?: source.substringAfter('/'))
+
+    /** Finds the ROM / patch file behind a ROM-hack game page (see [WebsiteDownloadResolver]). */
+    internal fun resolveWebsiteDownload(website: String, title: String): WebsiteDownloadResolver.Resolved =
+        WebsiteDownloadResolver(pageHttp).resolve(website, title)
+
+    /** Streams a website ROM (resolved by [resolveWebsiteDownload]) into the download folder with progress rows. */
+    internal suspend fun downloadWebsite(source: String, game: GameMetadata, file: WebsiteDownloadResolver.Resolved, progress: (JSONObject) -> Unit): File {
+        val key = downloadKey(source, game.id)
+        val state = downloadState(key, source, game).put("total", 0L).put("website", true)
+        val part = File(downloadDir, "$key.part").apply { delete() }
+        fun report(status: String, error: String = "") {
+            state.put("status", status).put("bytes", part.length()).put("error", error)
+            store.put("download", key, state)
+            progress(JSONObject(state.toString()))
+        }
+        report("downloading")
+        try {
+            val connection = pageHttp.open(file.url)
+            val name = try {
+                require(connection.responseCode == 200) { "Unexpected partial download" }
+                require(!connection.contentType.orEmpty().contains("text/html", true)) { "The file host returned a web page instead of the ROM" }
+                val total = if (file.size > 0) file.size else connection.contentLengthLong
+                require(total <= MainActivity.MAX_ROM_BYTES) { "Download too large" }
+                state.put("total", maxOf(total, 0L))
+                val name = file.fileName ?: fileNameFromDisposition(connection.getHeaderField("Content-Disposition"))
+                    ?: fileNameFromUrl(connection.url.toString()).ifBlank { fileNameFromUrl(file.url) }
+                require(WebsiteDownloadResolver.SUPPORTED.any { name.lowercase(java.util.Locale.US).endsWith(".$it") }) { "Unsupported file type: $name" }
+                // MEGA serves AES-CTR encrypted bytes; everything else is plain.
+                val stream = file.decryptor()?.let { javax.crypto.CipherInputStream(connection.inputStream, it) } ?: connection.inputStream
+                stream.use { input ->
+                    FileOutputStream(part).use { output ->
+                        val buffer = ByteArray(32768)
+                        var count = 0L
+                        var reportedAt = 0L
+                        while (true) {
+                            coroutineContext.ensureActive()
+                            val read = input.read(buffer)
+                            if (read < 0) break
+                            count += read
+                            require(count <= MainActivity.MAX_ROM_BYTES) { "Download too large" }
+                            output.write(buffer, 0, read)
+                            if (System.nanoTime() - reportedAt >= PROGRESS_INTERVAL_NS) { report("downloading"); reportedAt = System.nanoTime() }
+                        }
+                        output.fd.sync()
+                        require(count > 0 && (total < 0 || count == total)) { "Incomplete download. Please retry." }
+                        if (total < 0) state.put("total", count)
+                    }
+                }
+                name
+            } finally { connection.disconnect() }
+            val ready = File(File(downloadDir, key).apply { deleteRecursively(); mkdirs() }, name)
+            part.copyTo(ready, overwrite = true)
+            part.delete()
+            report("importing")
+            return ready
+        } catch (error: Exception) {
+            part.delete()
+            report("interrupted", error.message ?: "Interrupted")
+            throw error
+        }
+    }
+    fun dismissDownload(key: String) {
+        store.delete("download", key)
+        File(downloadDir, "$key.part").delete()
+    }
     fun completeDownload(source: String, game: String) {
         val key = downloadKey(source, game)
         store.get("download", key)?.let { store.put("download", key, it.put("status", "complete").put("error", "")) }
         File(downloadDir, "$key.part").delete()
     }
 }
+
+private const val BROWSER_AGENT = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36"
+
+/** Last path segment, URL-decoded and stripped of any directory part. */
+internal fun fileNameFromUrl(url: String): String = runCatching {
+    java.net.URLDecoder.decode(URL(url).path.substringAfterLast('/'), "UTF-8")
+}.getOrDefault("").substringAfterLast('/').substringAfterLast('\\').trim()
+
+internal fun fileNameFromDisposition(header: String?): String? {
+    if (header.isNullOrBlank()) return null
+    Regex("""filename\*\s*=\s*[^']*'[^']*'([^;]+)""", RegexOption.IGNORE_CASE).find(header)?.let { match ->
+        return runCatching { java.net.URLDecoder.decode(match.groupValues[1].trim(), "UTF-8") }.getOrNull()
+            ?.substringAfterLast('/')?.substringAfterLast('\\')?.trim()?.ifBlank { null }
+    }
+    return Regex("""filename\s*=\s*"?([^";]+)"?""", RegexOption.IGNORE_CASE).find(header)?.groupValues?.get(1)
+        ?.substringAfterLast('/')?.substringAfterLast('\\')?.trim()?.ifBlank { null }
+}
+
+/** At most ~5 progress reports per second: each one writes the store and calls into the WebView. */
+private const val PROGRESS_INTERVAL_NS = 200_000_000L

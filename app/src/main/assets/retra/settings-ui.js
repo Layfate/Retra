@@ -87,7 +87,7 @@ function applyUiFont(fontName, { persist = false, notify = false } = {}){
   });
 
   if (settingsVersionLabel) {
-    settingsVersionLabel.textContent = 'Retra v1.0.2';
+    settingsVersionLabel.textContent = 'Retra v1.0.3';
   }
 
   if (persist) { localStorage.setItem(fontStorageKey, selected); setNativeUiPreference('font', selected); }
@@ -122,7 +122,7 @@ function setUpdateStatus(text){
 }
 
 function hydrateRetraVersion(){
-  let versionName = '1.0.2';
+  let versionName = '1.0.3';
   try {
     if (window.AndroidBridge && typeof window.AndroidBridge.getAppVersionInfo === 'function') {
       const info = JSON.parse(String(window.AndroidBridge.getAppVersionInfo() || '{}'));
@@ -698,10 +698,81 @@ function applyFastForwardSpeed(){
   });
 }
 
+const glslShaderSearch = document.getElementById('glslShaderSearch');
+const installShaderFolderBtn = document.getElementById('installShaderFolderBtn');
+/** Imported RetroArch packs can hold thousands of presets: render a capped, searchable list. */
+const SHADER_RENDER_LIMIT = 60;
+
+function shaderMatches(option, query){
+  if (!query) return true;
+  return `${option.label} ${option.description || ''} ${option.group || ''}`.toLowerCase().includes(query);
+}
+
+function shaderGroupHeader(group, packId, count){
+  const header = document.createElement('div');
+  header.className = 'shader-group-header';
+  const title = document.createElement('span');
+  title.className = 'shader-group-title';
+  title.textContent = `${group} • ${count}`;
+  header.appendChild(title);
+  if (packId) {
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'text-action-btn shader-group-remove';
+    remove.textContent = 'Remove';
+    remove.setAttribute('aria-label', `Remove shader pack ${group}`);
+    remove.addEventListener('click', () => {
+      const confirmRemove = () => {
+        if (window.AndroidBridge && typeof window.AndroidBridge.removeShaderPack === 'function') window.AndroidBridge.removeShaderPack(packId);
+      };
+      if (typeof openConfirmModal === 'function') openConfirmModal(`Remove ${group}?`, `Its ${count} shader${count === 1 ? '' : 's'} will be deleted from Retra.`, confirmRemove);
+      else confirmRemove();
+    });
+    header.appendChild(remove);
+  }
+  return header;
+}
+
 function renderGlslShaderOptions(){
   if (!glslShaderOptionsEl) return;
   glslShaderOptionsEl.replaceChildren();
-  availableGlslShaders.forEach(option => {
+  const query = (glslShaderSearch?.value || '').trim().toLowerCase();
+  if (glslShaderSearch) glslShaderSearch.hidden = availableGlslShaders.length <= 12;
+  const ungrouped = availableGlslShaders.filter(option => !option.group && shaderMatches(option, query));
+  ungrouped.forEach(option => glslShaderOptionsEl.appendChild(shaderOptionButton(option)));
+  const groups = new Map();
+  availableGlslShaders.filter(option => option.group).forEach(option => {
+    if (!groups.has(option.packId)) groups.set(option.packId, {name: option.group, options: []});
+    groups.get(option.packId).options.push(option);
+  });
+  let rendered = 0;
+  let hidden = 0;
+  groups.forEach((group, packId) => {
+    const matches = group.options.filter(option => shaderMatches(option, query) || option.id === selectedGlslShader);
+    if (!matches.length && query) return;
+    glslShaderOptionsEl.appendChild(shaderGroupHeader(group.name, packId, group.options.length));
+    matches.forEach(option => {
+      if (rendered < SHADER_RENDER_LIMIT || option.id === selectedGlslShader) {
+        glslShaderOptionsEl.appendChild(shaderOptionButton(option)); rendered++;
+      } else hidden++;
+    });
+  });
+  if (hidden) {
+    const note = document.createElement('p');
+    note.className = 'shader-more-note';
+    note.textContent = `${hidden} more shader${hidden === 1 ? '' : 's'}. Search to find them.`;
+    glslShaderOptionsEl.appendChild(note);
+  }
+  if (!glslShaderOptionsEl.children.length) {
+    const note = document.createElement('p');
+    note.className = 'shader-more-note';
+    note.textContent = 'No shaders match your search.';
+    glslShaderOptionsEl.appendChild(note);
+  }
+  updateGlslShaderLabel();
+}
+
+function shaderOptionButton(option){
     const button = document.createElement('button');
     button.className = `selection-option shader-option${option.id === selectedGlslShader ? ' active' : ''}`;
     button.type = 'button';
@@ -714,7 +785,7 @@ function renderGlslShaderOptions(){
     copy.className = 'shader-option-copy';
     const title = document.createElement('span');
     title.className = 'shader-option-title';
-    title.textContent = option.builtIn ? option.label : `${option.label} • Installed`;
+    title.textContent = option.builtIn || option.group ? option.label : `${option.label} • Installed`;
     const description = document.createElement('span');
     description.className = 'shader-option-description';
     description.textContent = option.description || (option.builtIn ? 'Built-in Retra shader' : 'Installed GLSL shader');
@@ -733,9 +804,10 @@ function renderGlslShaderOptions(){
       }
       closeSelectionModal(glslShaderModal);
     });
-    glslShaderOptionsEl.appendChild(button);
-  });
+    return button;
+}
 
+function updateGlslShaderLabel(){
   const selected = availableGlslShaders.find(option => option.id === selectedGlslShader);
   if (glslShaderLabel) {
     if (!selected || selectedGlslShader === 'none') {
@@ -781,6 +853,14 @@ glslShaderBtn?.addEventListener('click', () => {
 closeGlslShaderModal?.addEventListener('click', () => closeSelectionModal(glslShaderModal));
 glslShaderModal?.addEventListener('click', (event) => {
   if (event.target === glslShaderModal) closeSelectionModal(glslShaderModal);
+});
+glslShaderSearch?.addEventListener('input', () => renderGlslShaderOptions());
+installShaderFolderBtn?.addEventListener('click', () => {
+  if (window.AndroidBridge && typeof window.AndroidBridge.installShaderFolder === 'function') {
+    window.AndroidBridge.installShaderFolder();
+  } else {
+    showToast('Shader installation is available in the Android app');
+  }
 });
 installGlslShaderBtn?.addEventListener('click', () => {
   if (window.AndroidBridge && typeof window.AndroidBridge.installGlslShader === 'function') {

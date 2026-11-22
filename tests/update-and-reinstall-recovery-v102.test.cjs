@@ -11,8 +11,8 @@ test('v1.0.2 is upgrade-safe and Android offers keep-data uninstall recovery', (
   const manifest = read('app/src/main/AndroidManifest.xml');
   const backupRules = read('app/src/main/res/xml/backup_rules.xml');
   const extractionRules = read('app/src/main/res/xml/data_extraction_rules.xml');
-  assert.match(gradle, /versionCode = 453/);
-  assert.match(gradle, /versionName = "1.0.2"/);
+  assert.match(gradle, /versionCode = 454/);
+  assert.match(gradle, /versionName = "1.0.3"/);
   assert.match(manifest, /android:allowBackup="true"/);
   assert.match(manifest, /android:hasFragileUserData="true"/);
   assert.match(manifest, /android:dataExtractionRules="@xml\/data_extraction_rules"/);

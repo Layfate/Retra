@@ -116,6 +116,11 @@ class BrowseController(private val activity: MainActivity) {
                 openWebsite(url, source)
             }
             "removeDownload" -> store.delete(DOWNLOAD_LOG, args.getString("id"))
+            "dismissDownload" -> {
+                val id = args.getString("id")
+                require(!downloads.containsKey(id)) { "Pause the download first" }
+                repository.dismissDownload(id)
+            }
             "clearDownloads" -> store.all(DOWNLOAD_LOG).forEach { store.delete(DOWNLOAD_LOG, it.getString("id")) }
             "details", "addLibrary", "import", "download", "website" -> {
                 val source = args.getString("source")
@@ -140,15 +145,26 @@ class BrowseController(private val activity: MainActivity) {
                         openWebsite(url, definition)
                     }
                     "download" -> {
-                        require(definition != null) { "Reinstall the source to download" }
-                        val repo = store.get("repository", definition.getString("repository"))
-                        require(repo?.optBoolean("trusted") == true) { "Trust the source repository before downloading" }
                         require(!downloads.containsKey(key)) { "Download already running" }
+                        // Authorized catalog files download directly; website-only games resolve the
+                        // download link on their page (the same file the user would tap there).
+                        val websiteUrl = if (BrowseProtocol.authorized(game.json.optJSONObject("download"))) {
+                            require(definition != null) { "Reinstall the source to download" }
+                            val repo = store.get("repository", definition.getString("repository"))
+                            require(repo?.optBoolean("trusted") == true) { "Trust the source repository before downloading" }
+                            null
+                        } else {
+                            // Automatic download is for ROM hacks and homebrew; catalogs of commercial
+                            // ("official") games only open the website.
+                            require(game.json.optString("gameType") != "official") { "Automatic download is only for ROM hacks and homebrew" }
+                            repository.resolveWebsiteDownload(game.json.optString("website"), game.json.optString("title"))
+                        }
                         val job = scope.launch(start = CoroutineStart.LAZY) {
                             try {
-                                val file = repository.download(source, game) { emit("retraBrowseProgress", it) }
+                                val file = if (websiteUrl == null) repository.download(source, game) { emit("retraBrowseProgress", it) }
+                                    else repository.downloadWebsite(source, game, websiteUrl) { emit("retraBrowseProgress", it) }
                                 val romId = associate(source, game, Uri.fromFile(file))
-                                logDownload(downloadEntry(source, game.json, game.json.optJSONObject("download")?.optString("fileName"))
+                                logDownload(downloadEntry(source, game.json, file.name)
                                     .put("status", "complete").put("romId", romId).put("size", file.length()))
                                 repository.completeDownload(source, gameId)
                                 file.delete()

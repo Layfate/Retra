@@ -23,7 +23,8 @@ test('custom GLSL shaders install, validate, compile and render only on demand',
   assert.match(shaderRepo, /void main/);
   assert.match(shaderRepo, /gl_fragcolor/);
   assert.match(shaderRepo, /utexture/);
-  assert.match(shaderView, /setEGLContextClientVersion\(2\)/);
+  // ES 3 when the device has it (RetroArch .slang shaders need it), ES 2 otherwise.
+  assert.match(shaderView, /setEGLContextClientVersion\(if \(supportsEs3\) 3 else 2\)/);
   assert.match(shaderView, /RENDERMODE_WHEN_DIRTY/);
   assert.match(shaderView, /fun setFragmentShader/);
   assert.match(shaderView, /GLUtils\.texSubImage2D/);

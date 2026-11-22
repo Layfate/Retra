@@ -21,16 +21,41 @@ class ShaderController(
     fun selectedId(): String = repository.selectedId()
     fun optionsJson(): JSONArray = repository.optionsJson()
 
-    fun installAndSelect(uri: Uri) {
-        val result = runCatching { repository.install(uri) }
+    /** Call off the UI thread: imports can extract and check thousands of RetroArch files. */
+    fun installAndSelect(uri: Uri) = finishInstall { repository.install(uri) }
+
+    /** Imports a picked folder of RetroArch shaders. Call off the UI thread. */
+    fun installFolderAndSelect(treeUri: Uri) = finishInstall { repository.installFolder(treeUri) }
+
+    private fun finishInstall(install: () -> ShaderRepository.InstallResult) {
+        activity.runOnUiThread { RetraNotice.makeText(activity, "Importing shaders…", RetraNotice.LENGTH_SHORT).show() }
+        val result = runCatching(install)
         activity.runOnUiThread {
-            result.onSuccess { option ->
-                repository.select(option.id)
-                applySelection(showToast = true)
+            result.onSuccess { installed ->
+                if (installed.options.size == 1) {
+                    select(installed.options.first().id, showToast = true)
+                } else {
+                    val skipped = if (installed.skipped > 0) " (${installed.skipped} unsupported skipped)" else ""
+                    RetraNotice.makeText(activity, "Imported ${installed.options.size} shaders from ${installed.packName}$skipped. " +
+                        "Choose one in Video shader.", RetraNotice.LENGTH_LONG).show()
+                }
                 onSettingsChanged()
             }.onFailure { error ->
-                RetraNotice.makeText(activity, "Could not install shader: ${error.message ?: "invalid GLSL"}", RetraNotice.LENGTH_LONG).show()
+                RetraNotice.makeText(activity, "Could not install shader: ${error.message ?: "unsupported file"}", RetraNotice.LENGTH_LONG).show()
             }
+        }
+    }
+
+    /** Call off the UI thread: a pack can hold many files. */
+    fun removePack(packId: String) {
+        val wasSelected = repository.selectedId()
+        val removed = repository.removePack(packId)
+        activity.runOnUiThread {
+            if (removed) {
+                if (wasSelected != repository.selectedId()) applySelection(showToast = false)
+                RetraNotice.makeText(activity, "Shader pack removed", RetraNotice.LENGTH_SHORT).show()
+            }
+            onSettingsChanged()
         }
     }
 
@@ -94,6 +119,10 @@ class ShaderController(
             shaderView.visibility = View.GONE
             return
         }
+        if (repository.isRetroArch(selected)) {
+            applyRetroArch(selected, showToast)
+            return
+        }
         val source = repository.sourceFor(selected)
         if (selected == "none" || source == null) {
             // Normal gameplay also uses the dedicated GL surface. The ImageView is
@@ -132,10 +161,48 @@ class ShaderController(
                 latestFrame()?.let { shaderView.submitFrame(it.pixels, it.width, it.height) }
                 if (showToast) {
                     val label = repository.optionFor(selected)?.label ?: "Custom"
+
                     val suffix = if (error == "compatibility-mode") " • compatibility mode" else ""
                     RetraNotice.makeText(activity, "Video shader: $label$suffix", RetraNotice.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    /** Parses the preset off the UI thread, then lets the GL thread compile and run it. */
+    private fun applyRetroArch(selected: String, showToast: Boolean) {
+        Thread({
+            val pipeline = runCatching { repository.pipelineFor(selected) }
+            activity.runOnUiThread {
+                if (repository.selectedId() != selected || !isGameplayVisible()) return@runOnUiThread
+                pipeline.onFailure { error -> fallBack(error.message ?: "unsupported preset") }
+                pipeline.onSuccess { compiled ->
+                    normalView.visibility = View.INVISIBLE
+                    shaderView.visibility = View.VISIBLE
+                    shaderView.setRetroArchPipeline(compiled) { ok, error ->
+                        if (!ok) fallBack(error ?: "unsupported by this GPU")
+                        else {
+                            latestFrame()?.let { shaderView.submitFrame(it.pixels, it.width, it.height) }
+                            if (showToast) {
+                                val label = repository.optionFor(selected)?.label ?: "RetroArch shader"
+                                RetraNotice.makeText(activity, "Video shader: $label", RetraNotice.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+        }, "retra-shader-preset").start()
+    }
+
+    private fun fallBack(detail: String) {
+        repository.select("none")
+        shaderView.usePassthrough { ok, _ ->
+            if (!ok) {
+                shaderView.visibility = View.GONE
+                normalView.visibility = View.VISIBLE
+            }
+        }
+        RetraNotice.makeText(activity, "Shader unavailable: $detail", RetraNotice.LENGTH_LONG).show()
+        onSettingsChanged()
     }
 }

@@ -688,11 +688,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    internal val shaderFilePicker =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri == null) return@registerForActivityResult
-            ioExecutor.execute { shaderController.installAndSelect(uri) }
-        }
+    private val shaderImports = ShaderImportLaunchers(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -1295,12 +1291,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        @JavascriptInterface
-        fun installGlslShader() {
-            runOnUiThread {
-                shaderFilePicker.launch(arrayOf("text/plain", "application/octet-stream", "*/*"))
-            }
-        }
+        @JavascriptInterface fun installGlslShader() = shaderImports.pickFile()
+        @JavascriptInterface fun installShaderFolder() = shaderImports.pickFolder()
+        @JavascriptInterface fun removeShaderPack(packId: String) = shaderImports.removePack(packId)
 
         @JavascriptInterface
         fun setButtonsOpacity(value: Int) {

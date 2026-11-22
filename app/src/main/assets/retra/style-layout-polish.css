@@ -1911,3 +1911,53 @@ body[data-translucent="true"] .selection-modal .myboy-dialog-card:not(.import-sa
 /* v1.0.3 language selector mirrors the font selector. */
 .language-settings-list .language-option{width:100%;text-align:left;}
 .language-settings-list .language-option > div{min-width:0;}
+
+/* Video shader picker: imported RetroArch packs (search, pack headers, three actions). */
+#glslShaderModal .shader-search{
+  width:100%;
+  min-height:40px;
+  margin:0 0 8px;
+  padding:0 12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+  font-size:13px;
+}
+#glslShaderModal .shader-search[hidden]{display:none}
+#glslShaderOptions .shader-group-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:12px 4px 4px;
+}
+#glslShaderOptions .shader-group-title{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+#glslShaderOptions .shader-group-remove{
+  flex:0 0 auto;
+  min-height:32px;
+  padding:0 8px;
+  font-size:12px;
+}
+#glslShaderOptions .shader-more-note{
+  margin:8px 4px 4px;
+  color:var(--muted);
+  font-size:12px;
+}
+#glslShaderModal .shader-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:4px 8px;
+}
