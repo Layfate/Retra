@@ -48,14 +48,16 @@ Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art libr
 
 Measured on a **Redmi Note 13** (Snapdragon 685, 120 Hz display, Android 15) with a release build. Scrolling uses the same nine swipes per run, three runs per scenario; Android reports each frame's time with `dumpsys gfxinfo`. At 120 Hz a frame has 8.3 ms, so a median around 10 ms with few late frames tracks your finger smoothly.
 
-| Scenario | Before the v1.0.2 performance pass | v1.0.2 |
-|---|---|---|
-| Scroll a 1,089-game source catalog: median frame | 61 ms (about 16 fps) | **10–11 ms** |
-| Scroll a 1,089-game source catalog: late frames | 100% | **2–4%** |
-| Scroll the Browse source list: median frame | 23 ms | **10–11 ms** |
-| Scroll the Browse source list: late frames | 45% | **1–3%** |
-| Cold start to first frame (median of 5) | | **0.74 s** |
-| APK size | | **12.5 MB** |
+| Scenario | Before the v1.0.2 performance pass | v1.0.2 | v1.0.3 |
+|---|---|---|---|
+| Scroll a 1,089-game source catalog: median frame | 61 ms (about 16 fps) | **10–11 ms** | |
+| Scroll a 1,089-game source catalog: late frames | 100% | **2–4%** | |
+| Scroll the Browse source list: median frame | 23 ms | **10–11 ms** | |
+| Scroll the Browse source list: late frames | 45% | **1–3%** | |
+| Cold start to first frame (median of 5) | | **0.74 s** | |
+| APK size | | 12.5 MB | **31.5 MB** |
+
+v1.0.3 is larger because it bundles the native libraries for RetroArch shaders for all four CPU types (arm64, 32-bit ARM, x86 and x86_64). Frame times and cold start were measured on v1.0.2.
 
 <details>
 <summary>Reproduce</summary>
