@@ -1,0 +1,67 @@
+name: Retra downloads badge
+
+# Counts release downloads and publishes the README badge to the `badges` branch
+# (https://raw.githubusercontent.com/<owner>/<repo>/badges/downloads.svg), so the
+# badge is served by GitHub itself instead of a shields.io lookup that can time out.
+
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retra-downloads-badge
+  cancel-in-progress: false
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout builder
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: Build badge
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh api "repos/${GITHUB_REPOSITORY}/releases" --paginate --jq '.[].assets[].download_count' | awk '{s+=$1} END {print s+0}')
+          mkdir -p "$RUNNER_TEMP/badge"
+          node tools/downloads-badge/build-badge.cjs "$count" "$RUNNER_TEMP/badge/downloads.svg"
+
+      - name: Publish badge
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          if git fetch --depth=1 origin badges; then
+            git worktree add "$RUNNER_TEMP/badges" FETCH_HEAD
+            git -C "$RUNNER_TEMP/badges" checkout -B badges
+          else
+            git worktree add --detach "$RUNNER_TEMP/badges"
+            git -C "$RUNNER_TEMP/badges" checkout --orphan badges
+            git -C "$RUNNER_TEMP/badges" rm -rf --quiet .
+          fi
+          cp "$RUNNER_TEMP/badge/downloads.svg" "$RUNNER_TEMP/badges/downloads.svg"
+          cd "$RUNNER_TEMP/badges"
+          git add downloads.svg
+          if git diff --cached --quiet; then
+            echo "Badge unchanged"
+            exit 0
+          fi
+          git commit -m "Update downloads badge"
+          git push origin HEAD:badges
