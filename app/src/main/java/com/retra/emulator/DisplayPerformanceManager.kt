@@ -103,20 +103,25 @@ class DisplayPerformanceManager(
 
         var cap = when {
             totalRamBytes in 1 until FOUR_GIB -> 60f
-            // Gameplay benefits from a clean 2:1 120 Hz presentation cadence.
-            // Keep the more conservative 90 Hz cap for the general UI on
-            // 4-6 GiB devices, but do not force ~60 FPS game content into the
-            // uneven 90 Hz cadence when the panel can expose 120 Hz.
-            gameplay -> highRefreshCeiling
-            totalRamBytes in FOUR_GIB until SIX_GIB -> 90f
+            // The UI and gameplay both use the panel's 120 Hz mode on 4 GiB+
+            // phones. A "6 GB" phone reports roughly 5.5 GiB, so the former
+            // 90 Hz UI cap for 4-6 GiB kept most mid-range 120 Hz phones from
+            // ever scrolling at 120 Hz.
             else -> highRefreshCeiling
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && powerManager != null) {
+            val thermal = powerManager.currentThermalStatus
             cap = when {
-                powerManager.currentThermalStatus >= PowerManager.THERMAL_STATUS_SEVERE -> 60f
-                powerManager.currentThermalStatus >= PowerManager.THERMAL_STATUS_MODERATE ->
-                    if (gameplay) 60f else minOf(cap, 90f)
+                thermal >= PowerManager.THERMAL_STATUS_SEVERE -> 60f
+                // Warm: ~60 FPS game content goes to a clean 60 Hz cadence; the
+                // UI steps down to 90 Hz (60 Hz on 4-6 GiB phones, which heat up
+                // sooner) instead of staying at full 120 Hz.
+                thermal >= PowerManager.THERMAL_STATUS_MODERATE -> when {
+                    gameplay -> 60f
+                    totalRamBytes in FOUR_GIB until SIX_GIB -> 60f
+                    else -> minOf(cap, 90f)
+                }
                 else -> cap
             }
         }

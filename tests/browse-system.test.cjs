@@ -39,7 +39,7 @@ test('Sources list is Mihon-style: last used, Pinned, then platform sections; di
     {key:'a/off',name:'Off',platforms:['GB'],pinned:false,enabled:false}
   ];
   const sections = sourceSections(rows,{lastUsed:'a/gba'});
-  assert.deepEqual(sections.map(s => s.title),['','Pinned','GBA','Multi']);
+  assert.deepEqual(sections.map(s => s.title),['Last used','Pinned','GBA','Multi']);
   assert.equal(sections[0].rows[0].key,'a/gba');
   assert.ok(!sections.flatMap(s => s.rows).some(row => row.key === 'a/off'));
   // Searching drops the last-used shortcut and keeps only matches.

@@ -3,25 +3,26 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Retra controller glyph set: 24-unit grid, 2.4 stroke, round caps and joins, #F7F9FC. -->
     <path
-        android:pathData="M5.5,4.5 L16.3,4.5 L18.5,6.7 L18.5,19.5 L5.5,19.5 Z"
+        android:pathData="M6.5,4.5 L15.6,4.5 L19.5,8.4 L19.5,17.5 Q19.5,19.5 17.5,19.5 L6.5,19.5 Q4.5,19.5 4.5,17.5 L4.5,6.5 Q4.5,4.5 6.5,4.5 Z"
         android:fillColor="@android:color/transparent"
         android:strokeColor="#FFF7F9FC"
-        android:strokeWidth="2.25"
+        android:strokeWidth="2.4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
-        android:pathData="M8.2,4.5 L8.2,9.5 L15.2,9.5 L15.2,4.5"
+        android:pathData="M8.5,4.5 L8.5,8.5 L14.5,8.5 L14.5,4.5"
         android:fillColor="@android:color/transparent"
         android:strokeColor="#FFF7F9FC"
-        android:strokeWidth="2.25"
+        android:strokeWidth="2.4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
-        android:pathData="M8.4,13 L15.6,13 M8.4,16 L15.6,16"
+        android:pathData="M8,19.5 L8,14.5 L16,14.5 L16,19.5"
         android:fillColor="@android:color/transparent"
         android:strokeColor="#FFF7F9FC"
-        android:strokeWidth="2.25"
+        android:strokeWidth="2.4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
 </vector>

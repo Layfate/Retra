@@ -10,14 +10,19 @@
    Native drawable constants
    -------------------------------------------------------------------------- */
 #screenSizePage {
+  /* One face palette for every control (bg_controller_* drawables):
+     fill #5C11171D, 1.5dp border #CCFFFFFF, pressed #7545525A + #FFFFFFFF. */
   --native-controller-solid: rgba(17, 23, 29, .361);   /* #5C11171D */
-  --native-controller-pill-solid: rgba(17, 23, 29, .322); /* #5211171D */
+  --native-controller-pill-solid: var(--native-controller-solid);
   --native-controller-pressed: rgba(69, 82, 90, .459); /* #7545525A */
-  --native-controller-pill-pressed: rgba(69, 82, 90, .439); /* #7045525A */
-  --native-controller-circle-border: rgba(255,255,255,.839); /* #D6FFFFFF */
-  --native-controller-square-border: rgba(255,255,255,.800); /* #CCFFFFFF */
-  --native-controller-round-border: rgba(255,255,255,.784); /* #C8FFFFFF */
-  --native-controller-pill-border: rgba(255,255,255,.749); /* #BFFFFFFF */
+  --native-controller-pill-pressed: var(--native-controller-pressed);
+  --native-controller-border: rgba(255,255,255,.800);  /* #CCFFFFFF */
+  --native-controller-circle-border: var(--native-controller-border);
+  --native-controller-square-border: var(--native-controller-border);
+  --native-controller-round-border: var(--native-controller-border);
+  --native-controller-pill-border: var(--native-controller-border);
+  /* One glyph spec (ic_controller_*): 24-unit grid, 2.4 stroke, round caps/joins. */
+  --native-controller-stroke: 2.4;
   --native-controller-glyph: #fff;
   --native-controller-icon: #f7f9fc;
 }
@@ -39,7 +44,7 @@
 #screenSizePage .preview-shoulder {
   width: 72px !important;
   height: 30px !important;
-  border: 1.4px solid var(--native-controller-pill-border) !important;
+  border: 1.5px solid var(--native-controller-pill-border) !important;
   background: var(--native-controller-pill-solid) !important;
   box-shadow: none !important;
   color: var(--native-controller-glyph) !important;
@@ -54,7 +59,7 @@
 }
 #screenSizePage .preview-shoulder:active {
   background: var(--native-controller-pill-pressed) !important;
-  border-color: rgba(255,255,255,.973) !important; /* #F8FFFFFF */
+  border-color: #fff !important;
 }
 
 /* Menu wrapper is 44dp; the native ImageButton face inside is 42dp. */
@@ -83,7 +88,7 @@
   content: none !important;
 }
 #screenSizePage .preview-toolbar.top.landscape-only .toolbar-icon:active {
-  background: rgba(65,79,88,.439) !important; /* #70414F58 */
+  background: var(--native-controller-pressed) !important;
   border-color: #fff !important;
 }
 #screenSizePage .myboy-menu-icon {
@@ -91,7 +96,7 @@
   height: 24px !important;
   fill: none !important;
   stroke: var(--native-controller-icon) !important;
-  stroke-width: 2.45 !important;
+  stroke-width: var(--native-controller-stroke) !important;
   stroke-linecap: round !important;
   stroke-linejoin: round !important;
   filter: none !important;
@@ -125,22 +130,22 @@
 #screenSizePage .preview-dpad .right { left: 106px !important; top: 53px !important; right: auto !important; bottom: auto !important; }
 #screenSizePage .preview-dpad .down { left: 53px !important; top: 106px !important; right: auto !important; bottom: auto !important; }
 
-/* Exact ic_controller_dpad_up.xml artwork: M1,11.5 L8,4.5 L15,11.5,
-   3dp white stroke, square caps, miter joins. */
+/* Exact ic_controller_dpad_up.xml artwork: M5.5,15 L12,8.5 L18.5,15 on the
+   24-unit grid, 2.4 stroke, round caps and joins (rendered 24dp in the 44dp face). */
 #screenSizePage .preview-dpad .dpad::before {
   content: "" !important;
   position: absolute !important;
   left: 50% !important;
   top: 50% !important;
-  width: 16px !important;
-  height: 16px !important;
+  width: 24px !important;
+  height: 24px !important;
   border: 0 !important;
   border-radius: 0 !important;
   background-color: transparent !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  background-size: 16px 16px !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 11.5 L8 4.5 L15 11.5' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E") !important;
+  background-size: 24px 24px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23f7f9fc' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
   box-shadow: none !important;
   filter: none !important;
   transform-origin: center center !important;
@@ -167,14 +172,14 @@
   width: 50px !important;
   height: 24px !important;
   inset: auto !important;
-  border: 1.4px solid var(--native-controller-pill-border) !important;
+  border: 1.5px solid var(--native-controller-pill-border) !important;
   border-radius: 999px !important;
   background: var(--native-controller-pill-solid) !important;
   box-shadow: none !important;
 }
 #screenSizePage .preview-start-select span:active {
   background: var(--native-controller-pill-pressed) !important;
-  border-color: rgba(255,255,255,.973) !important;
+  border-color: #fff !important;
 }
 
 /* A/B group — native 54dp circles, 150 x 94dp group. */
@@ -286,7 +291,7 @@
   content: none !important;
 }
 #screenSizePage .extra-control-face.square-icon.myboy-menu-button.utility-menu-button:active {
-  background: rgba(65,79,88,.439) !important;
+  background: var(--native-controller-pressed) !important;
   border-color: #fff !important;
 }
 #screenSizePage .extra-control-face.square-icon.myboy-menu-button.utility-menu-button .control-svg {
@@ -298,9 +303,9 @@
   stroke-linejoin: round !important;
   filter: none !important;
 }
-#screenSizePage .quick-load-reference-icon { stroke-width: 2.45 !important; }
-#screenSizePage .quick-save-reference-icon { stroke-width: 2.25 !important; }
-#screenSizePage .fast-forward-reference-icon { stroke-width: 2.75 !important; }
+#screenSizePage .quick-load-reference-icon,
+#screenSizePage .quick-save-reference-icon,
+#screenSizePage .fast-forward-reference-icon { stroke-width: var(--native-controller-stroke) !important; }
 
 /* Screenshot — GameplayLayoutController.makeScreenshotControl(): 56dp ImageButton
    with the same bg_controller_round_rect and ic_controller_screenshot vector. */
@@ -322,7 +327,7 @@
   height: 24px !important;
   fill: none !important;
   stroke: var(--native-controller-icon) !important;
-  stroke-width: 1.8 !important;
+  stroke-width: var(--native-controller-stroke) !important;
   stroke-linecap: round !important;
   stroke-linejoin: round !important;
   filter: none !important;
@@ -363,9 +368,10 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
   stroke-linejoin: round !important;
   filter: none !important;
 }
-#screenSizePage .add-control-icon .quick-load-reference-icon { stroke-width: 2.45 !important; }
-#screenSizePage .add-control-icon .quick-save-reference-icon { stroke-width: 2.25 !important; }
-#screenSizePage .add-control-icon .fast-forward-reference-icon { stroke-width: 2.75 !important; }
+#screenSizePage .add-control-icon .control-svg,
+#screenSizePage .add-control-icon .quick-load-reference-icon,
+#screenSizePage .add-control-icon .quick-save-reference-icon,
+#screenSizePage .add-control-icon .fast-forward-reference-icon { stroke-width: var(--native-controller-stroke) !important; }
 
 /* Accurate base-control thumbnails when a removed built-in control is offered
    in Add control again. These deliberately preview the real gameplay geometry
@@ -375,7 +381,7 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
   height: 30px !important;
   display: grid !important;
   place-items: center !important;
-  border: 1.4px solid var(--native-controller-pill-border) !important;
+  border: 1.5px solid var(--native-controller-pill-border) !important;
   border-radius: 12px 26px 16px 12px !important;
   background: var(--native-controller-pill-solid) !important;
   box-shadow: none !important;
@@ -403,9 +409,9 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 9px;
-  height: 9px;
-  background: center/9px 9px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 11.5 L8 4.5 L15 11.5' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  width: 12px;
+  height: 12px;
+  background: center/12px 12px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23f7f9fc' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 #screenSizePage .add-control-icon.native-dpad-preview .up { left:25px; top:0; }
 #screenSizePage .add-control-icon.native-dpad-preview .left { left:0; top:25px; }

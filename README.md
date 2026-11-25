@@ -15,7 +15,7 @@ Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art libr
 
 ## Download
 
-[![Retra Stable](https://img.shields.io/badge/version-v1.0.3-E0457B?label=Stable&labelColor=27303D)](https://github.com/Layfate/Retra/releases/latest)
+[![Retra Stable](https://img.shields.io/badge/version-v1.0.4-E0457B?label=Stable&labelColor=27303D)](https://github.com/Layfate/Retra/releases/latest)
 
 *Requires Android 8.0 or higher.*
 

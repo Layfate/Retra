@@ -1,13 +1,14 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="16dp"
-    android:height="16dp"
-    android:viewportWidth="16"
-    android:viewportHeight="16">
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Retra controller glyph set: 24-unit grid, 2.4 stroke, round caps and joins, #F7F9FC. -->
     <path
-        android:pathData="M1,11.5 L8,4.5 L15,11.5"
+        android:pathData="M5.5,15 L12,8.5 L18.5,15"
         android:fillColor="@android:color/transparent"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="3"
-        android:strokeLineCap="square"
-        android:strokeLineJoin="miter" />
+        android:strokeColor="#FFF7F9FC"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

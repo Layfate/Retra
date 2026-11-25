@@ -1,3 +1,16 @@
+## Retra v1.0.4 — More sources, felt haptics, unified controller
+
+- Extension repo: Retra Sources 6.0 adds PokéMerald (GBA/GBC, WordPress API), GameBrew (GBA hacks and translations, MediaWiki API), FE Universe (completed FE6/FE7/FE8-based Fire Emblem hacks, Discourse JSON), and website sources RHDI and PokéCommunity. Live build: PokéMerald 169, GameBrew 80, FE Universe 251 games, with artwork.
+- Extension repo: every source shows its website's own logo. Romhacking.net and Hackdex replace the generated cartridge placeholders; logos the builder cannot fetch live in `tools/extension-repo/icons/`. Catalog text decodes `&hellip;`.
+- Browse: the last-used source sits under a "Last used" heading above Pinned.
+- Display: the UI uses the panel's 120 Hz mode on 4 GiB+ phones (a "6 GB" phone reports ~5.5 GiB and was capped at 90 Hz). Moderate heat steps the UI to 90 Hz (60 Hz on 4–6 GiB). Sheet and switch transitions animate only transform, opacity and colour.
+- Controller: one glyph set (24-unit grid, 2.4 stroke, round caps, #F7F9FC) and one face palette (fill #5C11171D, 1.5dp #CCFFFFFF border, pressed #7545525A) for every on-screen control. New Quick load (history arrow), Quick save, Fast forward, Screenshot and D-pad glyphs; lettered buttons share sans-serif-medium. The Screen Editor mirrors the same artwork.
+- Controller haptics: the D-pad ticks lightly on press and on each direction change (its own 40 ms limit, independent of A/B), never while a direction is held or on release; sound plays on the first press only.
+- Controller haptics are felt on every phone: one 14 ms pulse at a light fixed strength on the vibrator (game/media usage, `VIBRATE` permission) replaces `CLOCK_TICK` / `SEGMENT_FREQUENT_TICK`, which many phones (Xiaomi/HyperOS among them) played too faintly or not at all and which the system Touch feedback setting muted. The view haptic remains as a fallback.
+- Controller sound: a bundled 18 ms click on the media stream (SoundPool) replaces the system key-click, which was silent with Touch sounds off or the ringer on silent. It loads when controls are bound, so the first press clicks.
+- Extension repo builder: a site that is unreachable during a rebuild republishes its previous catalog and logo instead of failing every source; the libretro box-art index is retried.
+- `versionName 1.0.4`, `versionCode 455`.
+
 ## Retra v1.0.3 — One-tap ROM hack downloads and RetroArch shaders
 
 - Browse: Download resolves the file behind a ROM hack page (`WebsiteDownloadResolver`): ranks the page's download buttons, follows MediaFire (including dkey pages), MEGA (API + AES-CTR decryption), Google Drive, GitHub releases and direct links, probes each candidate and falls back to mirrors. Catalogs of commercial ("official") games keep opening the website.

@@ -21,6 +21,8 @@ import com.retra.emulator.MainActivity.Companion.KEY_L
  * hardened independently without growing GameplayLayoutController.
  */
 internal fun MainActivity.bindControls() {
+    // Create feedback now so the click sample is loaded before the first press.
+    controllerFeedback.prepare()
     bindKey(binding.buttonA, KEY_A)
     bindKey(binding.buttonB, KEY_B)
     bindDpad()
@@ -190,7 +192,8 @@ internal fun MainActivity.setActiveDpadMask(nextMask: Int) {
     syncDirection(KEY_DOWN, binding.buttonDown)
     syncDirection(KEY_LEFT, binding.buttonLeft)
     syncDirection(KEY_RIGHT, binding.buttonRight)
-    if (nextMask != 0) controllerFeedback.perform(binding.dpadContainer)
+    // Light tick on press and on each direction change; none while held.
+    controllerFeedback.performDpad(binding.dpadContainer, gameplayInputState.activeDpadMask, nextMask)
     gameplayInputState.activeDpadMask = nextMask
 }
 

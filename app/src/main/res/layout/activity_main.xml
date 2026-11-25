@@ -109,6 +109,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_controller_shoulder_left"
                 android:gravity="center"
+                android:fontFamily="sans-serif-medium"
                 android:text="L"
                 android:textColor="#FFFFFF"
                 android:textSize="17sp"
@@ -123,6 +124,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_controller_shoulder_right"
                 android:gravity="center"
+                android:fontFamily="sans-serif-medium"
                 android:text="R"
                 android:textColor="#FFFFFF"
                 android:textSize="17sp"
@@ -219,7 +221,7 @@
                     android:layout_gravity="top|center_horizontal"
                     android:background="@drawable/bg_controller_square"
                     android:contentDescription="Up"
-                    android:padding="14dp"
+                    android:padding="10dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
 
@@ -230,7 +232,7 @@
                     android:layout_gravity="center_vertical|start"
                     android:background="@drawable/bg_controller_square"
                     android:contentDescription="Left"
-                    android:padding="14dp"
+                    android:padding="10dp"
                     android:rotation="-90"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
@@ -242,7 +244,7 @@
                     android:layout_gravity="center_vertical|end"
                     android:background="@drawable/bg_controller_square"
                     android:contentDescription="Right"
-                    android:padding="14dp"
+                    android:padding="10dp"
                     android:rotation="90"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
@@ -254,7 +256,7 @@
                     android:layout_gravity="bottom|center_horizontal"
                     android:background="@drawable/bg_controller_square"
                     android:contentDescription="Down"
-                    android:padding="14dp"
+                    android:padding="10dp"
                     android:rotation="180"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />

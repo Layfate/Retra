@@ -107,3 +107,9 @@ test('retired playtime helpers are owned by StatisticsRepository after refactor'
   assert.match(stats, /fun clearPlaytime\(romId: String\)/);
   assert.doesNotMatch(activity, /playtimeKey\(/);
 });
+
+test('the UI runs at the panel 120 Hz mode on 4 GiB+ phones instead of a 90 Hz cap', () => {
+  const policy = display.slice(display.indexOf('fun adaptiveRefreshCapHz'), display.indexOf('private fun applyAdaptiveMode'));
+  assert.match(policy, /totalRamBytes in 1 until FOUR_GIB -> 60f\s*\/\/[\s\S]*?else -> highRefreshCeiling\s*\}/);
+  assert.doesNotMatch(policy, /totalRamBytes in FOUR_GIB until SIX_GIB -> 90f/);
+});

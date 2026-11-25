@@ -1,34 +1,20 @@
-# Retra v1.0.4 — Release Notes
+# Retra v1.0.4
 
-**Release:** [Retra v1.0.4 on GitHub](https://github.com/lascent/Retra/releases/tag/v1.0.4)
+More ROM hack sources with their real logos, buttons you can actually feel, a cleaner on-screen controller, and 120 Hz on more phones.
 
-Retra v1.0.4 focuses on high-speed gameplay smoothness and production hardening of the latest-frame GPU pipeline. The emulation core, video presentation, and audio output remain decoupled so Speed Mode can advance the game at the selected multiplier without building a renderer backlog.
+## Changes
 
-## Highlights
+- **More sources.** Retra Sources 6.0 adds **PokéMerald** (GBA and GBC), **GameBrew** (GBA hacks and translations, with author and version) and **FE Universe** (completed Fire Emblem hacks built on The Binding Blade, The Blazing Blade and The Sacred Stones), each with cover art. **RHDI** (the Romhacking Database Initiative) and **PokéCommunity**'s Completed ROM Hacks Showcase open as website sources in Retra's browser. Browse → Extensions shows **Update available** for Retra Sources; update it to see them. This part also works in v1.0.3.
+- **Real logos.** Every source shows its own website's logo. Romhacking.net and Hackdex no longer use a placeholder cartridge.
+- **Last used.** The source you opened last sits under a **Last used** heading at the top of Browse → Sources, above Pinned.
+- **Buttons you can feel.** On many phones the controller vibration was too faint to notice, or did nothing when the system Touch feedback setting was off. Each press now plays one short, light pulse from the vibration motor. Settings → Controller haptics turns it off.
+- **D-pad haptics.** The D-pad ticks once when you press a direction and once each time you change direction (for example Right → Up-Right → Up). Holding a direction or letting go never vibrates.
+- **Controller sound you can hear.** The tap sound used the system touch sound, which is silent when Touch sounds is off or the phone is on silent. It now plays a short click at your media volume. Settings → Controller sound turns it off.
+- **Cleaner controller.** Every on-screen button uses one icon style and one look: the same line weight, rounded ends, fill, border and pressed state. Quick load has a clearer icon, and L, R, A, B and combo buttons share one font. The Screen Editor shows the same artwork.
+- **120 Hz on more phones.** The app's screens now use the panel's 120 Hz mode on phones with 4 GB of memory or more. Phones sold as "6 GB" were previously held at 90 Hz. Battery saver, low-memory phones and an overheating phone still step down to save power.
 
-- **Four-buffer latest-frame mailbox** — producer, pending, rendering, and spare buffers are preallocated for each native video size.
-- **Allocation-free normal frame handoff** — the emulation producer and GL consumer reuse mutable result holders instead of creating new result objects every frame.
-- **No emergency framebuffer allocation in the hot path** — if an unexpected pool invariant is violated, Retra drops that visual publish and keeps emulation progressing rather than allocating during an existing GPU stall.
-- **Smooth fractional turbo slices** — `TurboSlicePlanner` distributes neighboring integer batch sizes to match the GBA's ~59.73 Hz base cadence while preserving long-term 2×/4×/8×/16× timing.
-- **Hitch-safe turbo recovery** — substantial Android/GC stalls re-anchor the cumulative governor rather than producing a visible catch-up burst.
-- **Safer VSync scheduling** — real mailbox generations are coalesced with CAS, posted Runnables are reused, and the presenter resets its generation state for every new gameplay session.
-- **Cleaner speed transitions** — changing the multiplier resets pacing, turbo planning, and the audio transform before the first frame at the new speed.
-- **Native turbo audio** — the existing 32-tap polyphase FIR path keeps high-speed PCM compression native so unnecessary raw 8×/16× audio does not cross JNI.
+## Install
 
-## Presentation policy
+Download **Retra-v1.0.4.apk** and open it on your Android device (Android 8.0 or newer). It installs over v1.0.3 and keeps your games, saves and settings. Android may ask you to allow installs from your browser or file manager.
 
-Retra continues to keep game speed independent from screen presentation. The gameplay surface uses a stable cadence-compatible 60 or 120 Hz path for the session rather than forcing 144/165 Hz mode changes during Speed Mode. Faster emulated states may be intentionally skipped visually; the newest completed state is presented and stale pending states are recycled.
-
-## Compatibility
-
-The v1.0.4 changes do not alter save formats, ROM identity, save-state storage, controller-layout storage, or backup formats. Existing v1.0.3 installations can upgrade normally through Android using `versionCode 451`.
-
-## Validation
-
-The dependency-light release gate passes **423/423 regression tests** and protects the four-buffer pool, allocation-free hot publish/acquire paths, session generation reset, reusable VSync scheduling, speed-transition resets, exact cumulative turbo behavior, latest-frame stale dropping, native turbo audio path, UI/XML integrity, and release metadata consistency.
-
-Physical-device validation is still recommended across low-, mid-, and high-end Android hardware, especially sustained 8×/16× sessions, audio transitions, lifecycle pause/resume, and thermal load.
-
-## Save import
-
-- Gameplay **Import save** supports both `.sav` and `.srm` battery-save files with ROM-match and save-size validation.
+Version: `1.0.4` / Android versionCode `455`.

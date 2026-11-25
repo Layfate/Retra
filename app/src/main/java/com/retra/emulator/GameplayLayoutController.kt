@@ -669,7 +669,8 @@ internal fun MainActivity.makeExtraActionTextView(label: String): TextView {
         setTextColor(Color.WHITE)
         textSize = 16f
         gravity = Gravity.CENTER
-        typeface = Typeface.DEFAULT_BOLD
+        // Same face as the native A/B/L/R labels (sans-serif-medium, bold).
+        typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
         setBackgroundResource(R.drawable.bg_controller_circle)
         includeFontPadding = false
         isClickable = false

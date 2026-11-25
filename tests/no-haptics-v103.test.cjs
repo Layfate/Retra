@@ -5,13 +5,34 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 
-test('v1.0.3 controller haptics use system feedback without raw vibration permissions', () => {
+test('controller haptics are a felt pulse from the vibrator, not a mutable UI tick', () => {
   const manifest = read('app/src/main/AndroidManifest.xml');
   const feedback = read('app/src/main/java/com/retra/emulator/ControllerFeedbackManager.kt');
+  // The view haptic constants were the faintest effects Android has and many phones skipped
+  // them, so presses were not felt. One short light pulse plays on the vibrator instead.
+  assert.match(manifest, /android\.permission\.VIBRATE/);
+  assert.match(feedback, /VibrationEffect\.createOneShot\(TICK_MS, amplitude\)/);
+  assert.match(feedback, /TICK_MS = 14L/);
+  assert.match(feedback, /TICK_AMPLITUDE = 140/);
+  // Game/media usage, so the system touch-feedback setting and a silent ringer do not mute it.
+  assert.match(feedback, /VibrationAttributes\.USAGE_MEDIA/);
+  assert.match(feedback, /AudioAttributes\.USAGE_GAME/);
+  // The view haptic remains only as the fallback when no vibrator service exists.
   assert.match(feedback, /HapticFeedbackConstants\.(?:CLOCK_TICK|SEGMENT_FREQUENT_TICK)/);
-  assert.match(feedback, /performHapticFeedback/);
-  assert.doesNotMatch(feedback, /VibrationEffect|VibratorManager|\bVibrator\b/);
-  assert.doesNotMatch(manifest, /android\.permission\.VIBRATE/);
+  assert.doesNotMatch(feedback, /createWaveform/, 'never a long or repeating vibration');
+});
+
+test('controller click is a bundled sample on the media stream, not the system touch sound', () => {
+  const feedback = read('app/src/main/java/com/retra/emulator/ControllerFeedbackManager.kt');
+  const activity = read('app/src/main/java/com/retra/emulator/MainActivity.kt');
+  const touch = read('app/src/main/java/com/retra/emulator/GameplayTouchController.kt');
+  assert.ok(fs.existsSync(path.join(root, 'app/src/main/res/raw/controller_click.wav')));
+  assert.match(feedback, /SoundPool\.Builder\(\)/);
+  assert.match(feedback, /R\.raw\.controller_click/);
+  assert.doesNotMatch(feedback, /FX_KEY_CLICK|playSoundEffect/);
+  // Loaded when controls are bound, so the very first press is not silent; released with the activity.
+  assert.match(touch, /controllerFeedback\.prepare\(\)/);
+  assert.match(activity, /if \(controllerFeedbackDelegate\.isInitialized\(\)\) controllerFeedback\.release\(\)/);
 });
 
 test('controller sound and haptics remain independently configurable', () => {

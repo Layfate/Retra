@@ -37,8 +37,8 @@ test('native gameplay icons match the current Screen Editor visual set', () => {
   const dpad = read('app/src/main/res/drawable/ic_controller_dpad_up.xml');
   const quickSave = read('app/src/main/res/drawable/ic_controller_quick_save.xml');
   const layout = read('app/src/main/res/layout/activity_main.xml');
-  assert.match(fast, /M5\.5,6\.5 L11,12 L5\.5,17\.5/);
-  assert.match(dpad, /M1,11\.5 L8,4\.5 L15,11\.5/);
-  assert.match(quickSave, /M5\.5,4\.5 L16\.3,4\.5 L18\.5,6\.7/);
+  assert.match(fast, /M6\.5,6\.5 L12,12 L6\.5,17\.5/);
+  assert.match(dpad, /M5\.5,15 L12,8\.5 L18\.5,15/);
+  assert.match(quickSave, /M6\.5,4\.5 L15\.6,4\.5 L19\.5,8\.4/);
   assert.doesNotMatch(layout, /@drawable\/bg_controller_dpad_center/);
 });

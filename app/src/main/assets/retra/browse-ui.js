@@ -24,7 +24,7 @@
     const visible = filterSources(sources.filter(source => source.enabled !== false), query, platform, sort);
     const sections = [];
     const last = !query && visible.find(source => source.key === lastUsed);
-    if (last) sections.push({title:'', rows:[last]});
+    if (last) sections.push({title:'Last used', rows:[last]});
     const pinned = visible.filter(source => source.pinned);
     if (pinned.length) sections.push({title:'Pinned', rows:pinned});
     for (const group of [...platformNames, 'Multi']) {

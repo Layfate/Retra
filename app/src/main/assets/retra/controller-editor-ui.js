@@ -121,13 +121,13 @@ function makeExtraControlMarkup(type){
     case 'turboAB':
       return '<span class="extra-control-face turbo-face"><span>B</span><span>A</span></span>';
     case 'quickLoad':
-      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg myboy-reference-icon quick-load-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.35 16.35c.95-4.15 4.1-6.95 8.35-7.55"></path><path d="M12.85 6.15 17.85 7.95l-3 4.05"></path></svg></span>';
+      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg myboy-reference-icon quick-load-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.25 12A7.5 7.5 0 1 1 7.93 17.75"></path><path d="M2.75 9.5 5.25 12l2.5-2.5"></path><path d="M12.75 8v4l2.75 1.75"></path></svg></span>';
     case 'quickSave':
-      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg myboy-reference-icon quick-save-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4.5h10.8l2.2 2.2v12.8h-13z"></path><path d="M8.2 4.5v5h7v-5"></path><path d="M8.4 13h7.2"></path><path d="M8.4 16h7.2"></path></svg></span>';
+      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg myboy-reference-icon quick-save-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h9.1l3.9 3.9v9.1q0 2-2 2h-11q-2 0-2-2v-11q0-2 2-2z"></path><path d="M8.5 4.5v4h6v-4"></path><path d="M8 19.5v-5h8v5"></path></svg></span>';
     case 'fastForward':
-      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m11 6.5 5.5 5.5-5.5 5.5"></path></svg></span>';
+      return '<span class="extra-control-face square-icon myboy-menu-button utility-menu-button"><svg class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m12 6.5 5.5 5.5-5.5 5.5"></path></svg></span>';
     case 'screenshot':
-      return '<span class="extra-control-face square-icon"><svg class="control-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7.5 8.5 5h7L17 7.5h2A2 2 0 0 1 21 9.5v8A2 2 0 0 1 19 19.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"></path><circle cx="12" cy="13" r="3.2"></circle></svg></span>';
+      return '<span class="extra-control-face square-icon"><svg class="control-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8.5a2 2 0 0 1 2-2h2l1.5-2h4l1.5 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z"></path><circle cx="12" cy="13" r="3.25"></circle></svg></span>';
     default:
       return `<span class="extra-control-face circle-text">${(previewControlCatalog[type]?.label || '?').slice(0, 2)}</span>`;
   }
@@ -168,13 +168,13 @@ function makeAddControlItemInnerMarkup(type){
     case 'comboRB':
       return '<span class="add-control-icon circle">RB</span><span class="add-control-label">TR+B</span>';
     case 'quickLoad':
-      return '<span class="add-control-icon square"><svg class="control-svg myboy-reference-icon quick-load-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.35 16.35c.95-4.15 4.1-6.95 8.35-7.55"></path><path d="M12.85 6.15 17.85 7.95l-3 4.05"></path></svg></span><span class="add-control-label">Quick load</span>';
+      return '<span class="add-control-icon square"><svg class="control-svg myboy-reference-icon quick-load-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.25 12A7.5 7.5 0 1 1 7.93 17.75"></path><path d="M2.75 9.5 5.25 12l2.5-2.5"></path><path d="M12.75 8v4l2.75 1.75"></path></svg></span><span class="add-control-label">Quick load</span>';
     case 'quickSave':
-      return '<span class="add-control-icon square"><svg class="control-svg myboy-reference-icon quick-save-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 4.5h10.8l2.2 2.2v12.8h-13z"></path><path d="M8.2 4.5v5h7v-5"></path><path d="M8.4 13h7.2"></path><path d="M8.4 16h7.2"></path></svg></span><span class="add-control-label">Quick save</span>';
+      return '<span class="add-control-icon square"><svg class="control-svg myboy-reference-icon quick-save-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h9.1l3.9 3.9v9.1q0 2-2 2h-11q-2 0-2-2v-11q0-2 2-2z"></path><path d="M8.5 4.5v4h6v-4"></path><path d="M8 19.5v-5h8v5"></path></svg></span><span class="add-control-label">Quick save</span>';
     case 'fastForward':
-      return '<span class="add-control-icon square"><svg class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m11 6.5 5.5 5.5-5.5 5.5"></path></svg></span><span class="add-control-label">Fast forward</span>';
+      return '<span class="add-control-icon square"><svg class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m12 6.5 5.5 5.5-5.5 5.5"></path></svg></span><span class="add-control-label">Fast forward</span>';
     case 'screenshot':
-      return '<span class="add-control-icon square"><svg class="control-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7.5 8.5 5h7L17 7.5h2A2 2 0 0 1 21 9.5v8A2 2 0 0 1 19 19.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"></path><circle cx="12" cy="13" r="3.2"></circle></svg></span><span class="add-control-label">Screenshot</span>';
+      return '<span class="add-control-icon square"><svg class="control-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8.5a2 2 0 0 1 2-2h2l1.5-2h4l1.5 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z"></path><circle cx="12" cy="13" r="3.25"></circle></svg></span><span class="add-control-label">Screenshot</span>';
     default:
       return `<span class="add-control-icon circle">${label.slice(0, 2).toUpperCase()}</span><span class="add-control-label">${label}</span>`;
   }

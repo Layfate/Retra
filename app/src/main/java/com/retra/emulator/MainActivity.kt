@@ -219,13 +219,14 @@ class MainActivity : AppCompatActivity() {
         RetraPreferences(this)
     }
 
-    internal val controllerFeedback: ControllerFeedbackManager by lazy {
+    private val controllerFeedbackDelegate = lazy {
         ControllerFeedbackManager(
             context = this,
             soundEnabled = { prefs.getBoolean(CONTROLLER_SOUND_PREF, true) },
             hapticsEnabled = { prefs.getBoolean(CONTROLLER_HAPTICS_PREF, true) }
         )
     }
+    internal val controllerFeedback: ControllerFeedbackManager by controllerFeedbackDelegate
 
     internal val audioController: AudioController by lazy {
         AudioController(
@@ -927,6 +928,7 @@ class MainActivity : AppCompatActivity() {
         gameplayMenuDialog = null
         stopEmulation()
         audioController.release()
+        if (controllerFeedbackDelegate.isInitialized()) controllerFeedback.release()
         if (romLoaded) {
             shutdownCore()
             commitActiveWorkingSaves()

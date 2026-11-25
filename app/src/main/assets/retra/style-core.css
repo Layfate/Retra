@@ -748,10 +748,10 @@ button.detail-row:hover{background:rgba(255,255,255,.02)}
 .switch{position:relative;width:44px;height:24px}
 .switch input{display:none}
 .slider{
-  position:absolute;inset:0;border-radius:999px;background:#4a4f62;transition:.2s
+  position:absolute;inset:0;border-radius:999px;background:#4a4f62;transition:background-color .2s
 }
 .slider::before{
-  content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#ececf0;transition:.2s
+  content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#ececf0;transition:transform .2s,background-color .2s
 }
 .switch input:checked + .slider{background:#76d7d6}
 .switch input:checked + .slider::before{transform:translateX(20px);background:#b3ffff}
@@ -1282,7 +1282,7 @@ body.more-headerless main{height:calc(100% - var(--bottom-nav-total-height));pad
   padding:10px 0 18px;
   transform:translateY(20px);
   opacity:0;
-  transition:.22s ease;
+  transition:transform .22s ease,opacity .22s ease;
 }
 .sheet-backdrop.open .rom-sheet{
   transform:translateY(0);

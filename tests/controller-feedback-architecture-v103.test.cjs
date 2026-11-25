@@ -20,11 +20,10 @@ const models = read('app/src/main/java/com/retra/emulator/RetraModels.kt');
   assert.match(manager, /HapticFeedbackConstants\.CLOCK_TICK/);
   assert.match(manager, /HapticFeedbackConstants\.SEGMENT_FREQUENT_TICK/);
   assert.match(manager, /Build\.VERSION\.SDK_INT >= 34/);
-  assert.match(manager, /FX_KEY_CLICK/);
+  assert.match(manager, /R\.raw\.controller_click/);
   assert.match(manager, /HAPTIC_GAP_MS = 26L/);
   assert.match(manager, /SOUND_GAP_MS = 28L/);
-  assert.doesNotMatch(manager, /Vibrator|VibrationEffect/);
-  assert.doesNotMatch(touch, /AudioManager|performHapticFeedback|SystemClock/);
+  assert.doesNotMatch(touch, /AudioManager|SoundPool|Vibrator|performHapticFeedback|SystemClock/);
   assert.match(touch, /controllerFeedback\.perform/);
   assert.match(layout, /controllerFeedback\.perform/);
 });
@@ -45,4 +44,16 @@ test('shared ROM/import models no longer depend on nested MainActivity types', (
   }
   const romUi = read('app/src/main/java/com/retra/emulator/RomUiController.kt');
   assert.doesNotMatch(romUi, /MainActivity\.(NativeLibraryItem|PendingPatchLaunch|PendingLocate)/);
+});
+
+test('D-pad gives a light tick on press and each direction change, never while held', () => {
+  assert.match(manager, /fun performDpad\(view: View, previousMask: Int, nextMask: Int\)/);
+  assert.match(manager, /DPAD_HAPTIC_GAP_MS = 40L/);
+  assert.match(manager, /nextMask != 0 && nextMask != previousMask && nowMs - lastTickMs >= DPAD_HAPTIC_GAP_MS/);
+  // Its own rate limit: an A/B tick never swallows a direction change.
+  assert.match(manager, /lastDpadHapticAtMs/);
+  // The D-pad reports every mask change once; held MOVE events return early before feedback.
+  assert.match(touch, /if \(gameplayInputState\.activeDpadMask == nextMask\) return/);
+  assert.match(touch, /controllerFeedback\.performDpad\(binding\.dpadContainer, gameplayInputState\.activeDpadMask, nextMask\)/);
+  assert.doesNotMatch(touch, /if \(nextMask != 0\) controllerFeedback\.perform\(/);
 });
