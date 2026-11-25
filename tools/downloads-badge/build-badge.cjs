@@ -2,7 +2,7 @@
 
 // Writes the README downloads badge as a self-contained SVG, styled like the
 // shields.io badges next to it. Usage: node build-badge.cjs <count> <out.svg>
-// Served from the `badges` branch so GitHub's image proxy never waits on shields.io.
+// Committed to docs/badges/ on main so GitHub's image proxy never waits on shields.io.
 
 const fs = require('fs');
 
