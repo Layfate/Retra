@@ -2,8 +2,8 @@
 //
 //   node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir>
 //
-// The default extension, Retra Sources, bundles Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid,
-// Romhacking.net and Hackdex sources.
+// The default extension, Retra Sources, bundles Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald,
+// Operation iDroid, GameBrew, FE Universe, Romhacking.net, Hackdex, RHDI and PokéCommunity sources.
 // Optional --homebrew extensions:
 //   * Retra Homebrew Sample  - the CC0 Retra Pad cartridge (samples/catalog-extension).
 //   * Homebrew Hub           - every GB, GBC and GBA entry of the gbdev Homebrew Hub
@@ -180,8 +180,17 @@ const SITES = [
   {id:'pokecoders', name:'PokéCoders', website:'https://www.pokemoncoders.com/',
     api:'https://www.pokemoncoders.com/wp-json/wp/v2/', searchUrl:'https://www.pokemoncoders.com/?s={query}',
     icon:'https://static.pokemoncoders.com/wp-content/uploads/2018/05/cropped-icon-amp-google.png',
-    categories:{GBA:'gba-rom-hacks', GBC:'gbc-rom-hacks'}}
+    categories:{GBA:'gba-rom-hacks', GBC:'gbc-rom-hacks'}},
+  {id:'pokemerald', name:'PokéMerald', website:'https://pokemerald.com/',
+    api:'https://pokemerald.com/wp-json/wp/v2/', searchUrl:'https://pokemerald.com/?s={query}',
+    logo:'pokemerald.png', categories:{GBA:'gba', GBC:'gbc'}}
 ];
+// Site logos kept in tools/extension-repo/icons/ (each site's own favicon or app icon, so a source looks
+// like its website). Used where the builder cannot or should not fetch the icon on every weekly rebuild.
+const LOGOS = path.join(__dirname, 'icons');
+async function siteLogo(site){
+  return site.logo ? fs.readFileSync(path.join(LOGOS, site.logo)) : fetchRetry(site.icon, 'buffer');
+}
 const ROMSGAMES = {name:'Roms Games', website:'https://www.romsgames.net/',
   searchUrl:'https://www.romsgames.net/search/?q={query}', icon:'https://www.romsgames.net/image/apple-touch-icon.png'};
 // Operation iDroid (PokeHacks): a Next.js site without a public API. Hack pages are listed in its
@@ -191,20 +200,35 @@ const IDROID = {id:'operationidroid', name:'Operation iDroid', website:'https://
 // Sites behind a bot challenge (Cloudflare / Vercel) cannot be cataloged by the builder and are not
 // worked around. They are website sources: Retra opens them in its in-app browser, where the user
 // passes the challenge, searches, and downloads ROM, ZIP or patch files into Library.
+// RHDI renders its database over a websocket and PokéCommunity blocks automated requests, so they are
+// website sources too.
 const WEB_ONLY = [
   {id:'romhacking', name:'Romhacking.net', website:'https://www.romhacking.net/hacks/',
-    searchUrl:'https://www.romhacking.net/?page=hacks&title={query}&hacksearch=Go', colors:[[214,40,40],[255,255,255]]},
-  {id:'hackdex', name:'Hackdex', website:'https://www.hackdex.app/', colors:[[40,92,214],[255,214,0]]}
+    searchUrl:'https://www.romhacking.net/?page=hacks&title={query}&hacksearch=Go', logo:'romhacking.png'},
+  {id:'hackdex', name:'Hackdex', website:'https://www.hackdex.app/', logo:'hackdex.png'},
+  {id:'rhdi', name:'RHDI', website:'https://romhack.ing/', logo:'rhdi.png'},
+  {id:'pokecommunity', name:'PokéCommunity', website:'https://www.pokecommunity.com/forums/completed-rom-hacks-showcase.184/',
+    logo:'pokecommunity.png'}
 ];
-const EXTENSION = {id:'org.retra.romhackplaza', name:'Retra Sources', versionCode:5, versionName:'5.0'};
+// GameBrew: a MediaWiki with a public API. GBA hack and translation pages carry an infobox (title,
+// author, version, date, description) and a page image.
+const GAMEBREW = {id:'gamebrew', name:'GameBrew', website:'https://www.gamebrew.org/wiki/List_of_all_GBA_Rom_Hacks',
+  api:'https://www.gamebrew.org/api.php', searchUrl:'https://www.gamebrew.org/index.php?search={query}', logo:'gamebrew.png',
+  categories:['GBA rom hacks', 'GBA game hacks', 'GBA game translations']};
+// FE Universe: the Fire Emblem hacking community (Discourse, public JSON). Completed projects tagged with a
+// GBA base game (FE6, FE7 or FE8) become the catalog.
+const FEU = {id:'feuniverse', name:'FE Universe', website:'https://feuniverse.us/c/projects/17',
+  list:'https://feuniverse.us/tags/c/projects/17/complete_project.json', searchUrl:'https://feuniverse.us/search?q={query}',
+  logo:'feuniverse.png', bases:{fe6_base:'The Binding Blade', fe7_base:'The Blazing Blade', fe8_base:'The Sacred Stones'}};
+const EXTENSION = {id:'org.retra.romhackplaza', name:'Retra Sources', versionCode:6, versionName:'6.0'};
 const GAME_PLATFORM = {'game boy advance':'GBA', 'game boy color':'GBC', 'game boy':'GB'};
 function plainText(value){
-  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|eacute);/gi, (all, entity) => {
+  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|eacute|hellip);/gi, (all, entity) => {
     if (entity[0] === '#') {
       const code = entity[1].toLowerCase() === 'x' ? parseInt(entity.slice(2), 16) : Number(entity.slice(1));
       return code > 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff) ? String.fromCodePoint(code) : '';
     }
-    return {amp:'&', quot:'"', apos:"'", lt:'<', gt:'>', nbsp:' ', eacute:'é'}[entity.toLowerCase()];
+    return {amp:'&', quot:'"', apos:"'", lt:'<', gt:'>', nbsp:' ', eacute:'é', hellip:'…'}[entity.toLowerCase()];
   }).replace(/\s+/g, ' ').trim();
 }
 function websiteGame(post, platform, site){
@@ -312,14 +336,97 @@ async function idroidCatalogs(){
   assert(catalogs.length, IDROID.name + ' returned no GB, GBC or GBA hacks');
   return catalogs;
 }
-/** Original placeholder logo for a website source: a two-tone cartridge (no site branding is copied). */
-function siteIcon([body, label]){
-  return sample.png(96, 96, (x, y) => {
-    const shell = x >= 22 && x < 74 && y >= 14 && y < 84 && !(x >= 62 && y < 26);
-    const window = x >= 30 && x < 66 && y >= 30 && y < 58;
-    const pins = y >= 78 && y < 84 && x >= 28 && x < 68 && x % 6 < 3;
-    return pins ? label : window ? label : shell ? body : [24, 24, 28];
-  });
+/** Wiki markup to plain text: links keep their label; templates, bold/italic quotes and tags are dropped. */
+function wikiText(value){
+  return plainText(String(value || '').replace(/\{\{[^{}]*\}\}/g, ' ').replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1')
+    .replace(/\[https?:\/\/[^\s\]]+\s*([^\]]*)\]/g, '$1').replace(/'{2,}/g, ''));
+}
+/** The fields of a page's GameBrew infobox ({{Infobox GBA Homebrews |key=value ...}}), or null. */
+function infobox(text){
+  const source = String(text || '');
+  const start = source.search(/\{\{\s*Infobox\b/i);
+  if (start < 0) return null;
+  const fields = {};
+  for (const line of source.slice(start).split('\n').slice(1)) {
+    if (/^\s*\}\}/.test(line)) break;
+    const match = line.match(/^\s*\|\s*([a-z_]+)\s*=(.*)$/i);
+    if (match) fields[match[1].toLowerCase()] = match[2].trim();
+  }
+  return fields;
+}
+/** Convert one GameBrew page (revisions, pageimages and info props) to a GBA catalog game, or null. */
+function gamebrewGame(page){
+  const content = page?.revisions?.[0]?.slots?.main?.content ?? page?.revisions?.[0]?.['*'];
+  const box = infobox(content);
+  const url = page?.fullurl || page?.canonicalurl;
+  if (!box || !Number.isSafeInteger(page.pageid) || page.pageid <= 0 || !acceptedUrl(url) || new URL(url).hostname !== 'www.gamebrew.org') return null;
+  const title = (wikiText(box.title) || plainText(page.title).replace(/\s+GBA$/, '')).slice(0, 200);
+  if (!title) return null;
+  const date = String(box.lastupdated || '').match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+  const version = wikiText(box.version);
+  const cover = httpsUrl(page.thumbnail?.source);
+  return {id:String(page.pageid), title, platform:'GBA', gameType:'romhack', genre:wikiText(box.type).slice(0, 100) || 'Game Hacks',
+    developer:wikiText(box.author).slice(0, 200) || undefined,
+    year:date ? date[1] : undefined,
+    updatedAt:date ? Date.UTC(Number(date[1]), Number(date[2]) - 1, Number(date[3])) || 0 : 0,
+    description:[wikiText(box.description), version && !/^n\/?a$/i.test(version) ? `Version ${version}.` : ''].filter(Boolean).join(' ').slice(0, 1200) || undefined,
+    cover:cover || undefined, website:url};
+}
+async function gamebrewCatalogs(){
+  const ids = new Set();
+  for (const category of GAMEBREW.categories) {
+    let next = {};
+    for (let page = 0; next && page < 50; page++) {
+      const query = new URLSearchParams({action:'query', list:'categorymembers', cmtitle:'Category:' + category, cmnamespace:'0',
+        cmlimit:'500', format:'json', formatversion:'2', ...next});
+      const result = await fetchRetry(GAMEBREW.api + '?' + query);
+      for (const member of result.query?.categorymembers || []) if (Number.isSafeInteger(member.pageid)) ids.add(member.pageid);
+      next = result.continue || null;
+    }
+  }
+  assert(ids.size > 0, GAMEBREW.name + ' lists no GBA hacks');
+  const games = [];
+  const queue = [...ids].sort((a, b) => a - b);
+  while (queue.length) {
+    // 50 pages per request (the API limit for page content); a pause keeps the weekly rebuild light.
+    const query = new URLSearchParams({action:'query', prop:'revisions|pageimages|info', rvprop:'content', rvslots:'main',
+      pithumbsize:'400', inprop:'url', format:'json', formatversion:'2', pageids:queue.splice(0, 50).join('|')});
+    const result = await fetchRetry(GAMEBREW.api + '?' + query);
+    for (const page of result.query?.pages || []) { const game = gamebrewGame(page); if (game) games.push(game); }
+    await sleep(300);
+  }
+  const rows = [...new Map(games.map(game => [game.id, game])).values()].sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
+  assert(rows.length > 0 && rows.length <= 10000, GAMEBREW.name + ' catalog size invalid');
+  return [{platform:'GBA', games:rows}];
+}
+const tagName = tag => typeof tag === 'string' ? tag : tag?.name || '';
+/** Convert one FE Universe topic to a GBA catalog game, or null when it is not a completed GBA-based hack. */
+function feuGame(topic){
+  if (!topic || topic.pinned || !Number.isSafeInteger(topic.id) || topic.id <= 0 || !/^[a-z0-9-]+$/.test(topic.slug || '')) return null;
+  const base = (topic.tags || []).map(tagName).map(tag => FEU.bases[tag]).find(Boolean);
+  const title = plainText(topic.title).slice(0, 200);
+  if (!base || !title) return null;
+  const cover = httpsUrl(topic.image_url);
+  const created = Date.parse(topic.created_at || '') || 0;
+  return {id:String(topic.id), title, platform:'GBA', gameType:'romhack', genre:'Fire Emblem',
+    year:created ? String(new Date(created).getUTCFullYear()) : undefined,
+    updatedAt:Date.parse(topic.last_posted_at || topic.bumped_at || '') || created,
+    description:[`Base game: Fire Emblem: ${base}.`, plainText(topic.excerpt)].filter(Boolean).join(' ').slice(0, 1200),
+    cover:cover && new URL(cover).hostname === 'feuniverse.us' ? cover : undefined,
+    website:`https://feuniverse.us/t/${topic.slug}/${topic.id}`};
+}
+async function feuCatalogs(){
+  const games = [];
+  for (let page = 0; page < 100; page++) {
+    const result = await fetchRetry(FEU.list + '?page=' + page);
+    const topics = result.topic_list?.topics || [];
+    for (const topic of topics) { const game = feuGame(topic); if (game) games.push(game); }
+    if (!topics.length || !result.topic_list?.more_topics_url) break;
+    await sleep(400);
+  }
+  const rows = [...new Map(games.map(game => [game.id, game])).values()].sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
+  assert(rows.length > 0 && rows.length <= 10000, FEU.name + ' catalog size invalid');
+  return [{platform:'GBA', games:rows}];
 }
 // ---------- Box art (libretro-thumbnails, also used by ArtworkRepository) ----------
 const BOXART_REPOS = {GB:'Nintendo_-_Game_Boy', GBC:'Nintendo_-_Game_Boy_Color', GBA:'Nintendo_-_Game_Boy_Advance'};
@@ -330,9 +437,18 @@ async function boxartIndex(){
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   for (const [platform, repo] of Object.entries(BOXART_REPOS)) {
     try {
-      const response = await fetch(`https://api.github.com/repos/libretro-thumbnails/${repo}/git/trees/master?recursive=1`, {headers});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const tree = await response.json();
+      let tree;
+      for (let attempt = 0; !tree; attempt++) {
+        try {
+          const response = await fetch(`https://api.github.com/repos/libretro-thumbnails/${repo}/git/trees/master?recursive=1`, {headers, signal:AbortSignal.timeout(60000)});
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          tree = await response.json();
+        } catch (error) {
+          // A missing index drops every cover of that platform, so retry before giving up.
+          if (attempt >= 3) throw error;
+          await sleep(2000 * (attempt + 1));
+        }
+      }
       // Regular files only: symlinked names would serve link text instead of an image.
       index[platform] = tree.tree.filter(item => item.type === 'blob' && item.mode === '100644' && /^Named_Boxarts\/[^/]+\.png$/.test(item.path))
         .map(item => {
@@ -441,17 +557,22 @@ function readme(base, extensions){
   return `# Retra extension repository\n\nCatalog extensions for Retra (extension API 1). Add this URL in Retra under ` +
     `**Browse → Extensions → ⋮ → Extension repos → Add**:\n\n\`\`\`\n${url}\n\`\`\`\n\n## Extensions\n\n` +
     extensions.map(ext => `- **${ext.name}**: ${ext.summary}`).join('\n') +
-    '\n\nRetra Sources 5.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.\n\n' +
+    '\n\nRetra Sources replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.\n\n' +
     '## Sources\n\n' +
     '| Source | Platforms | In Retra |\n|---|---|---|\n' +
     '| Roms Games | GB, GBC, GBA | Official releases (No-Intro) with box art; each game opens a Roms Games title search |\n' +
     '| PokéHarbor | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
     '| PokeMundo | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
     '| PokéCoders | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
+    '| PokéMerald | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
     '| Operation iDroid | GBC, GBA | Hack catalog from its sitemap and page data, with artwork; NDS hacks are skipped |\n' +
+    '| GameBrew | GBA | GBA hacks and translations from its public wiki API, with author, version and artwork |\n' +
+    '| FE Universe | GBA | Completed Fire Emblem hacks (FE6, FE7 and FE8 bases) from its public forum API, with artwork |\n' +
     '| Romhacking.net | GB, GBC, GBA | Website source: search and download in the in-app browser |\n' +
-    '| Hackdex | GB, GBC, GBA | Website source: browse and download in the in-app browser |\n\n' +
-    'Romhacking.net and Hackdex protect their pages with a bot check, so the builder cannot list their games. Open them from the source page; ' +
+    '| Hackdex | GB, GBC, GBA | Website source: browse and download in the in-app browser |\n' +
+    '| RHDI | GB, GBC, GBA | Website source: the Romhacking Database Initiative, browsed in the in-app browser |\n' +
+    '| PokéCommunity | GB, GBC, GBA | Website source: its Completed ROM Hacks Showcase forum, browsed in the in-app browser |\n\n' +
+    'Romhacking.net, Hackdex and PokéCommunity protect their pages with a bot check, and RHDI has no public listing, so the builder cannot list their games. Open them from the source page; ' +
     'Retra shows the site in its in-app browser, where you can pass the check, search and download.\n\n' +
     'Search the installed catalogs in Retra. Use Download on website on a game, or Search website in the source menu, to browse the original site inside Retra. ' +
     'Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM. ' +
@@ -467,6 +588,33 @@ async function build(base, out, {homebrew = false} = {}){
   fs.mkdirSync(out, {recursive:true});
   const cacheFile = path.join(out, 'hashes.json');
   const cache = fs.existsSync(cacheFile) ? JSON.parse(fs.readFileSync(cacheFile, 'utf8')) : {};
+  // Remember the last published website catalogs and logos: if one site is down during a rebuild,
+  // its previous catalog is republished instead of failing every other source.
+  const previous = new Map();
+  const previousDir = path.join(out, 'sources');
+  if (fs.existsSync(previousDir)) {
+    for (const name of fs.readdirSync(previousDir)) if (/\.(json|png)$/.test(name)) previous.set(name, fs.readFileSync(path.join(previousDir, name)));
+  }
+  /** A site's fresh catalogs, or its last published ones (per platform) when the site cannot be reached. */
+  async function catalogsOrPrevious(id, name, load){
+    try { return await load(); } catch (error) {
+      const kept = ['gba', 'gbc', 'gb'].map(platform => {
+        const bytes = previous.get(`${id}-${platform}.json`);
+        if (!bytes) return null;
+        const games = JSON.parse(bytes.toString('utf8')).games || [];
+        return games.length ? {platform:platform.toUpperCase(), games} : null;
+      }).filter(Boolean);
+      if (!kept.length) throw error;
+      console.warn(`${name} unavailable (${error.message}); republishing its previous catalog`);
+      return kept;
+    }
+  }
+  async function logoOrPrevious(site, file){
+    try { return await siteLogo(site); } catch (error) {
+      if (previous.has(file)) { console.warn(`${file}: ${error.message}; keeping the previous logo`); return previous.get(file); }
+      throw error;
+    }
+  }
   // Start from an empty tree (keeping git metadata and the ROM hash cache) so removed extensions disappear.
   for (const name of fs.readdirSync(out)) if (!['.git', 'hashes.json'].includes(name)) fs.rmSync(path.join(out, name), {recursive:true, force:true});
   const extensions = [];
@@ -480,9 +628,8 @@ async function build(base, out, {homebrew = false} = {}){
   fs.mkdirSync(dir, {recursive:true});
   const sources = [];
   for (const site of SITES) {
-    const iconBytes = await fetchRetry(site.icon, 'buffer');
-    fs.writeFileSync(path.join(dir, site.id + '.png'), iconBytes);
-    for (const {platform, games} of await websiteCatalogs(site)) {
+    fs.writeFileSync(path.join(dir, site.id + '.png'), await logoOrPrevious(site, site.id + '.png'));
+    for (const {platform, games} of await catalogsOrPrevious(site.id, site.name, () => websiteCatalogs(site))) {
       const id = site.id + '-' + platform.toLowerCase();
       writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
       sources.push({id, name:site.name + ' ' + platform, platforms:[platform], latest:true,
@@ -491,8 +638,8 @@ async function build(base, out, {homebrew = false} = {}){
       console.log(site.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
     }
   }
-  fs.writeFileSync(path.join(dir, IDROID.id + '.png'), await fetchRetry(IDROID.icon, 'buffer'));
-  for (const {platform, games} of await idroidCatalogs()) {
+  fs.writeFileSync(path.join(dir, IDROID.id + '.png'), await logoOrPrevious(IDROID, IDROID.id + '.png'));
+  for (const {platform, games} of await catalogsOrPrevious(IDROID.id, IDROID.name, idroidCatalogs)) {
     const id = IDROID.id + '-' + platform.toLowerCase();
     writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
     sources.push({id, name:IDROID.name + ' ' + platform, platforms:[platform], latest:true,
@@ -500,15 +647,26 @@ async function build(base, out, {homebrew = false} = {}){
       website:IDROID.website + '?platform=' + platform});
     console.log(IDROID.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
   }
+  for (const site of [GAMEBREW, FEU]) {
+    fs.writeFileSync(path.join(dir, site.id + '.png'), await siteLogo(site));
+    for (const {platform, games} of await catalogsOrPrevious(site.id, site.name, site === GAMEBREW ? gamebrewCatalogs : feuCatalogs)) {
+      const id = site.id + '-' + platform.toLowerCase();
+      writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
+      sources.push({id, name:site.name + ' ' + platform, platforms:[platform], latest:true,
+        catalogUrl:base + folder + '/' + id + '.json', icon:base + folder + '/' + site.id + '.png',
+        website:site.website, searchUrl:site.searchUrl});
+      console.log(site.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
+    }
+  }
   for (const site of WEB_ONLY) {
-    fs.writeFileSync(path.join(dir, site.id + '.png'), siteIcon(site.colors));
+    fs.writeFileSync(path.join(dir, site.id + '.png'), await siteLogo(site));
     writeJson(path.join(dir, site.id + '.json'), {apiVersion:1, games:[]});
     sources.push({id:site.id, name:site.name, platforms:PLATFORMS, latest:false,
       catalogUrl:base + folder + '/' + site.id + '.json', icon:base + folder + '/' + site.id + '.png',
       website:site.website, ...(site.searchUrl ? {searchUrl:site.searchUrl} : {})});
     console.log(site.name + ': website source');
   }
-  fs.writeFileSync(path.join(dir, 'romsgames.png'), await fetchRetry(ROMSGAMES.icon, 'buffer'));
+  fs.writeFileSync(path.join(dir, 'romsgames.png'), await logoOrPrevious(ROMSGAMES, 'romsgames.png'));
   for (const platform of PLATFORMS) {
     const games = officialGames(platform, boxarts[platform] || [], await metadata(platform));
     assert(games.length > 0 && games.length <= 10000, 'Official catalog size invalid');
@@ -526,7 +684,8 @@ async function build(base, out, {homebrew = false} = {}){
     publisher:'Retra contributors (independent website catalogs)', versionCode:EXTENSION.versionCode, versionName:EXTENSION.versionName,
     format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
     packageUrl:base + folder + '/extension.json', sha256, icon:base + folder + '/pokeharbor.png'});
-  summaries.push({name:EXTENSION.name, summary:'Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid, Romhacking.net and Hackdex: ' +
+  summaries.push({name:EXTENSION.name, summary:'Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald, Operation iDroid, GameBrew, FE Universe, ' +
+    'Romhacking.net, Hackdex, RHDI and PokéCommunity: ' +
     'searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.'});
 
   if (homebrew) await buildHomebrew(base, out, cache, extensions, summaries);
@@ -577,5 +736,5 @@ if (require.main === module) {
   if (!base || !out) { console.error('Usage: node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir> [--homebrew]'); process.exit(2); }
   build(base, path.resolve(out), {homebrew}).catch(error => { console.error(error); process.exit(1); });
 }
-module.exports = {build, normalizeLicense, toGame, acceptedUrl, SITES, ROMSGAMES, IDROID, WEB_ONLY, EXTENSION, plainText, websiteGame, websiteCatalogs,
-  idroidGame, siteDate, displayTitle, officialGames, LICENSE};
+module.exports = {build, normalizeLicense, toGame, acceptedUrl, SITES, ROMSGAMES, IDROID, GAMEBREW, FEU, WEB_ONLY, EXTENSION, plainText, websiteGame,
+  websiteCatalogs, idroidGame, gamebrewGame, gamebrewCatalogs, feuGame, feuCatalogs, infobox, wikiText, siteDate, displayTitle, officialGames, LICENSE};

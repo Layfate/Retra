@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {createHash} = require('node:crypto');
-const {build, SITES, WEB_ONLY, websiteGame, idroidGame, siteDate, plainText, officialGames} = require('../tools/extension-repo/build-repo.cjs');
+const {build, SITES, WEB_ONLY, websiteGame, idroidGame, gamebrewGame, feuGame, siteDate, plainText, officialGames} = require('../tools/extension-repo/build-repo.cjs');
 const {gameDownloadAction, filterSources, extensionSections, emptyCatalogAction} = require('../app/src/main/assets/retra/browse-ui.js');
 
 const idroidPage = (name, platform, image = '/images/cover.jpg') => '<meta property="og:title" content="' + name +
@@ -59,6 +59,46 @@ test('Operation iDroid pages become GB/GBC/GBA catalog games from their JSON-LD'
   assert.equal(siteDate('nonsense'), 0);
 });
 
+const gamebrewPage = (pageid, title, type = 'Game Hacks') => ({pageid, title: title + ' GBA', fullurl:'https://www.gamebrew.org/wiki/' + title.replace(/ /g, '_') + '_GBA',
+  thumbnail:{source:'https://www.gamebrew.org/images/2/26/' + pageid + '.png'},
+  revisions:[{slots:{main:{content:'{{#seo:\n|title=x\n}}\n{{Infobox GBA Homebrews\n|title=' + title + '\n|description=A [[Fire Red]] hack with \'\'new\'\' maps.\n' +
+    '|author=[https://example.org Skeli]\n|lastupdated=2021/11/18\n|type=' + type + '\n|version=1.1\n}}\nBody text.'}}}]});
+const feuTopic = (id, tag, extra = {}) => ({id, slug:'hack-' + id, title:'Hack ' + id, tags:[{name:'complete_project'}, {name:tag}],
+  image_url:'https://feuniverse.us/uploads/default/original/' + id + '.png', created_at:'2023-01-05T00:41:26.653Z',
+  last_posted_at:'2026-11-25T09:26:24.509Z', pinned:false, ...extra});
+
+test('GameBrew wiki pages become GBA catalog games from their infobox', () => {
+  const game = gamebrewGame(gamebrewPage(21271, 'F-Zero - Climax', 'Translations'));
+  assert.equal(game.id, '21271');
+  assert.equal(game.title, 'F-Zero - Climax');
+  assert.equal(game.platform, 'GBA');
+  assert.equal(game.developer, 'Skeli');
+  assert.equal(game.genre, 'Translations');
+  assert.equal(game.year, '2021');
+  assert.equal(game.updatedAt, Date.UTC(2021, 10, 18));
+  assert.equal(game.description, 'A Fire Red hack with new maps. Version 1.1.');
+  assert.equal(game.cover, 'https://www.gamebrew.org/images/2/26/21271.png');
+  assert.equal(game.website, 'https://www.gamebrew.org/wiki/F-Zero_-_Climax_GBA');
+  assert.equal(game.download, undefined);
+  assert.equal(gamebrewGame({...gamebrewPage(1, 'X'), fullurl:'https://attacker.example/wiki/X'}), null);
+  assert.equal(gamebrewGame({...gamebrewPage(1, 'X'), revisions:[{slots:{main:{content:'No infobox here.'}}}]}), null);
+});
+
+test('FE Universe completed projects on a GBA base become Fire Emblem catalog games', () => {
+  const game = feuGame(feuTopic(18883, 'fe8_base'));
+  assert.equal(game.id, '18883');
+  assert.equal(game.platform, 'GBA');
+  assert.equal(game.genre, 'Fire Emblem');
+  assert.equal(game.website, 'https://feuniverse.us/t/hack-18883/18883');
+  assert.equal(game.cover, 'https://feuniverse.us/uploads/default/original/18883.png');
+  assert.match(game.description, /^Base game: Fire Emblem: The Sacred Stones\./);
+  assert.equal(game.updatedAt, Date.parse('2026-11-25T09:26:24.509Z'));
+  assert.equal(feuGame(feuTopic(2, 'snesfe')), null, 'SNES hacks are skipped');
+  assert.equal(feuGame(feuTopic(3, 'fe7_base', {pinned:true})), null, 'pinned guides are skipped');
+  assert.equal(feuGame(feuTopic(4, 'fe6_base', {image_url:'https://attacker.example/x.png'})).cover, undefined);
+  assert.equal(feuGame(feuTopic(5, 'fe6_base', {slug:'../x'})), null);
+});
+
 test('empty catalogs of website sources offer the website instead of a dead end', () => {
   const hackdex = {name:'Hackdex', website:'https://www.hackdex.app/'};
   assert.equal(emptyCatalogAction(hackdex, '', 0, 0).button, 'Open Hackdex');
@@ -93,6 +133,15 @@ test('default repository publishes Retra Sources with the requested websites and
       const slug = url.pathname.split('/').pop();
       return new Response(idroidPage('Pokémon ' + slug, {unbound:'Game Boy Advance', crystal:'Game Boy Color', kaizo:'Nintendo DS'}[slug]));
     }
+    if (url.href.startsWith('https://www.gamebrew.org/api.php')) {
+      if (url.searchParams.get('list') === 'categorymembers') return Response.json({query:{categorymembers:[{pageid:21271}, {pageid:21316}]}});
+      return Response.json({query:{pages:url.searchParams.get('pageids').split('|').map(id => gamebrewPage(Number(id), 'Hack ' + id))}});
+    }
+    if (url.hostname === 'feuniverse.us') {
+      const page = Number(url.searchParams.get('page'));
+      return Response.json({topic_list:{topics:page ? [feuTopic(30, 'fe7_base')] : [feuTopic(10, 'fe8_base'), feuTopic(20, 'snesfe')],
+        more_topics_url:page ? undefined : '/tags/c/projects/17/complete_project?page=1'}});
+    }
     if (url.hostname === 'api.github.com') return Response.json({tree:[{type:'blob', mode:'100644', path:'Named_Boxarts/Harvest Moon (USA).png'}]});
     if (url.pathname.endsWith('.dat')) return new Response('game (\n name "Harvest Moon (USA)"\n rom ( name "Harvest Moon (USA).gb" )\n)\n');
     if (url.pathname.endsWith('/categories')) return Response.json(url.searchParams.get('slug').split(',')
@@ -118,20 +167,25 @@ test('default repository publishes Retra Sources with the requested websites and
     const ext = index.extensions[0];
     // Same extension ID, so installed copies update in place and saved source keys keep working.
     assert.equal(ext.id, 'org.retra.romhackplaza');
-    assert.equal(ext.versionCode, 5);
+    assert.equal(ext.versionCode, 6);
     assert.equal(ext.name, 'Retra Sources');
     assert.doesNotMatch([ext.name, ext.publisher, ext.packageUrl, ext.icon].join(' '), /romhack ?plaza/i);
     assert.equal(ext.sha256, createHash('sha256').update(read('sources/extension.json')).digest('hex'));
     const sources = JSON.parse(read('sources/extension.json')).sources;
     assert.deepEqual(sources.map(source => source.id), ['pokeharbor-gba', 'pokeharbor-gbc', 'pokemundo-gba', 'pokemundo-gbc',
-      'pokecoders-gba', 'pokecoders-gbc', 'operationidroid-gba', 'operationidroid-gbc',
-      'romhacking', 'hackdex', 'official-gb', 'official-gbc', 'official-gba']);
+      'pokecoders-gba', 'pokecoders-gbc', 'pokemerald-gba', 'pokemerald-gbc', 'operationidroid-gba', 'operationidroid-gbc',
+      'gamebrew-gba', 'feuniverse-gba', 'romhacking', 'hackdex', 'rhdi', 'pokecommunity', 'official-gb', 'official-gbc', 'official-gba']);
     assert.ok(sources.every(source => !/romhack ?plaza/i.test(source.name + source.catalogUrl + source.icon)));
     assert.equal(fs.existsSync(path.join(dir, 'homebrewhub')), false);
     assert.equal(fs.existsSync(path.join(dir, 'romhackplaza')), false);
-    assert.ok(!requests.some(url => /romhackplaza|romhacking\.net|hackdex/.test(url)), 'bot-protected sites are never fetched');
+    assert.ok(!requests.some(url => /romhackplaza|romhacking\.net|hackdex|pokecommunity|romhack\.ing/.test(url)), 'website-only sites are never fetched');
     const hosts = new Set(sources.map(source => new URL(source.website).hostname));
-    for (const host of ['www.romsgames.net', 'www.pokeharbor.com', 'pokemundo.com', 'www.pokemoncoders.com', 'www.romhacking.net', 'www.hackdex.app', 'operationidroid.com']) assert.ok(hosts.has(host), host);
+    for (const host of ['www.romsgames.net', 'www.pokeharbor.com', 'pokemundo.com', 'www.pokemoncoders.com', 'pokemerald.com', 'www.romhacking.net',
+      'www.hackdex.app', 'operationidroid.com', 'www.gamebrew.org', 'feuniverse.us', 'romhack.ing', 'www.pokecommunity.com']) assert.ok(hosts.has(host), host);
+    // Every source shows its own website's logo, not a generated placeholder; a site's sources share one logo.
+    for (const site of WEB_ONLY) assert.ok(read('sources/' + site.id + '.png').equals(fs.readFileSync(path.join(__dirname, '../tools/extension-repo/icons/' + site.logo))), site.id);
+    assert.ok(read('sources/pokemerald.png').equals(fs.readFileSync(path.join(__dirname, '../tools/extension-repo/icons/pokemerald.png'))));
+    assert.equal(sources.find(source => source.id === 'pokemerald-gba').icon, sources.find(source => source.id === 'pokemerald-gbc').icon);
     for (const source of sources) {
       if (source.searchUrl) assert.ok(source.searchUrl.includes('{query}'));
       assert.ok(source.website.startsWith('https://'));
@@ -143,9 +197,49 @@ test('default repository publishes Retra Sources with the requested websites and
     assert.equal(sources.find(source => source.id === 'romhacking').searchUrl, 'https://www.romhacking.net/?page=hacks&title={query}&hacksearch=Go');
     assert.deepEqual(JSON.parse(read('sources/operationidroid-gba.json')).games.map(game => game.id), ['unbound']);
     assert.deepEqual(JSON.parse(read('sources/operationidroid-gbc.json')).games.map(game => game.id), ['crystal']);
+    assert.deepEqual(JSON.parse(read('sources/gamebrew-gba.json')).games.map(game => game.id), ['21271', '21316']);
+    assert.deepEqual(JSON.parse(read('sources/feuniverse-gba.json')).games.map(game => game.id), ['10', '30']);
     assert.equal(JSON.parse(read('sources/pokeharbor-gba.json')).games.length, 101);
     assert.ok(requests.some(url => url.includes('page=2')));
     assert.ok(JSON.parse(read('sources/official-gba.json')).games[0].website.includes('/search/?q=Harvest%20Moon'));
+  } finally {
+    global.fetch = originalFetch;
+    fs.rmSync(dir, {recursive:true, force:true});
+  }
+});
+
+test('a site that is down during a rebuild keeps its last published catalog', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'retra-sites-down-'));
+  const originalFetch = global.fetch;
+  const png = require('../samples/catalog-extension/build-fixture.cjs').png(8, 8, () => [20, 100, 140]);
+  const kept = {apiVersion:1, games:[{id:'7', title:'Kept Hack', platform:'GBA', gameType:'romhack', cover:'https://pokemundo.com/c.png', website:'https://pokemundo.com/en/kept/'}]};
+  fs.mkdirSync(path.join(dir, 'sources'));
+  fs.writeFileSync(path.join(dir, 'sources/pokemundo-gba.json'), JSON.stringify(kept));
+  fs.writeFileSync(path.join(dir, 'sources/pokemundo.png'), png);
+  global.fetch = async address => {
+    const url = new URL(address);
+    if (url.hostname === 'pokemundo.com') throw new Error('fetch failed');
+    if (url.pathname.endsWith('.png')) return new Response(png);
+    if (url.href === 'https://operationidroid.com/sitemap.xml') return new Response('<urlset><url><loc>https://operationidroid.com/hacks/unbound</loc></url></urlset>');
+    if (url.hostname === 'operationidroid.com') return new Response(idroidPage('Pokémon Unbound', 'Game Boy Advance'));
+    if (url.href.startsWith('https://www.gamebrew.org/api.php')) {
+      if (url.searchParams.get('list') === 'categorymembers') return Response.json({query:{categorymembers:[{pageid:1}]}});
+      return Response.json({query:{pages:[gamebrewPage(1, 'Hack')]}});
+    }
+    if (url.hostname === 'feuniverse.us') return Response.json({topic_list:{topics:[feuTopic(10, 'fe8_base')]}});
+    if (url.hostname === 'api.github.com') return Response.json({tree:[]});
+    if (url.pathname.endsWith('.dat')) return new Response('game (\n name "Harvest Moon (USA)"\n rom ( name "Harvest Moon (USA).gb" )\n)\n');
+    if (url.pathname.endsWith('/categories')) return Response.json(url.searchParams.get('slug').split(',').map((slug, i) => ({id:i + 1, count:1, slug})));
+    if (url.pathname.endsWith('/posts')) return Response.json([{id:1, title:{rendered:'Quest'}, link:url.origin + '/q/'}]);
+    throw new Error('Unexpected request: ' + address);
+  };
+  try {
+    await build('https://example.org/repo/', dir);
+    const sources = JSON.parse(fs.readFileSync(path.join(dir, 'sources/extension.json'), 'utf8')).sources.map(source => source.id);
+    assert.ok(sources.includes('pokemundo-gba'), 'the down site is still listed');
+    assert.ok(!sources.includes('pokemundo-gbc'), 'a platform with no previous catalog is skipped');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'sources/pokemundo-gba.json'), 'utf8')).games.map(game => game.id), ['7']);
+    assert.ok(sources.includes('gamebrew-gba') && sources.includes('feuniverse-gba'));
   } finally {
     global.fetch = originalFetch;
     fs.rmSync(dir, {recursive:true, force:true});

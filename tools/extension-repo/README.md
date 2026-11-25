@@ -1,6 +1,6 @@
 # Retra website sources
 
-The default index contains one extension, **Retra Sources** (5.0). It replaces the former Romhack Plaza package and keeps its extension ID (`org.retra.romhackplaza`), so installed copies update in place and saved Library links keep working. The Homebrew Hub and sample extensions are omitted from the default index.
+The default index contains one extension, **Retra Sources** (6.0). It replaces the former Romhack Plaza package and keeps its extension ID (`org.retra.romhackplaza`), so installed copies update in place and saved Library links keep working. The Homebrew Hub and sample extensions are omitted from the default index.
 
 | Source | Platforms | How it is built |
 |---|---|---|
@@ -8,9 +8,16 @@ The default index contains one extension, **Retra Sources** (5.0). It replaces t
 | PokéHarbor | GBC, GBA | Hack catalogs from its public WordPress API, including featured artwork. |
 | PokeMundo | GBC, GBA | Hack catalogs from its public WordPress API, including featured artwork. |
 | PokéCoders | GBC, GBA | Hack catalogs (its GBA and GBC ROM Hacks categories) from its public WordPress API, including featured artwork. |
+| PokéMerald | GBC, GBA | Hack catalogs (its GBA and GBC categories) from its public WordPress API, including featured artwork. |
 | Operation iDroid | GBC, GBA | Hack pages from its sitemap, read from each page's schema.org JSON-LD (title, platform, author, version, cover). NDS hacks are skipped. |
+| GameBrew | GBA | GBA hack and translation pages from its public MediaWiki API, read from each page's infobox (title, author, version, date, description) with the page image. |
+| FE Universe | GBA | Completed Fire Emblem projects on an FE6, FE7 or FE8 base, from its public Discourse JSON, with the topic image. |
 | Romhacking.net | GB, GBC, GBA | Website source with an empty catalog. The site is behind a Cloudflare bot check, so the builder does not fetch it. |
 | Hackdex | GB, GBC, GBA | Website source with an empty catalog. The site is behind a Vercel bot check, so the builder does not fetch it. |
+| RHDI | GB, GBC, GBA | Website source with an empty catalog. The Romhacking Database Initiative loads its listings over a websocket, with no public listing to read. |
+| PokéCommunity | GB, GBC, GBA | Website source with an empty catalog, opening the Completed ROM Hacks Showcase forum. The site blocks automated requests, so the builder does not fetch it. |
+
+Each source shows its website's own logo. Logos the builder cannot or should not fetch on every rebuild are kept in `tools/extension-repo/icons/`; the others are downloaded from the site.
 
 A website source's empty catalog page shows an **Open <site>** button, and a catalog search with no matches offers **Search <site> for "…"** when the source has a search URL.
 

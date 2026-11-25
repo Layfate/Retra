@@ -8,9 +8,9 @@ https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 
 ## Extensions
 
-- **Retra Sources**: Roms Games, PokéHarbor, PokeMundo, PokéCoders, Operation iDroid, Romhacking.net and Hackdex: searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.
+- **Retra Sources**: Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald, Operation iDroid, GameBrew, FE Universe, Romhacking.net, Hackdex, RHDI and PokéCommunity: searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.
 
-Retra Sources 5.0 replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.
+Retra Sources replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.
 
 ## Sources
 
@@ -20,11 +20,16 @@ Retra Sources 5.0 replaces the former Romhack Plaza extension and updates it in 
 | PokéHarbor | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
 | PokeMundo | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
 | PokéCoders | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
+| PokéMerald | GBC, GBA | Hack catalog from its public WordPress API, with artwork |
 | Operation iDroid | GBC, GBA | Hack catalog from its sitemap and page data, with artwork; NDS hacks are skipped |
+| GameBrew | GBA | GBA hacks and translations from its public wiki API, with author, version and artwork |
+| FE Universe | GBA | Completed Fire Emblem hacks (FE6, FE7 and FE8 bases) from its public forum API, with artwork |
 | Romhacking.net | GB, GBC, GBA | Website source: search and download in the in-app browser |
 | Hackdex | GB, GBC, GBA | Website source: browse and download in the in-app browser |
+| RHDI | GB, GBC, GBA | Website source: the Romhacking Database Initiative, browsed in the in-app browser |
+| PokéCommunity | GB, GBC, GBA | Website source: its Completed ROM Hacks Showcase forum, browsed in the in-app browser |
 
-Romhacking.net and Hackdex protect their pages with a bot check, so the builder cannot list their games. Open them from the source page; Retra shows the site in its in-app browser, where you can pass the check, search and download.
+Romhacking.net, Hackdex and PokéCommunity protect their pages with a bot check, and RHDI has no public listing, so the builder cannot list their games. Open them from the source page; Retra shows the site in its in-app browser, where you can pass the check, search and download.
 
 Search the installed catalogs in Retra. Use Download on website on a game, or Search website in the source menu, to browse the original site inside Retra. Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM. Website downloads require the updated Retra app; older apps can still browse the catalogs.
 

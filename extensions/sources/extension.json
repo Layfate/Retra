@@ -1,7 +1,7 @@
 {
   "apiVersion": 1,
   "id": "org.retra.romhackplaza",
-  "versionCode": 5,
+  "versionCode": 6,
   "sources": [
     {
       "id": "pokeharbor-gba",
@@ -76,6 +76,30 @@
       "searchUrl": "https://www.pokemoncoders.com/?s={query}"
     },
     {
+      "id": "pokemerald-gba",
+      "name": "PokéMerald GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemerald-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemerald.png",
+      "website": "https://pokemerald.com/",
+      "searchUrl": "https://pokemerald.com/?s={query}"
+    },
+    {
+      "id": "pokemerald-gbc",
+      "name": "PokéMerald GBC",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemerald-gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemerald.png",
+      "website": "https://pokemerald.com/",
+      "searchUrl": "https://pokemerald.com/?s={query}"
+    },
+    {
       "id": "operationidroid-gba",
       "name": "Operation iDroid GBA",
       "platforms": [
@@ -96,6 +120,30 @@
       "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid-gbc.json",
       "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid.png",
       "website": "https://operationidroid.com/?platform=GBC"
+    },
+    {
+      "id": "gamebrew-gba",
+      "name": "GameBrew GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/gamebrew-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/gamebrew.png",
+      "website": "https://www.gamebrew.org/wiki/List_of_all_GBA_Rom_Hacks",
+      "searchUrl": "https://www.gamebrew.org/index.php?search={query}"
+    },
+    {
+      "id": "feuniverse-gba",
+      "name": "FE Universe GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/feuniverse-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/feuniverse.png",
+      "website": "https://feuniverse.us/c/projects/17",
+      "searchUrl": "https://feuniverse.us/search?q={query}"
     },
     {
       "id": "romhacking",
@@ -123,6 +171,32 @@
       "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/hackdex.json",
       "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/hackdex.png",
       "website": "https://www.hackdex.app/"
+    },
+    {
+      "id": "rhdi",
+      "name": "RHDI",
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "latest": false,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/rhdi.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/rhdi.png",
+      "website": "https://romhack.ing/"
+    },
+    {
+      "id": "pokecommunity",
+      "name": "PokéCommunity",
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "latest": false,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokecommunity.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokecommunity.png",
+      "website": "https://www.pokecommunity.com/forums/completed-rom-hacks-showcase.184/"
     },
     {
       "id": "official-gb",
