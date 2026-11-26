@@ -9,13 +9,13 @@
 ### Game Boy, Game Boy Color and Game Boy Advance on Android
 Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art library, customizable controls and built-in source browsing.
 
-[![GitHub downloads](https://raw.githubusercontent.com/Layfate/Retra/main/docs/badges/downloads.svg)](https://github.com/Layfate/Retra/releases)
-[![Retra regression checks](https://img.shields.io/github/actions/workflow/status/Layfate/Retra/regression.yml?branch=main&style=for-the-badge&label=Retra%20regression%20checks&labelColor=27303D&logo=github&logoColor=white)](https://github.com/Layfate/Retra/actions/workflows/regression.yml)
-[![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-0877d2?style=for-the-badge&labelColor=27303D)](LICENSE)
+<a href="https://github.com/Layfate/Retra/releases"><img src="docs/badges/downloads.svg" height="24" alt="GitHub downloads" /></a>
+<a href="https://github.com/Layfate/Retra/actions/workflows/regression.yml"><img src="https://img.shields.io/github/actions/workflow/status/Layfate/Retra/regression.yml?branch=main&amp;style=for-the-badge&amp;label=Retra%20regression%20checks&amp;labelColor=27303D&amp;logo=github&amp;logoColor=white" height="24" alt="Retra regression checks" /></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MPL--2.0-0877d2?style=for-the-badge&amp;labelColor=27303D" height="24" alt="License: MPL-2.0" /></a>
 
 ## Download
 
-[![Retra Stable](https://img.shields.io/badge/version-v1.0.4-E0457B?label=Stable&labelColor=27303D)](https://github.com/Layfate/Retra/releases/latest)
+<a href="https://github.com/Layfate/Retra/releases/latest"><img src="https://img.shields.io/badge/version-v1.0.4-E0457B?style=for-the-badge&amp;label=Stable&amp;labelColor=27303D" height="24" alt="Retra Stable v1.0.4" /></a>
 
 *Requires Android 8.0 or higher.*
 
