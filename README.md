@@ -10,8 +10,8 @@
 Play your games with an accurate [mGBA](https://mgba.io/) core, a cover-art library, customizable controls and built-in source browsing.
 
 [![GitHub downloads](https://raw.githubusercontent.com/Layfate/Retra/main/docs/badges/downloads.svg)](https://github.com/Layfate/Retra/releases)
-[![CI](https://github.com/Layfate/Retra/actions/workflows/regression.yml/badge.svg?branch=main)](https://github.com/Layfate/Retra/actions/workflows/regression.yml)
-[![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-0877d2?labelColor=27303D)](LICENSE)
+[![Retra regression checks](https://img.shields.io/github/actions/workflow/status/Layfate/Retra/regression.yml?branch=main&style=for-the-badge&label=Retra%20regression%20checks&labelColor=27303D&logo=github&logoColor=white)](https://github.com/Layfate/Retra/actions/workflows/regression.yml)
+[![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-0877d2?style=for-the-badge&labelColor=27303D)](LICENSE)
 
 ## Download
 
