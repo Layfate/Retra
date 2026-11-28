@@ -22,10 +22,10 @@ Accurate emulation on the [mGBA](https://mgba.io/) core, a cover-art library, cu
 
 ## Screenshots
 
-<img src="docs/images/screenshots/browse-dark.webp" alt="Browse sources, dark theme" width="200"/>
-<img src="docs/images/screenshots/catalog-dark.webp" alt="Source catalog with pinned header, dark theme" width="200"/>
+<img src="docs/images/screenshots/library-dark.webp" alt="Library with cover art, dark theme" width="200"/>
+<img src="docs/images/screenshots/extensions-dark.webp" alt="Browse extensions, dark theme" width="200"/>
+<img src="docs/images/screenshots/extensions-light.webp" alt="Browse extensions, light theme" width="200"/>
 <img src="docs/images/screenshots/catalog-light.webp" alt="Source catalog, light theme" width="200"/>
-<img src="docs/images/screenshots/settings-light.webp" alt="Settings, light theme" width="200"/>
 
 </div>
 
@@ -80,9 +80,11 @@ Open the project in Android Studio, let Gradle sync, and run it on a device or e
 
 Pull requests are welcome. For larger changes, please open an issue first. Before reporting a problem, check [Troubleshooting](TROUBLESHOOTING.md) and the existing [issues](https://github.com/Layfate/Retra/issues).
 
-<a href="https://github.com/Layfate/Retra/graphs/contributors">
+<p align="center">
+  <a href="https://github.com/Layfate/Retra/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=Layfate/Retra" alt="Retra contributors" title="Retra contributors"/>
-</a>
+  </a>
+</p>
 
 ## Credits
 
