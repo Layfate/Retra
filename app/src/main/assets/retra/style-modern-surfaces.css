@@ -1,0 +1,515 @@
+/* Retra — modern surfaces (loaded after style-material-shell.css)
+
+   1. Dialogs: every .selection-modal is one opaque Material 3 card with a fixed
+      title, ONE scroll area and a fixed action bar. No backdrop blur: a live
+      blur behind a scrolling list is re-rendered every frame and was the main
+      cause of dropped frames on 120 Hz panels.
+   2. Settings pages: rows are grouped into rounded cards under section labels.
+   3. Sliders: a custom track/thumb with no transitions, so the thumb follows the
+      finger on every frame; touch-action lets the drag start immediately. */
+
+/* ---------- 1. Dialogs ---------- */
+body[data-resolved-mode] .modal-backdrop.selection-modal{
+  position:fixed !important;
+  inset:0 !important;
+  padding:max(20px, var(--device-safe-top, 0px)) 16px max(20px, var(--device-safe-bottom, 0px)) !important;
+  background:rgba(4, 6, 12, .52) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  transition:opacity .16s ease-out, visibility 0s linear .16s;
+}
+body[data-resolved-mode="light"] .modal-backdrop.selection-modal{background:rgba(18, 22, 34, .36)}
+body[data-resolved-mode] .modal-backdrop.selection-modal.open{transition:opacity .16s ease-out, visibility 0s}
+
+body[data-resolved-mode] .selection-modal .selection-modal-card{
+  display:flex !important;
+  flex-direction:column !important;
+  width:min(100%, 440px) !important;
+  max-height:min(86vh, 720px) !important;
+  max-height:min(86dvh, 720px) !important;
+  padding:0 !important;
+  overflow:hidden;
+  border:0 !important;
+  border-radius:28px !important;
+  background:var(--m3-surface-container-high) !important;
+  box-shadow:0 24px 64px rgba(0, 0, 0, .38), 0 2px 8px rgba(0, 0, 0, .18) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  transform:translateY(12px) scale(.97);
+  opacity:0;
+  transition:transform .22s cubic-bezier(.2, 0, 0, 1), opacity .16s ease-out;
+  will-change:transform, opacity;
+}
+body[data-resolved-mode] .selection-modal.open .selection-modal-card{transform:none;opacity:1}
+
+body[data-resolved-mode] .selection-modal .selection-modal-card > h3,
+body[data-resolved-mode] .selection-modal .import-saves-head{
+  flex:none !important;
+  margin:0 !important;
+  padding:24px 24px 0 !important;
+  font-size:24px !important;
+  line-height:1.3 !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+  color:var(--m3-on-surface) !important;
+}
+body[data-resolved-mode] .selection-modal .selection-modal-copy,
+body[data-resolved-mode] .selection-modal .multi-category-copy{
+  flex:none !important;
+  margin:12px 0 0 !important;
+  padding:0 24px !important;
+  font-size:14px !important;
+  line-height:1.5 !important;
+  color:var(--m3-on-surface-variant) !important;
+}
+body[data-resolved-mode] .selection-modal .shader-search{
+  flex:none !important;
+  margin:14px 24px 0 !important;
+  width:auto !important;
+}
+
+/* The only scroll area. Opaque background + contain lets Chromium composite
+   the scroller on the GPU, so scrolling stays at the panel's refresh rate. */
+body[data-resolved-mode] .selection-modal .selection-options,
+body[data-resolved-mode] .selection-modal .multi-category-list{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:16px 0 0 !important;
+  padding:0 12px 4px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  background:var(--m3-surface-container-high) !important;
+  contain:content;
+}
+body[data-resolved-mode] .selection-modal .selection-options::-webkit-scrollbar{display:none}
+
+/* Option rows: a plain radio + label line, like a Material list dialog. */
+body[data-resolved-mode] .selection-modal .selection-option{
+  position:relative;
+  flex:none !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:20px !important;
+  width:100% !important;
+  min-height:56px !important;
+  margin:0 !important;
+  padding:8px 12px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:transparent !important;
+  color:var(--m3-on-surface) !important;
+  text-align:left !important;
+  font-size:16px !important;
+  font-weight:400 !important;
+  transform:none !important;
+  transition:background-color .12s ease, border-color .12s ease;
+}
+body[data-resolved-mode] .selection-modal .selection-option.active{
+  background:transparent !important;
+}
+body[data-resolved-mode] .selection-modal .selection-option:active,
+body[data-resolved-mode] .selection-modal .selection-option.retra-pressing{
+  background:var(--m3-state-press) !important;
+}
+body[data-resolved-mode] .selection-modal .selection-radio{
+  flex:none !important;
+  width:20px !important;
+  height:20px;
+  margin:0 !important;
+  border:2px solid var(--m3-on-surface-variant) !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+body[data-resolved-mode] .selection-modal .selection-option.active .selection-radio{
+  border-color:var(--accent) !important;
+  background:radial-gradient(circle, var(--accent) 0 5px, transparent 5.5px) !important;
+}
+body[data-resolved-mode] .selection-modal .selection-radio::after{display:none}
+
+/* Shader option: title, description, GPU-cost chip */
+body[data-resolved-mode] .selection-modal .shader-option-copy{flex:1 !important;min-width:0;display:flex !important;flex-direction:column !important;gap:3px}
+body[data-resolved-mode] .selection-modal .shader-option-title{font-size:15px !important;font-weight:600 !important;line-height:1.3 !important;color:var(--m3-on-surface)}
+body[data-resolved-mode] .selection-modal .shader-option-description{font-size:12.5px !important;font-weight:400 !important;line-height:1.4 !important;color:var(--m3-on-surface-variant)}
+body[data-resolved-mode] .selection-modal .shader-impact{
+  flex:none !important;
+  align-self:center;
+  padding:4px 10px !important;
+  border-radius:999px !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  letter-spacing:.02em !important;
+  white-space:nowrap;
+  color:var(--m3-on-surface-variant) !important;
+  background:color-mix(in srgb, var(--m3-on-surface) 8%, transparent) !important;
+}
+body[data-resolved-mode] .selection-modal .shader-impact-none{color:#1e9e5a !important;background:rgba(30, 158, 90, .14)}
+body[data-resolved-mode] .selection-modal .shader-impact-low{color:#2f7fd8 !important;background:rgba(47, 127, 216, .14)}
+body[data-resolved-mode] .selection-modal .shader-impact-medium{color:#c27c0e !important;background:rgba(214, 141, 22, .16)}
+body[data-resolved-mode] .selection-modal .shader-impact-high{color:#d4453b !important;background:rgba(212, 69, 59, .15)}
+body[data-resolved-mode]:not([data-resolved-mode="light"]) .selection-modal .shader-impact-none{color:#6fdc9c}
+body[data-resolved-mode]:not([data-resolved-mode="light"]) .selection-modal .shader-impact-low{color:#8cc2ff}
+body[data-resolved-mode]:not([data-resolved-mode="light"]) .selection-modal .shader-impact-medium{color:#ffc46b}
+body[data-resolved-mode]:not([data-resolved-mode="light"]) .selection-modal .shader-impact-high{color:#ff8a80}
+body[data-resolved-mode] .selection-modal .shader-group-header{
+  flex:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  margin:10px 4px 0 !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase;
+  color:var(--accent) !important;
+}
+body[data-resolved-mode] .selection-modal .shader-more-note{margin:6px 4px !important;font-size:12px !important;color:var(--m3-on-surface-variant)}
+
+/* Fixed action bar: flat text buttons, right-aligned, no divider. Every
+   dialog (selection, confirm, rename, add) uses this same button. */
+body[data-resolved-mode] .selection-modal .selection-actions{
+  flex:none !important;
+  display:flex !important;
+  flex-wrap:wrap;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  margin:0 !important;
+  padding:20px 16px 16px !important;
+  border-top:0 !important;
+  background:var(--m3-surface-container-high) !important;
+}
+body[data-resolved-mode] .selection-modal .selection-actions .text-action-btn{
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 12px !important;
+  border:0 !important;
+  border-radius:20px !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+  letter-spacing:.01em !important;
+  text-transform:none !important;
+  color:var(--accent) !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+body[data-resolved-mode] .selection-modal .selection-actions .text-action-btn:active{background:color-mix(in srgb, var(--accent) 12%, transparent) !important}
+/* Shader picker: the two import actions sit on the left (like "Edit" in a
+   category picker), Cancel on the right. Same text button as everywhere. */
+body[data-resolved-mode] .selection-modal .shader-actions{justify-content:flex-start !important}
+body[data-resolved-mode] .selection-modal .shader-actions #closeGlslShaderModal{margin-left:auto !important}
+
+/* Import saves: warning icon beside the title, padded body text. */
+body[data-resolved-mode] .selection-modal .import-saves-card{width:min(100%, 440px) !important}
+body[data-resolved-mode] .selection-modal .import-saves-head{display:flex !important;align-items:center !important;gap:14px !important}
+body[data-resolved-mode] .selection-modal .import-saves-head h3{margin:0 !important;padding:0 !important;font-size:22px !important;font-weight:600 !important}
+body[data-resolved-mode] .selection-modal .import-saves-copy{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  margin:12px 0 0 !important;
+  padding:0 24px 16px !important;
+  font-size:14px !important;
+  line-height:1.55 !important;
+  color:var(--m3-on-surface-variant) !important;
+}
+body[data-resolved-mode] .selection-modal .import-saves-copy p{margin:0 0 10px !important}
+body[data-resolved-mode] .selection-modal .import-saves-copy strong{color:var(--m3-on-surface)}
+
+/* Set categories: checkbox + name rows, no dividers. */
+body[data-resolved-mode] .selection-modal .multi-category-item{
+  min-height:56px;
+  gap:20px;
+  padding:8px 12px;
+  border:0;
+  border-radius:12px;
+}
+body[data-resolved-mode] .selection-modal .multi-category-item:active{background:var(--m3-state-press)}
+body[data-resolved-mode] .selection-modal .multi-category-box{
+  width:18px;
+  height:18px;
+  border:2px solid var(--m3-on-surface-variant);
+  border-radius:3px;
+}
+body[data-resolved-mode] .selection-modal .multi-category-check input:checked + .multi-category-box,
+body[data-resolved-mode] .selection-modal .multi-category-item.mixed .multi-category-box{border-color:var(--accent)}
+body[data-resolved-mode] .selection-modal .multi-category-name strong{font-size:16px;font-weight:400;color:var(--m3-on-surface)}
+body[data-resolved-mode] .selection-modal .multi-category-name small{font-size:12.5px;color:var(--m3-on-surface-variant)}
+
+/* Confirm, rename, add-category, repository and layout-profile dialogs use
+   the same card, title, copy and flat text buttons as the selection dialogs
+   above (they used to have filled/outlined pill buttons). */
+body[data-resolved-mode] .modal-backdrop:not(.selection-modal):not(.rom-card-actions-backdrop){
+  background:rgba(4, 6, 12, .52) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+body[data-resolved-mode="light"] .modal-backdrop:not(.selection-modal):not(.rom-card-actions-backdrop){background:rgba(18, 22, 34, .36) !important}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card){
+  width:min(100%, 440px) !important;
+  max-width:440px !important;
+  padding:24px 24px 16px !important;
+  border:0 !important;
+  border-radius:28px !important;
+  background:var(--m3-surface-container-high) !important;
+  box-shadow:0 24px 64px rgba(0, 0, 0, .38), 0 2px 8px rgba(0, 0, 0, .18) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) :is(h3, .modal-title){
+  margin:0 !important;
+  font-size:24px !important;
+  line-height:1.3 !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+  color:var(--m3-on-surface) !important;
+  text-shadow:none !important;
+}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) :is(p, .modal-copy){
+  margin:12px 0 0 !important;
+  font-size:14px !important;
+  line-height:1.5 !important;
+  color:var(--m3-on-surface-variant) !important;
+}
+body[data-resolved-mode] .category-modal-card input{margin-top:20px}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) :is(.modal-actions, .confirm-actions){
+  display:flex !important;
+  flex-wrap:wrap;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  margin:20px -8px 0 0 !important;
+}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) .modal-btn{
+  width:auto !important;
+  min-width:0 !important;
+  height:40px !important;
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 12px !important;
+  border:0 !important;
+  border-radius:20px !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+  letter-spacing:.01em !important;
+  text-transform:none !important;
+  color:var(--accent) !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+body[data-resolved-mode] :is(.category-modal-card, .confirm-modal-card) .modal-btn:active{background:color-mix(in srgb, var(--accent) 12%, transparent) !important}
+
+/* Text fields: no glow/outline ring outside the field when focused. The
+   field's own border turns accent instead, so focus is still visible. */
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select):is(:focus, :focus-visible){
+  outline:none !important;
+  outline-offset:0 !important;
+  box-shadow:none !important;
+}
+body[data-resolved-mode] .category-modal-card input:focus{border-color:var(--accent) !important}
+
+/* Screen editor "Add control": same card radius and title weight. */
+body[data-resolved-mode] .add-control-dialog{border-radius:28px}
+body[data-resolved-mode] .add-control-header h3{font-weight:400}
+
+@media (prefers-reduced-motion: reduce){
+  body[data-resolved-mode] .selection-modal .selection-modal-card{transition:opacity .12s linear;transform:none}
+}
+
+/* ---------- 2. Settings pages: grouped cards ---------- */
+body[data-resolved-mode] .settings-detail-page .settings-section-label{
+  margin:20px 0 8px;
+  padding:0 4px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.02em;
+  color:var(--accent);
+}
+body[data-resolved-mode] .settings-detail-page .sub-header + .settings-section-label{margin-top:6px}
+body[data-resolved-mode] .settings-detail-page .detail-list.settings-card{
+  display:block;
+  width:auto;
+  max-width:none;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb, var(--m3-on-surface) 7%, transparent);
+  border-radius:24px;
+  background:var(--m3-surface-container);
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+body[data-resolved-mode="light"] .settings-detail-page .detail-list.settings-card{
+  background:color-mix(in srgb, white 92%, var(--accent) 8%);
+  border-color:color-mix(in srgb, var(--text) 7%, transparent);
+}
+body[data-resolved-mode] .settings-detail-page .settings-card > .detail-row,
+body[data-resolved-mode] .settings-detail-page .settings-card > .detail-range-row{
+  position:relative;
+  width:100%;
+  min-height:64px;
+  margin:0;
+  padding:14px 18px;
+  border:0 !important;
+  border-radius:0;
+  background:transparent !important;
+  box-shadow:none;
+}
+/* Inset divider between rows of one card */
+body[data-resolved-mode] .settings-detail-page .settings-card > :not(:first-child)::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:18px;
+  right:18px;
+  height:1px;
+  background:color-mix(in srgb, var(--m3-on-surface) 8%, transparent);
+}
+body[data-resolved-mode] .settings-detail-page .settings-card > .detail-row.tappable:active{background:var(--m3-state-press) !important}
+body[data-resolved-mode] .settings-detail-page .settings-card strong{font-size:15.5px;font-weight:600}
+body[data-resolved-mode] .settings-detail-page .settings-card .detail-row span,
+body[data-resolved-mode] .settings-detail-page .settings-card .range-copy span{font-size:13px;line-height:1.4}
+
+/* ---------- 3. Sliders ---------- */
+.settings-card input[type="range"],
+.range-line input[type="range"]{
+  -webkit-appearance:none;
+  appearance:none;
+  width:100%;
+  height:32px;
+  margin:0;
+  padding:0;
+  background:transparent;
+  touch-action:pan-y;
+  cursor:pointer;
+  transition:none !important;
+  --fill:50%;
+}
+.settings-card input[type="range"]:focus,
+.range-line input[type="range"]:focus{outline:none}
+.settings-card input[type="range"]::-webkit-slider-runnable-track,
+.range-line input[type="range"]::-webkit-slider-runnable-track{
+  height:6px;
+  border-radius:999px;
+  background:linear-gradient(to right, var(--accent) 0 var(--fill), color-mix(in srgb, var(--m3-on-surface) 14%, transparent) var(--fill) 100%);
+  transition:none;
+}
+.settings-card input[type="range"]::-webkit-slider-thumb,
+.range-line input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:22px;
+  height:22px;
+  margin-top:-8px;
+  border:0;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 2px 6px rgba(0, 0, 0, .28);
+  transition:none;
+}
+.settings-card input[type="range"]:active::-webkit-slider-thumb,
+.range-line input[type="range"]:active::-webkit-slider-thumb{
+  box-shadow:0 0 0 8px color-mix(in srgb, var(--accent) 20%, transparent), 0 2px 6px rgba(0, 0, 0, .28);
+}
+.range-line output{min-width:44px;font-variant-numeric:tabular-nums;font-weight:600;color:var(--m3-on-surface)}
+
+/* ---------- 4. "New version available!" ----------
+   Full-screen page shown on launch when GitHub has a newer Retra release:
+   icon, title, version, intro links, the release notes rendered from Markdown,
+   and a fixed Download / Not now bar. Only the notes scroll. */
+.app-update-screen{
+  position:fixed;
+  inset:0;
+  z-index:600;
+  display:flex;
+  flex-direction:column;
+  background:var(--m3-surface, var(--shell-start, #12141a));
+  color:var(--m3-on-surface, var(--text, #f5f5fb));
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(16px);
+  transition:opacity .2s ease-out, transform .24s cubic-bezier(.2, 0, 0, 1), visibility 0s linear .24s;
+}
+.app-update-screen.open{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease-out, transform .24s cubic-bezier(.2, 0, 0, 1), visibility 0s}
+body.app-update-open{overflow:hidden}
+.app-update-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:calc(var(--device-safe-top, 0px) + 40px) 24px 24px;
+  background:var(--m3-surface, var(--shell-start, #12141a));
+  contain:content;
+}
+.app-update-icon{width:52px;height:52px;fill:var(--accent);display:block}
+.app-update-title{margin:20px 0 6px;font-size:34px;line-height:1.15;font-weight:500;letter-spacing:-.01em;color:var(--m3-on-surface, var(--text))}
+.app-update-version{margin:0;font-size:15px;color:var(--m3-on-surface-variant, var(--muted))}
+.app-update-intro{margin:28px 0 8px;font-size:16px;line-height:1.55;color:var(--m3-on-surface, var(--text))}
+.app-update-screen a{color:var(--accent);font-weight:600;text-decoration:none}
+.app-update-screen .app-update-notes{margin:20px 0 0;padding:0;max-height:none;overflow:visible;border:0;border-radius:0;background:none !important;box-shadow:none;white-space:normal;font-size:15.5px;line-height:1.55;color:var(--m3-on-surface, var(--text))}
+.app-update-notes > p{margin:0 0 12px}
+.app-update-section{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:26px 0 10px;
+  font-size:24px;
+  line-height:1.25;
+  font-weight:500;
+  color:var(--m3-on-surface, var(--text));
+}
+.app-update-notes > .app-update-section:first-child{margin-top:8px}
+.app-update-emoji{font-size:26px;line-height:1}
+.app-update-notes ul{margin:0 0 4px;padding:0 0 0 22px}
+.app-update-notes li{margin:0 0 8px;padding-left:2px}
+.app-update-notes li::marker{color:var(--m3-on-surface-variant, var(--muted))}
+.app-update-notes strong{font-weight:700}
+.app-update-notes code{padding:1px 6px;border-radius:6px;font-size:.9em;background:color-mix(in srgb, var(--m3-on-surface, #fff) 9%, transparent)}
+.app-update-actions{
+  flex:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:14px 24px calc(var(--device-safe-bottom, 0px) + 16px);
+  border-top:1px solid color-mix(in srgb, var(--m3-on-surface, #fff) 10%, transparent);
+  background:var(--m3-surface, var(--shell-start, #12141a));
+}
+.app-update-actions button{
+  width:100%;
+  min-height:52px;
+  border-radius:999px;
+  font:inherit;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+}
+.app-update-download{
+  border:0;
+  color:var(--m3-surface, #fff);
+  background:var(--accent);
+}
+body[data-resolved-mode="light"] .app-update-download{color:#fff}
+.app-update-later{
+  border:1px solid color-mix(in srgb, var(--m3-on-surface, #fff) 26%, transparent);
+  color:var(--m3-on-surface, var(--text));
+  background:transparent;
+}
+.app-update-download:active{filter:brightness(.92)}
+.app-update-later:active{background:var(--m3-state-press, rgba(127,127,127,.12))}
+@media (orientation:landscape) and (max-height:520px){
+  .app-update-scroll{padding-top:calc(var(--device-safe-top, 0px) + 20px)}
+  .app-update-title{font-size:28px;margin-top:12px}
+  .app-update-actions{flex-direction:row}
+}
+@media (prefers-reduced-motion: reduce){
+  .app-update-screen{transform:none !important}
+}

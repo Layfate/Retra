@@ -65,7 +65,8 @@ test('resampler state follows dynamic game audio rates and is reset when cores c
 test('audio volume is applied once and sound settings rebuild the output track', () => {
   assert.match(settings, /setCoreConfigOption\("volume", "256"\)/);
   assert.match(settings, /audioController\.setVolume\(volume\)/);
-  assert.match(settings, /key == "enableSound" \|\| key == "soundFrequency"/);
+  assert.match(settings, /if \(key == "enableSound"\) \{/);
+  assert.match(settings, /if \(key == "muteFastForward"\) audioController\.refreshFastForwardMute\(\)/);
   assert.match(settings, /audioController\.configure\(romLoaded\)/);
 });
 

@@ -28,8 +28,8 @@ test('high-frequency sliders use a rate-limited specialized native bridge', () =
   assert.match(js, /setRangeSetting/);
   assert.match(js, /createNativeRangeDispatcher\('volume', 48\)/);
   assert.match(js, /createNativeRangeDispatcher\('buttonsOpacity', 64\)/);
-  assert.match(js, /createNativeRangeDispatcher\('frameSkip', 72\)/);
-  assert.match(js, /createNativeRangeDispatcher\('smcCheck', 96\)/);
+  // Frameskip and Link sync check sliders were retired from Settings.
+  assert.doesNotMatch(js, /createNativeRangeDispatcher\('(frameSkip|smcCheck)'/);
   assert.match(settings, /fun MainActivity\.updateRangeSetting/);
   assert.match(settings, /if \(commit\) syncAppFolderAsync/);
   assert.match(activity, /fun setRangeSetting\(key: String, value: Int, commit: Boolean\)/);
@@ -54,5 +54,4 @@ test('Android instrumentation suite covers preferences file durability and windo
   assert.ok(files.includes('RetraFileOpsInstrumentedTest.kt'));
   assert.ok(files.includes('MainActivityWindowInstrumentedTest.kt'));
   assert.ok(files.includes('RomIdentityStoreInstrumentedTest.kt'));
-  assert.ok(fs.existsSync(path.join(root, 'docs/REAL_DEVICE_VALIDATION_MATRIX_v1.0.1.md')));
 });

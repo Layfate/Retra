@@ -296,6 +296,23 @@ async function resumeCurrentRom(){
 resumeAction.addEventListener('click', resumeCurrentRom);
 bigResumeBtn?.addEventListener('click', resumeCurrentRom);
 
+// ROM detail "In library" toggle: tapping it asks before removing, using the
+// same archive-only removal as the card menu, then returns to the Library.
+document.getElementById('romLibraryAction')?.addEventListener('click', () => {
+  const id = currentRomCard?.dataset.romId;
+  const rom = id ? getRomById(id) : null;
+  if (!rom) return;
+  const title = rom.title || 'this ROM';
+  openConfirmModal(
+    'Remove from Library?',
+    `Remove “${title}” from the Library? Saves, save states, cheats, favourites, categories and other game data will be kept and restored if you add the same ROM again.`,
+    async () => {
+      await removeRomFromLibrary(id);
+      document.querySelector('#romDetailPage [data-back-to]')?.click();
+    }
+  );
+});
+
 
 const libraryChips = document.getElementById('libraryChips');
 const categoriesList = document.getElementById('categoriesList');

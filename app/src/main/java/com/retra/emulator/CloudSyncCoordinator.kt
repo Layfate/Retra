@@ -5,7 +5,10 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Handler
 import android.os.Looper
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
@@ -42,7 +45,8 @@ class CloudSyncCoordinator(
         val operation: Operation,
         val accountName: String,
         val interactive: Boolean,
-        val showResult: Boolean
+        val showResult: Boolean,
+        val automatic: Boolean = false
     )
 
     private val authorizationClient = Identity.getAuthorizationClient(activity)
@@ -54,15 +58,22 @@ class CloudSyncCoordinator(
     @Volatile private var restoreInFlight = false
     @Volatile private var pendingAutoBackup = false
     @Volatile private var pendingAuthorization: PendingAuthorization? = null
+    @Volatile private var autoRetries = 0
 
     private val autoSyncRunnable = Runnable {
         autoSyncScheduled.set(false)
-        backupNow(showResult = false, interactiveAuthorization = false)
+        runAutomaticBackup()
     }
 
     fun mode(): String = MODE_API
     fun isReady(): Boolean = !prefs.getString(ACCOUNT_PREF, null).isNullOrBlank()
     fun isAutomaticBackupEnabled(): Boolean = prefs.getBoolean(ENABLED_PREF, false)
+    fun isWifiOnly(): Boolean = prefs.getBoolean(WIFI_ONLY_PREF, false)
+    fun setWifiOnly(enabled: Boolean) {
+        prefs.edit().putBoolean(WIFI_ONLY_PREF, enabled).apply()
+        onSettingsChanged()
+        if (!enabled) requestAutoSync(urgent = false)
+    }
     fun connectedAccount(): String = prefs.getString(ACCOUNT_PREF, "").orEmpty()
     fun lastSuccessfulSyncAt(): Long = prefs.getLong(LAST_SUCCESS_PREF, 0L).coerceAtLeast(0L)
     fun lastRestoreAt(): Long = prefs.getLong(LAST_RESTORE_PREF, 0L).coerceAtLeast(0L)
@@ -133,6 +144,7 @@ class CloudSyncCoordinator(
     fun setEnabled(enabled: Boolean) {
         prefs.edit().putBoolean(ENABLED_PREF, enabled).apply()
         if (!enabled) {
+            stopWatchingNetwork()
             mainHandler.removeCallbacks(autoSyncRunnable)
             autoSyncScheduled.set(false)
             pendingAutoBackup = false
@@ -149,7 +161,22 @@ class CloudSyncCoordinator(
         }
         mainHandler.removeCallbacks(autoSyncRunnable)
         autoSyncScheduled.set(true)
+        // Saves and settings change in bursts while playing; wait for a quiet moment so one
+        // backup covers the burst. Leaving the app (urgent) backs up right away.
         mainHandler.postDelayed(autoSyncRunnable, if (urgent) 0L else AUTO_BACKUP_DEBOUNCE_MS)
+    }
+
+    /** Automatic pass: never shows UI, respects Wi-Fi only, and waits quietly when offline. */
+    private fun runAutomaticBackup() {
+        if (!isAutomaticBackupEnabled() || !isReady()) return
+        when (networkState()) {
+            NetworkState.OFFLINE -> { recordWaiting("Waiting for a network connection"); watchNetwork(); return }
+            NetworkState.METERED -> if (isWifiOnly()) { recordWaiting("Waiting for Wi-Fi (Wi-Fi only is on)"); watchNetwork(); return }
+            NetworkState.UNMETERED -> Unit
+        }
+        val account = connectedAccount()
+        if (!beginOperation()) return
+        authorize(PendingAuthorization(Operation.BACKUP, account, interactive = false, showResult = false, automatic = true))
     }
 
     fun backupNow(showResult: Boolean = true, interactiveAuthorization: Boolean = true) {
@@ -158,7 +185,14 @@ class CloudSyncCoordinator(
             if (showResult) toast("Connect a Google account first")
             return
         }
-        if (!beginOperation()) return
+        if (showResult && networkState() == NetworkState.OFFLINE) {
+            toast("No internet connection. Connect to the internet and try again.")
+            return
+        }
+        if (!beginOperation()) {
+            if (showResult) toast("A Google Drive backup is already running")
+            return
+        }
         authorize(PendingAuthorization(Operation.BACKUP, account, interactiveAuthorization, showResult))
     }
 
@@ -168,7 +202,14 @@ class CloudSyncCoordinator(
             if (showResult) toast("Choose the Google account that contains your Retra backup")
             return
         }
-        if (!beginOperation()) return
+        if (networkState() == NetworkState.OFFLINE) {
+            if (showResult) toast("No internet connection. Connect to the internet and try again.")
+            return
+        }
+        if (!beginOperation()) {
+            if (showResult) toast("Wait for the current Google Drive backup to finish")
+            return
+        }
         authorize(PendingAuthorization(Operation.RESTORE, account, true, showResult))
     }
 
@@ -176,12 +217,22 @@ class CloudSyncCoordinator(
         val account = connectedAccount()
         AlertDialog.Builder(activity)
             .setTitle(if (account.isBlank()) "Google Drive" else "Google Drive • $account")
-            .setItems(arrayOf("Backup Now", "Restore from Google Drive", "Change Google account", "Disconnect")) { _, which ->
+            .setItems(arrayOf(
+                "Backup now",
+                "Restore from Google Drive",
+                if (isWifiOnly()) "Automatic backup: Wi-Fi only" else "Automatic backup: Wi-Fi or mobile data",
+                "Change Google account",
+                "Disconnect"
+            )) { _, which ->
                 when (which) {
                     0 -> backupNow(showResult = true)
                     1 -> restoreFromDrive(showResult = true)
-                    2 -> requestAccount()
-                    3 -> {
+                    2 -> {
+                        setWifiOnly(!isWifiOnly())
+                        toast(if (isWifiOnly()) "Automatic backups wait for Wi-Fi" else "Automatic backups also use mobile data")
+                    }
+                    3 -> requestAccount()
+                    4 -> {
                         disconnect()
                         toast("Google Drive disconnected")
                     }
@@ -197,6 +248,7 @@ class CloudSyncCoordinator(
     }
 
     fun disconnect() {
+        stopWatchingNetwork()
         mainHandler.removeCallbacks(autoSyncRunnable)
         autoSyncScheduled.set(false)
         pendingAutoBackup = false
@@ -278,15 +330,16 @@ class CloudSyncCoordinator(
 
     private fun executeAuthorized(pending: PendingAuthorization, token: String) {
         when (pending.operation) {
-            Operation.BACKUP -> performBackup(token, pending.showResult)
+            Operation.BACKUP -> performBackup(token, pending.showResult, pending.automatic)
             Operation.RESTORE -> loadRestoreChoices(token, pending.showResult)
         }
     }
 
-    private fun performBackup(token: String, showResult: Boolean) {
+    private fun performBackup(token: String, showResult: Boolean, automatic: Boolean) {
         ioExecutor.execute {
             val tempDir = File(activity.cacheDir, "drive-backup").apply { mkdirs() }
             val file = File(tempDir, cloudBackupName())
+            var retryLater = false
             try {
                 // Critical fresh-install rule: query Drive FIRST, before metadata
                 // generation or any upload. A cloud recovery can never be replaced
@@ -306,31 +359,102 @@ class CloudSyncCoordinator(
                 }
 
                 setProgress("Preparing Retra backup", 8)
-                backupRepository.create(file, BackupRepository.Selection())
+                val archive = backupRepository.create(file, BackupRepository.Selection())
+                // Check the final file (create() checked its temporary copy) before anything is uploaded.
                 backupRepository.validate(file)
+                val fingerprint = archive.contentFingerprint
+                val newest = cloudBackups.firstOrNull()
+                // Nothing changed since the newest backup in Drive: do not upload another copy.
+                if (fingerprint.isNotBlank() && newest != null && newest.contentFingerprint.equals(fingerprint, ignoreCase = true)) {
+                    autoRetries = 0
+                    recordUpToDate(newest.time)
+                    setProgress("Backup is up to date", 100)
+                    if (showResult) activity.runOnUiThread { toast("Google Drive backup is already up to date") }
+                    return@execute
+                }
                 val sha256 = driveApi.sha256(file)
 
                 setProgress("Uploading to My Drive/Retra Backups", 12)
-                val uploaded = driveApi.uploadBackup(token, file, sha256) { percent ->
-                    setProgress("Uploading to My Drive/Retra Backups", 12 + (percent * 86 / 100))
+                val uploaded = driveApi.uploadBackup(token, file, sha256, fingerprint, automatic) { percent ->
+                    setProgress("Uploading to My Drive/Retra Backups", 12 + (percent * 84 / 100))
                 }
+                // Keep Drive tidy: only the newest automatic snapshots are kept. Manual backups stay.
+                if (!uploaded.deduplicated) {
+                    setProgress("Removing older automatic backups", 97)
+                    runCatching { driveApi.pruneAutomaticBackups(token, KEEP_AUTOMATIC_BACKUPS) }
+                }
+                autoRetries = 0
                 recordBackupSuccess(if (uploaded.deduplicated) 0 else 1)
                 setProgress("Backup complete", 100)
                 if (showResult) activity.runOnUiThread {
-                    toast(if (uploaded.deduplicated) "Google Drive already has this backup" else "Backup uploaded to My Drive/Retra Backups")
+                    toast(if (uploaded.deduplicated) "Google Drive backup is already up to date" else "Backup uploaded to My Drive/Retra Backups")
                 }
             } catch (auth: GoogleDriveApiRepository.AuthExpiredException) {
                 clearExpiredToken(token)
-                recordFailure("Google Drive authorization expired. Tap Backup Now to reconnect.")
+                // The next pass requests a fresh token; Google Identity refreshes it silently when it can.
+                retryLater = automatic
+                recordFailure("Google Drive authorization expired. Tap Backup now to reconnect.")
                 if (showResult) activity.runOnUiThread { toast("Google Drive authorization expired • reconnect and try again") }
             } catch (error: Exception) {
+                retryLater = automatic && error is java.io.IOException &&
+                    (error !is GoogleDriveApiRepository.DriveException || error.transient)
                 recordFailure("Backup failed: ${friendly(error)}")
                 if (showResult) activity.runOnUiThread { toast("Google Drive backup failed: ${friendly(error)}") }
             } finally {
                 file.delete()
                 finishOperation()
+                if (retryLater) scheduleRetry()
             }
         }
+    }
+
+    /** Transient automatic failures (network drop, Drive busy) retry a few times with growing delays. */
+    private fun scheduleRetry() {
+        if (autoRetries >= MAX_AUTO_RETRIES || !isAutomaticBackupEnabled()) return
+        val delay = AUTO_RETRY_BASE_MS shl autoRetries
+        autoRetries++
+        mainHandler.post {
+            mainHandler.removeCallbacks(autoSyncRunnable)
+            autoSyncScheduled.set(true)
+            mainHandler.postDelayed(autoSyncRunnable, delay)
+        }
+    }
+
+    private enum class NetworkState { OFFLINE, METERED, UNMETERED }
+
+    private var networkWatch: ConnectivityManager.NetworkCallback? = null
+
+    /** One-shot: when a usable network appears, run the waiting automatic backup. */
+    private fun watchNetwork() {
+        val manager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        synchronized(this) {
+            if (networkWatch != null) return
+            val callback = object : ConnectivityManager.NetworkCallback() {
+                override fun onCapabilitiesChanged(network: android.net.Network, capabilities: NetworkCapabilities) {
+                    if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return
+                    if (isWifiOnly() && !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)) return
+                    stopWatchingNetwork()
+                    mainHandler.post { requestAutoSync(urgent = false) }
+                }
+            }
+            if (runCatching { manager.registerDefaultNetworkCallback(callback) }.isSuccess) networkWatch = callback
+        }
+    }
+
+    private fun stopWatchingNetwork() {
+        val manager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        val callback = synchronized(this) { networkWatch.also { networkWatch = null } } ?: return
+        runCatching { manager.unregisterNetworkCallback(callback) }
+    }
+
+    private fun networkState(): NetworkState {
+        val manager = activity.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            ?: return NetworkState.UNMETERED
+        val capabilities = runCatching { manager.getNetworkCapabilities(manager.activeNetwork) }.getOrNull()
+            ?: return NetworkState.OFFLINE
+        if (!capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return NetworkState.OFFLINE
+        return if (capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)) NetworkState.UNMETERED
+            else NetworkState.METERED
     }
 
     private fun loadRestoreChoices(token: String, showResult: Boolean) {
@@ -361,18 +485,51 @@ class CloudSyncCoordinator(
 
     private fun showRestoreChooser(token: String, backups: List<GoogleDriveApiRepository.CloudBackup>, showResult: Boolean) {
         val visible = backups.take(MAX_RESTORE_CHOICES)
-        val labels = visible.map { backup ->
-            val whenText = dateLabel(backup.createdAt.takeIf { it > 0L } ?: backup.modifiedAt)
-            "$whenText • ${sizeLabel(backup.size)}"
+        val labels = visible.mapIndexed { index, backup ->
+            val parts = mutableListOf(dateLabel(backup.time), sizeLabel(backup.size))
+            if (backup.device.isNotBlank()) parts += backup.device
+            if (backup.kind == GoogleDriveApiRepository.KIND_MANUAL) parts += "Manual"
+            (if (index == 0) "Latest • " else "") + parts.joinToString(" • ")
         }.toTypedArray()
+        // However the dialog closes (Cancel, back, outside tap, activity finishing), the operation
+        // is finished exactly once unless a backup was chosen, so Drive never stays "busy".
+        var chosen = false
         AlertDialog.Builder(activity)
             .setTitle("Restore from My Drive/Retra Backups")
-            .setItems(labels) { _, which -> performRestore(token, visible[which], showResult) }
-            .setNegativeButton("Cancel") { _, _ ->
-                recordFailure("")
-                finishOperation()
+            .setItems(labels) { _, which ->
+                chosen = true
+                confirmRestore(token, visible[which], showResult)
             }
-            .setOnCancelListener { finishOperation() }
+            .setNegativeButton("Cancel", null)
+            .setOnDismissListener {
+                if (!chosen) {
+                    recordFailure("")
+                    finishOperation()
+                }
+            }
+            .show()
+    }
+
+    /** Restoring replaces saves on this device; say so before downloading. */
+    private fun confirmRestore(token: String, backup: GoogleDriveApiRepository.CloudBackup, showResult: Boolean) {
+        var confirmed = false
+        val from = if (backup.device.isBlank()) "" else " from ${backup.device}"
+        AlertDialog.Builder(activity)
+            .setTitle("Restore this backup?")
+            .setMessage("Backup of ${dateLabel(backup.time)}$from.\n\n" +
+                "Saves, save states, settings and library details in this backup replace the copies on this device. " +
+                "Files that exist only on this device are kept. ROM files are never part of a backup.")
+            .setPositiveButton("Restore") { _, _ ->
+                confirmed = true
+                performRestore(token, backup, showResult)
+            }
+            .setNegativeButton("Cancel", null)
+            .setOnDismissListener {
+                if (!confirmed) {
+                    recordFailure("")
+                    finishOperation()
+                }
+            }
             .show()
     }
 
@@ -453,6 +610,20 @@ class CloudSyncCoordinator(
         onSettingsChanged()
     }
 
+    /** Drive already holds this exact data, so the last backup time is that backup's time. */
+    private fun recordUpToDate(backupTime: Long) {
+        val editor = prefs.edit().putString(LAST_ERROR_PREF, "").putInt(LAST_UPLOADED_PREF, 0)
+        if (backupTime > lastSuccessfulSyncAt()) editor.putLong(LAST_SUCCESS_PREF, backupTime)
+        editor.apply()
+        onSettingsChanged()
+    }
+
+    /** Not an error: an automatic backup is waiting for Wi-Fi or a connection. */
+    private fun recordWaiting(message: String) {
+        prefs.edit().putString(LAST_ERROR_PREF, message).apply()
+        onSettingsChanged()
+    }
+
     private fun recordFailure(message: String) {
         prefs.edit().putString(LAST_ERROR_PREF, message.take(320)).apply()
         onSettingsChanged()
@@ -495,8 +666,12 @@ class CloudSyncCoordinator(
         const val TRANSFER_ACTIVE_PREF = "cloud_transfer_active_v1"
         const val TRANSFER_LABEL_PREF = "cloud_transfer_label_v1"
         const val TRANSFER_PROGRESS_PREF = "cloud_transfer_progress_v1"
+        const val WIFI_ONLY_PREF = "cloud_sync_wifi_only_v1"
         const val DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
-        private const val AUTO_BACKUP_DEBOUNCE_MS = 1_500L
+        private const val AUTO_BACKUP_DEBOUNCE_MS = 30_000L
+        private const val AUTO_RETRY_BASE_MS = 2 * 60_000L
+        private const val MAX_AUTO_RETRIES = 3
+        private const val KEEP_AUTOMATIC_BACKUPS = 10
         private const val MAX_RESTORE_CHOICES = 30
     }
 }

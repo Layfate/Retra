@@ -12,8 +12,8 @@ const shaderRepo = fs.readFileSync(path.join(__dirname, '../app/src/main/java/co
 const shaderView = fs.readFileSync(path.join(__dirname, '../app/src/main/java/com/retra/emulator/ShaderGameView.kt'), 'utf8');
 
 test('release metadata and optimization are enabled', () => {
-  assert.match(gradle, /versionCode = 455/);
-  assert.match(gradle, /versionName = "1.0.4"/);
+  assert.match(gradle, /versionCode = 456/);
+  assert.match(gradle, /versionName = "1.0.5"/);
   assert.match(gradle, /optimization \{\s*enable = true\s*\}/s);
 });
 
@@ -47,9 +47,6 @@ test('publish-ready repository metadata and CI quality gates are present', () =>
     'CHANGELOG.md',
     'SECURITY.md',
     'CONTRIBUTING.md',
-    'docs/RELEASE_NOTES_v1.0.0.md',
-    'docs/RELEASE_CHECKLIST_v1.0.0.md',
-    'docs/DEVELOPMENT_HISTORY.md',
     'docs/README.md',
     'tools/release_gate.py',
   ]) {

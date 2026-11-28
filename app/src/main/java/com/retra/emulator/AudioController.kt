@@ -26,8 +26,16 @@ internal class AudioController(
     private val volume: () -> Float,
     private val readSamples: (ShortArray) -> Int,
     private val readSamplesAtSpeed: (ShortArray, Double) -> Int,
-    private val onOutputRateChanged: (Int) -> Unit
+    private val onOutputRateChanged: (Int) -> Unit,
+    /** "Mute while fast-forwarding": silence the track whenever the game runs faster than 1x. */
+    private val muteWhenFast: () -> Boolean = { false }
 ) {
+    @Volatile
+    private var currentSpeed = 1.0
+
+    @Volatile
+    private var fastMuted = false
+
     @Volatile
     private var audioTrack: AudioTrack? = null
 
@@ -166,7 +174,7 @@ internal class AudioController(
                 try { track.release() } catch (_: Exception) {}
                 false
             } else {
-                try { track.setVolume(volume().coerceIn(0f, 1f)) } catch (_: Exception) {}
+                try { track.setVolume(if (fastMuted) 0f else volume().coerceIn(0f, 1f)) } catch (_: Exception) {}
                 applyAdaptiveTrackBuffer(track)
                 audioTrack = track
                 try { onOutputRateChanged(track.sampleRate.coerceIn(8000, 96000)) } catch (_: Throwable) {}
@@ -180,7 +188,16 @@ internal class AudioController(
     }
 
     fun setVolume(value: Float) {
-        try { audioTrack?.setVolume(value.coerceIn(0f, 1f)) } catch (_: Exception) {}
+        try { audioTrack?.setVolume(if (fastMuted) 0f else value.coerceIn(0f, 1f)) } catch (_: Exception) {}
+    }
+
+    /** Re-evaluate "Mute while fast-forwarding" (speed or setting changed). */
+    fun refreshFastForwardMute() {
+        val mute = currentSpeed > 1.01 && muteWhenFast()
+        if (mute == fastMuted) return
+        fastMuted = mute
+        setVolume(volume())
+        if (!mute) requestFadeIn()
     }
 
     fun play() {
@@ -229,6 +246,8 @@ internal class AudioController(
      */
     fun onSpeedChanged(speed: Double) {
         prepareTransform(normalizeSpeed(speed))
+        currentSpeed = speed
+        refreshFastForwardMute()
     }
 
     /**

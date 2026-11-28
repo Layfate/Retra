@@ -43,17 +43,25 @@ test('every controller glyph shares one spec and every face one palette', () => 
     assert.doesNotMatch(xml, /strokeLineCap="(square|butt)"|strokeLineJoin="miter"/, name);
     assert.doesNotMatch(xml.replace(/#FFF7F9FC/g, ''), /strokeColor="#/, name);
   }
+  // Light gray face on a darker rim; pressed sinks the face onto the rim.
   for (const name of ['bg_controller_circle', 'bg_controller_pill', 'bg_controller_round_rect',
     'bg_controller_shoulder_left', 'bg_controller_shoulder_right', 'bg_controller_square']) {
     const xml = drawable(name);
-    assert.deepEqual([...new Set([...xml.matchAll(/<solid android:color="([^"]+)"/g)].map(m => m[1]))].sort(), ['#5C11171D', '#7545525A'], name);
+    assert.deepEqual([...new Set([...xml.matchAll(/<solid android:color="([^"]+)"/g)].map(m => m[1]))].sort(), ['#FF8F959C', '#FFA9AEB5', '#FFD4D7DB'], name);
     assert.deepEqual([...new Set([...xml.matchAll(/<stroke android:width="([^"]+)" android:color="([^"]+)"/g)].map(m => m[1] + ' ' + m[2]))].sort(),
-      ['1.5dp #CCFFFFFF', '1.5dp #FFFFFFFF'], name);
+      ['1dp #FFEEF0F2'], name);
   }
-  // The D-pad glyph renders at its 24dp size inside the 44dp face.
+  for (const dir of ['up', 'down', 'left', 'right']) {
+    for (const state of ['normal', 'pressed']) {
+      const xml = drawable(`bg_controller_dpad_${dir}_${state}`);
+      assert.match(xml, /android:fillColor="#FF8F959C"/, dir);
+      assert.match(xml, new RegExp(`android:fillColor="${state === 'pressed' ? '#FFA9AEB5' : '#FFD4D7DB'}"`), dir);
+    }
+  }
+  // The D-pad glyph renders at its 24dp size in the body of the 60dp arrow piece.
   const layout = read('app/src/main/res/layout/activity_main.xml');
   for (const id of ['buttonUp', 'buttonDown', 'buttonLeft', 'buttonRight']) {
-    assert.match(layout, new RegExp(`android:id="@\\+id/${id}"[^>]*?android:padding="10dp"`), id);
+    assert.match(layout, new RegExp(`android:id="@\\+id/${id}"[^>]*?android:paddingStart="18dp"[^>]*?android:paddingTop="8dp"[^>]*?android:paddingEnd="18dp"[^>]*?android:paddingBottom="28dp"`), id);
   }
   // Lettered buttons share one typeface.
   for (const id of ['buttonL', 'buttonR', 'buttonA', 'buttonB']) {
@@ -84,7 +92,7 @@ test('Add-control restore thumbnails no longer substitute generic D-pad or Start
   assert.doesNotMatch(js, /case 'startSelect':[\s\S]{0,160}>SS</);
 });
 
-test('native gameplay L/R use asymmetric curved shoulder drawables while Start/Select keep the pill', () => {
+test('native gameplay L/R and Start/Select are labelled pills', () => {
   const layout = read('app/src/main/res/layout/activity_main.xml');
   const left = read('app/src/main/res/drawable/bg_controller_shoulder_left.xml');
   const right = read('app/src/main/res/drawable/bg_controller_shoulder_right.xml');
@@ -94,12 +102,8 @@ test('native gameplay L/R use asymmetric curved shoulder drawables while Start/S
   assert.match(layout, /android:id="@\+id\/buttonSelect"[\s\S]*?android:background="@drawable\/bg_controller_pill"/);
   assert.match(layout, /android:id="@\+id\/buttonStart"[\s\S]*?android:background="@drawable\/bg_controller_pill"/);
 
-  assert.match(left, /android:topLeftRadius="12dp"/);
-  assert.match(left, /android:topRightRadius="28dp"/);
-  assert.match(left, /android:bottomRightRadius="16dp"/);
-  assert.match(left, /android:bottomLeftRadius="12dp"/);
-  assert.match(right, /android:topLeftRadius="28dp"/);
-  assert.match(right, /android:topRightRadius="12dp"/);
-  assert.match(right, /android:bottomRightRadius="12dp"/);
-  assert.match(right, /android:bottomLeftRadius="16dp"/);
+  assert.match(left, /<corners android:radius="999dp" \/>/);
+  assert.match(right, /<corners android:radius="999dp" \/>/);
+  assert.match(layout, /android:id="@\+id\/buttonSelect"[^>]*?android:text="SELECT"/);
+  assert.match(layout, /android:id="@\+id\/buttonStart"[^>]*?android:text="START"/);
 });

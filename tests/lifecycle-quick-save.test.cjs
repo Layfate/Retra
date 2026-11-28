@@ -25,5 +25,5 @@ test('Recents removal and orderly teardown retry Quick Save without duplicate wr
 test('automatic Quick Save respects Auto save & load and avoids paired-link corruption', () => {
   assert.match(gameplay, /prefs\.getBoolean\(MainActivity\.AUTO_SAVE_LOAD_PREF, true\)/);
   assert.match(gameplay, /localLinkActive \|\| remoteTransport\.isActive/);
-  assert.match(html, /Quick-save on background\/exit and keep automatic resume available on next launch/);
+  assert.match(html, /<strong>Auto save &amp; resume<\/strong><span>Save when you leave a game and continue where you left off next time<\/span>/);
 });

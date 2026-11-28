@@ -15,9 +15,9 @@ test('screen editor base sizes match native gameplay controls at 100 percent sca
   assert.match(xml, /@\+id\/buttonL[\s\S]*?layout_width="72dp"[\s\S]*?layout_height="30dp"/);
 
   assert.match(css, /#screenSizePage \.preview-dpad\{[\s\S]*?width:150px !important;[\s\S]*?height:150px !important;/);
-  assert.match(css, /#screenSizePage \.preview-dpad \.dpad\{[\s\S]*?width:44px !important;[\s\S]*?height:44px !important;/);
+  assert.match(css, /#screenSizePage \.preview-dpad \.dpad\{[\s\S]*?width:60px !important;[\s\S]*?height:60px !important;/);
   assert.match(xml, /@\+id\/dpadContainer[\s\S]*?layout_width="150dp"[\s\S]*?layout_height="150dp"/);
-  assert.match(xml, /@\+id\/buttonUp[\s\S]*?layout_width="44dp"[\s\S]*?layout_height="44dp"/);
+  assert.match(xml, /@\+id\/buttonUp[\s\S]*?layout_width="60dp"[\s\S]*?layout_height="60dp"/);
 
   assert.match(css, /#screenSizePage \.preview-start-select\{[\s\S]*?width:116px !important;[\s\S]*?height:38px !important;/);
   assert.match(css, /#screenSizePage \.preview-start-select span\{[\s\S]*?width:50px !important;[\s\S]*?height:24px !important;/);

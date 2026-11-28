@@ -142,6 +142,21 @@ class BrowseRepository(
         }
         return errors
     }
+
+    /**
+     * Retra Sources (one bundle with every website) is now published as one extension per website.
+     * Once its repository lists the per-site extensions instead, the bundle is uninstalled so the user
+     * installs the sites they want. Library games, downloads and pins keep working: legacy source keys
+     * resolve to the same source in a per-site extension (see [source]). Returns the retired names.
+     */
+    fun retireLegacyBundle(): List<String> {
+        val installed = store.get("installed", LEGACY_BUNDLE) ?: return emptyList()
+        val repository = store.get("repository", installed.optString("repository")) ?: return emptyList()
+        val listed = runCatching { BrowseProtocol.extensions(repository.getJSONObject("index")) }.getOrNull() ?: return emptyList()
+        if (listed.any { it.id == LEGACY_BUNDLE } || listed.none { it.id.startsWith(SPLIT_PREFIX) }) return emptyList()
+        store.delete("installed", LEGACY_BUNDLE)
+        return listOf(installed.getJSONObject("metadata").optString("name", "Retra Sources"))
+    }
     fun trust(url: String, trusted: Boolean) {
         val row = store.get("repository", url) ?: error("Repository not found")
         store.put("repository", url, row.put("trusted", trusted))
@@ -165,10 +180,13 @@ class BrowseRepository(
         val extension = installed.getJSONObject("metadata").getString("id")
         val rows = installed.getJSONObject("manifest").getJSONArray("sources")
         (0 until rows.length()).map { i ->
-            val key = "$extension/${rows.getJSONObject(i).getString("id")}"
+            val sourceId = rows.getJSONObject(i).getString("id")
+            val key = "$extension/$sourceId"
+            // A source pinned in the former Retra Sources bundle stays pinned in its own extension.
+            val legacyPin = extension.startsWith(SPLIT_PREFIX) && store.get("pin", "$LEGACY_BUNDLE/$sourceId") != null
             JSONObject(rows.getJSONObject(i).toString()).put("key", key)
                 .put("extensionId", extension).put("repository", installed.getString("repository"))
-                .put("pinned", store.get("pin", key) != null)
+                .put("pinned", store.get("pin", key) != null || legacyPin)
                 .put("enabled", store.get("disabled", key) == null)
         }
     }
@@ -177,7 +195,24 @@ class BrowseRepository(
         val source = source(key).getString("key")
         if (enabled) store.delete("disabled", source) else store.put("disabled", source, JSONObject())
     }
-    fun source(key: String) = sources().firstOrNull { it.getString("key") == key } ?: error("Source is not installed")
+    fun source(key: String): JSONObject {
+        val all = sources()
+        all.firstOrNull { it.getString("key") == key }?.let { return it }
+        // Library games and downloads saved from the former Retra Sources bundle use
+        // "org.retra.romhackplaza/<source>"; the per-site extensions keep the same source IDs.
+        if (key.startsWith("$LEGACY_BUNDLE/")) {
+            val sourceId = key.substringAfter('/')
+            all.firstOrNull { it.getString("extensionId").startsWith(SPLIT_PREFIX) && it.getString("id") == sourceId }?.let { return it }
+        }
+        error("Source is not installed")
+    }
+
+    /** Pins for [key], including the same source pinned in the former Retra Sources bundle. */
+    fun pinKeys(key: String): List<String> {
+        val extension = key.substringBefore('/')
+        val sourceId = key.substringAfter('/')
+        return if (extension.startsWith(SPLIT_PREFIX)) listOf(key, "$LEGACY_BUNDLE/$sourceId") else listOf(key)
+    }
 
     inner class JsonGameSource(private val definition: JSONObject, private val reload: Boolean = false) : GameSource {
         override val id = definition.getString("key")
@@ -422,3 +457,8 @@ internal fun fileNameFromDisposition(header: String?): String? {
 
 /** At most ~5 progress reports per second: each one writes the store and calls into the WebView. */
 private const val PROGRESS_INTERVAL_NS = 200_000_000L
+
+/** The former all-in-one Retra Sources extension, now split into one extension per website. */
+internal const val LEGACY_BUNDLE = "org.retra.romhackplaza"
+/** ID prefix of Retra's own per-site extensions. */
+internal const val SPLIT_PREFIX = "org.retra."

@@ -25,6 +25,7 @@
 <link href="style-scroll-performance.css" rel="stylesheet"/>
 <link href="style-gameplay-controller-parity.css" rel="stylesheet"/>
 <link href="style-material-shell.css" rel="stylesheet"/>
+<link href="style-modern-surfaces.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-shell">
@@ -166,7 +167,7 @@
 </div>
 <div class="rom-detail-body">
 <div class="rom-actions">
-<button class="rom-action active">
+<button aria-label="In library. Tap to remove from Library" class="rom-action active" id="romLibraryAction" type="button">
 <svg viewbox="0 0 24 24"><path d="m12 20-6-6a4.5 4.5 0 0 1 6-6 4.5 4.5 0 0 1 6 6l-6 6Z"></path></svg>
 <span>In library</span>
 </button>
@@ -492,9 +493,10 @@
 
 <div class="storage-section-label">Google Drive</div>
 <div class="detail-list data-storage-card">
-<div class="detail-row"><div><strong>Automatic Google Drive backup</strong><span id="cloudSyncSummary">Protect saves, statistics and settings across reinstalls and devices</span></div><label class="switch"><input id="cloudSyncToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>Automatic Google Drive backup</strong><span id="cloudSyncSummary">Back up saves, statistics and settings when they change. Keeps the 10 newest automatic backups per device.</span></div><label class="switch"><input id="cloudSyncToggle" type="checkbox"/><span class="slider"></span></label></div>
 <button class="detail-row tappable" id="cloudBackupNowBtn" type="button"><div><strong>Backup Now</strong><span id="cloudBackupNowSummary">Upload a validated backup directly to My Drive/Retra Backups</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
 <button class="detail-row tappable" id="restoreCloudBackupBtn" type="button"><div><strong>Restore from Google Drive</strong><span>Recover saves, library, statistics and settings after reinstalling Retra</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+<div class="detail-row" id="cloudWifiOnlyRow"><div><strong>Back up on Wi-Fi only</strong><span>Automatic backups wait for Wi-Fi instead of using mobile data</span></div><label class="switch"><input id="cloudWifiOnlyToggle" type="checkbox"/><span class="slider"></span></label></div>
 <button class="detail-row tappable disabled-row" disabled="" id="syncSettingsBtn"><div><strong>Google Drive settings</strong><span id="syncSettingsSummary">Connect a Google account to manage Drive backup</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
 
@@ -539,53 +541,56 @@
 <h2>Settings</h2>
 </div>
 <div class="settings-menu">
+<div class="section-label settings-group-label">General</div>
 <button class="settings-item" data-setting="Appearance">
 <div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67A2.5 2.5 0 0 1 12 22zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5a.54.54 0 0 0-.14-.35c-.41-.46-.63-1.05-.63-1.65a2.5 2.5 0 0 1 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"></path><circle cx="6.5" cy="11.5" r="1.5"></circle><circle cx="9.5" cy="7.5" r="1.5"></circle><circle cx="14.5" cy="7.5" r="1.5"></circle><circle cx="17.5" cy="11.5" r="1.5"></circle></svg></div>
-<div class="settings-item-copy"><strong>Appearance</strong><span>Theme, dark mode, accents</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Video">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H4V4h16v12z"></path></svg></div>
-<div class="settings-item-copy"><strong>Video</strong><span>Renderer, scaling, frame rate</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Audio">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm7-.17v6.34L7.83 13H5v-2h2.83L10 8.83zM16.5 12A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z"></path></svg></div>
-<div class="settings-item-copy"><strong>Sound</strong><span>Game audio and controller sound</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Layouts">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M21.58 16.09l-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zm-2.1.72c-.04.05-.12.11-.24.11-.09 0-.17-.03-.23-.1L16.17 14H7.83l-2.84 2.84c-.06.06-.14.1-.23.1-.12 0-.2-.06-.24-.11a.29.29 0 0 1-.07-.24l1.09-7.66c.14-.98.99-1.72 1.98-1.72h9.06c.99 0 1.84.74 1.98 1.72l1.09 7.66c.01.1-.02.18-.07.23zM9.5 8h-1v2h-2v1h2v2h1v-2h2v-1h-2zm6 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm2 2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path></svg></div>
-<div class="settings-item-copy"><strong>Layouts</strong><span>Controls, buttons, screen placement</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Misc">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M16.66 4.52l2.83 2.83-2.83 2.83-2.83-2.83 2.83-2.83M9 5v4H5V5h4m10 10v4h-4v-4h4M9 15v4H5v-4h4m7.66-13.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65zM11 3H3v8h8V3zm10 10h-8v8h8v-8zm-10 0H3v8h8v-8z"></path></svg></div>
-<div class="settings-item-copy"><strong>Misc</strong><span>Saves, gameplay, library tools</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Advanced">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path></svg></div>
-<div class="settings-item-copy"><strong>Advanced</strong><span>Core options, BIOS, debugging</span></div>
-<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<button class="settings-item" data-setting="Fonts">
-<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M2.5 4v3h5v12h3V7h5V4h-13zm19 5h-9v3h3v7h3v-7h3V9z"></path></svg></div>
-<div class="settings-item-copy"><strong>Fonts</strong><span>Choose the Retra interface font</span></div>
+<div class="settings-item-copy"><strong>Appearance</strong><span>Theme, dark mode, colors and font</span></div>
 <svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
 </button>
 <button class="settings-item" data-setting="Language">
 <div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 0 1 5.08 16zm2.95-8H5.08a7.987 7.987 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"></path></svg></div>
-<div class="settings-item-copy"><strong>Language</strong><span>Choose the Retra interface language</span></div>
+<div class="settings-item-copy"><strong>Language</strong><span>Retra interface language</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<div class="section-label settings-group-label">Playing</div>
+<button class="settings-item" data-setting="Video">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H4V4h16v12z"></path></svg></div>
+<div class="settings-item-copy"><strong>Display</strong><span>Screen size, shaders, fullscreen</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<button class="settings-item" data-setting="Audio">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm7-.17v6.34L7.83 13H5v-2h2.83L10 8.83zM16.5 12A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z"></path></svg></div>
+<div class="settings-item-copy"><strong>Sound &amp; haptics</strong><span>Volume, button sounds, vibration</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<button class="settings-item" data-setting="Layouts">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M21.58 16.09l-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zm-2.1.72c-.04.05-.12.11-.24.11-.09 0-.17-.03-.23-.1L16.17 14H7.83l-2.84 2.84c-.06.06-.14.1-.23.1-.12 0-.2-.06-.24-.11a.29.29 0 0 1-.07-.24l1.09-7.66c.14-.98.99-1.72 1.98-1.72h9.06c.99 0 1.84.74 1.98 1.72l1.09 7.66c.01.1-.02.18-.07.23zM9.5 8h-1v2h-2v1h2v2h1v-2h2v-1h-2zm6 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm2 2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path></svg></div>
+<div class="settings-item-copy"><strong>Controls</strong><span>On-screen layouts and buttons</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<button class="settings-item" data-setting="Gameplay">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"></path></svg></div>
+<div class="settings-item-copy"><strong>Gameplay</strong><span>Speed, auto save, cheats</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<div class="section-label settings-group-label">Library &amp; system</div>
+<button class="settings-item" data-setting="Library">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z"></path></svg></div>
+<div class="settings-item-copy"><strong>Library</strong><span>Cover art, ROM patching, app folder</span></div>
+<svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+</button>
+<button class="settings-item" data-setting="Advanced">
+<div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6 4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0 4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"></path></svg></div>
+<div class="settings-item-copy"><strong>Advanced</strong><span>BIOS and cartridge save type</span></div>
 <svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
 </button>
 <button class="settings-item" data-setting="About">
 <div class="settings-item-icon"><svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg></div>
-<div class="settings-item-copy"><strong>About</strong><span>Retra version, licenses, information</span></div>
+<div class="settings-item-copy"><strong>About</strong><span>Version, licenses, privacy</span></div>
 <svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
 </button>
 </div>
-<div class="version" id="settingsVersionLabel">Retra v1.0.4</div>
+<div class="version" id="settingsVersionLabel">Retra v1.0.5</div>
 </section>
 <!-- APPEARANCE -->
 <section class="page settings-detail-page" id="appearanceSettingsPage">
@@ -833,6 +838,7 @@
 <div><strong>Translucent mode</strong><span>Add a soft glass effect across cards and panels</span></div>
 <label class="switch"><input id="translucentModeToggle" type="checkbox"/><span class="slider"></span></label>
 </div>
+<button class="detail-row tappable" data-open-page="fontsSettingsPage" id="interfaceFontBtn" type="button"><div><strong>Interface font</strong><span id="interfaceFontSummary">Inter</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
 </div>
 </section>
@@ -842,17 +848,23 @@
 <button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
 </button>
-<h2>Video</h2>
+<h2>Display</h2>
 </div>
-<div class="detail-list">
-<div class="detail-row"><div><strong>Stretch to fit screen</strong><span>Stretch video inside the saved game-screen frame</span></div><label class="switch"><input id="stretchToFitToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-range-row" id="buttonsOpacityRow"><div class="range-copy"><strong>Controller Opacity</strong><span>Adjust the transparency of on-screen game controls</span></div><div class="range-line"><input id="buttonsOpacityRange" max="100" min="25" step="1" type="range" value="70"/><output id="buttonsOpacityValue">70%</output></div></div>
+<div class="settings-section-label">Screen</div>
+<div class="detail-list settings-card">
 <button class="detail-row tappable" data-open-page="screenSizePage" id="screenSizeBtn"><div><strong>Screen size</strong><span id="screenSizeSummary">Preview and adjust in landscape mode</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
 <button class="detail-row tappable" id="screenOrientationBtn"><div><strong>Screen orientation</strong><span id="screenOrientationSummary">Auto rotate</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
-<div class="detail-range-row"><div class="range-copy"><strong>Frameskip</strong><span>0 = smoothest (~60 FPS); 1 = ~30 FPS. Leave at 0 unless the device struggles.</span></div><div class="range-line"><input id="frameSkipRange" max="10" min="0" type="range" value="0"/><output id="frameSkipValue">0</output></div></div>
-<div class="detail-row"><div><strong>Hardware rendering</strong><span>Use Android GPU compositing for the game screen</span></div><label class="switch"><input checked="" id="hardwareRenderingToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Linear filtering</strong><span>Smooth pixels when scaling</span></div><label class="switch"><input id="linearFilteringToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>Immersive fullscreen</strong><span>Hide the status and navigation bars while playing. Swipe from an edge to show them.</span></div><label class="switch"><input checked="" id="immersiveFullscreenToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>Stretch to fit screen</strong><span>Stretch video inside the saved game-screen frame</span></div><label class="switch"><input id="stretchToFitToggle" type="checkbox"/><span class="slider"></span></label></div>
+</div>
+<div class="settings-section-label">Picture</div>
+<div class="detail-list settings-card">
 <button class="detail-row tappable" id="glslShaderBtn"><div><strong>Video shader</strong><span id="glslShaderLabel">Off • no extra GPU cost</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+<div class="detail-row"><div><strong>Smooth scaling</strong><span>Soften pixels when the screen is scaled up (off keeps sharp pixels)</span></div><label class="switch"><input id="linearFilteringToggle" type="checkbox"/><span class="slider"></span></label></div>
+</div>
+<div class="settings-section-label">On-screen controls</div>
+<div class="detail-list settings-card">
+<div class="detail-range-row" id="buttonsOpacityRow"><div class="range-copy"><strong>Controller opacity</strong><span>Adjust the transparency of on-screen game controls</span></div><div class="range-line"><input aria-label="Controller opacity" id="buttonsOpacityRange" max="100" min="25" step="any" type="range" value="70"/><output id="buttonsOpacityValue">70%</output></div></div>
 </div>
 </section>
 <!-- SCREEN SIZE PREVIEW -->
@@ -969,19 +981,19 @@
 </button>
 <button class="add-control-item" data-control-type="quickLoad" type="button">
 <span class="add-control-icon square">
-<svg aria-hidden="true" class="control-svg myboy-reference-icon quick-load-reference-icon" viewbox="0 0 24 24"><path d="M7.35 16.35c.95-4.15 4.1-6.95 8.35-7.55"></path><path d="M12.85 6.15 17.85 7.95l-3 4.05"></path></svg>
+<svg aria-hidden="true" class="control-svg myboy-reference-icon quick-load-reference-icon" viewbox="0 0 24 24"><path d="M5.25 12A7.5 7.5 0 1 1 7.93 17.75"></path><path d="M2.75 9.5 5.25 12l2.5-2.5"></path><path d="M12.75 8v4l2.75 1.75"></path></svg>
 </span>
 <span class="add-control-label">Quick load</span>
 </button>
 <button class="add-control-item" data-control-type="quickSave" type="button">
 <span class="add-control-icon square">
-<svg aria-hidden="true" class="control-svg myboy-reference-icon quick-save-reference-icon" viewbox="0 0 24 24"><path d="M5.5 4.5h10.8l2.2 2.2v12.8h-13z"></path><path d="M8.2 4.5v5h7v-5"></path><path d="M8.4 13h7.2"></path><path d="M8.4 16h7.2"></path></svg>
+<svg aria-hidden="true" class="control-svg myboy-reference-icon quick-save-reference-icon" viewbox="0 0 24 24"><path d="M6.5 4.5h9.1l3.9 3.9v9.1q0 2-2 2h-11q-2 0-2-2v-11q0-2 2-2z"></path><path d="M8.5 4.5v4h6v-4"></path><path d="M8 19.5v-5h8v5"></path></svg>
 </span>
 <span class="add-control-label">Quick save</span>
 </button>
 <button class="add-control-item" data-control-type="fastForward" type="button">
 <span class="add-control-icon square">
-<svg aria-hidden="true" class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewbox="0 0 24 24"><path d="m5.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m11 6.5 5.5 5.5-5.5 5.5"></path></svg>
+<svg aria-hidden="true" class="control-svg control-svg-fast myboy-reference-icon fast-forward-reference-icon" viewbox="0 0 24 24"><path d="m6.5 6.5 5.5 5.5-5.5 5.5"></path><path d="m12 6.5 5.5 5.5-5.5 5.5"></path></svg>
 </span>
 <span class="add-control-label">Fast forward</span>
 </button>
@@ -1009,43 +1021,19 @@
 <button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
 </button>
-<h2>Sound</h2>
+<h2>Sound &amp; haptics</h2>
 </div>
-<div class="detail-list">
+<div class="settings-section-label">Game audio</div>
+<div class="detail-list settings-card">
 <div class="detail-row"><div><strong>Enable sound</strong><span>Turn emulator audio on or off</span></div><label class="switch"><input checked="" id="enableSoundToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-range-row"><div class="range-copy"><strong>Sound volume</strong><span>Master emulator volume</span></div><div class="range-line"><input id="volumeRange" max="100" min="0" type="range" value="100"/><output id="volumeValue">100%</output></div></div>
-<div class="detail-row"><div><strong>Controller sound</strong><span>Soft low-volume tap sound for on-screen controls and D-pad</span></div><label class="switch"><input checked="" id="controllerSoundToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Controller haptics</strong><span>Light smooth vibration feedback for every on-screen control</span></div><label class="switch"><input checked="" id="controllerHapticsToggle" type="checkbox"/><span class="slider"></span></label></div>
-<button class="detail-row tappable frequency-toggle" id="soundFrequencyBtn">
-<div>
-<strong>Sound frequency</strong>
-<span id="soundFrequencyLabel">44100 Hz</span>
+<div class="detail-range-row"><div class="range-copy"><strong>Sound volume</strong><span>Master emulator volume</span></div><div class="range-line"><input aria-label="Sound volume" id="volumeRange" max="100" min="0" step="any" type="range" value="100"/><output id="volumeValue">100%</output></div></div>
+<div class="detail-row"><div><strong>Mute while fast-forwarding</strong><span>Silence game audio whenever the game runs faster than normal speed</span></div><label class="switch"><input id="muteFastForwardToggle" type="checkbox"/><span class="slider"></span></label></div>
 </div>
-<svg class="chevron frequency-chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
-</button>
-<div class="frequency-options" id="frequencyOptions">
-<button class="frequency-option active" data-frequency="44100">
-<div>
-<strong>44100 Hz</strong>
-<span>High quality</span>
-</div>
-<span class="frequency-radio"></span>
-</button>
-<button class="frequency-option" data-frequency="22050">
-<div>
-<strong>22050 Hz</strong>
-<span>Balanced</span>
-</div>
-<span class="frequency-radio"></span>
-</button>
-<button class="frequency-option" data-frequency="11025">
-<div>
-<strong>11025 Hz</strong>
-<span>Lower CPU usage</span>
-</div>
-<span class="frequency-radio"></span>
-</button>
-</div>
+<div class="settings-section-label">Button feedback</div>
+<div class="detail-list settings-card">
+<div class="detail-row"><div><strong>Button sounds</strong><span>Soft tap sound for on-screen buttons and the D-pad</span></div><label class="switch"><input checked="" id="controllerSoundToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>D-pad vibration</strong><span>A light tick when you press the D-pad or slide to a new direction</span></div><label class="switch"><input checked="" id="controllerHapticsToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-range-row" id="controllerHapticStrengthRow"><div class="range-copy"><strong>Vibration strength</strong><span>How strong each D-pad tick feels</span></div><div class="range-line"><input aria-label="Vibration strength" id="controllerHapticStrengthRange" max="100" min="10" step="any" type="range" value="55"/><output id="controllerHapticStrengthValue">55%</output></div></div>
 </div>
 </section>
 <!-- LAYOUTS -->
@@ -1054,7 +1042,7 @@
 <button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
 </button>
-<h2>Layouts</h2>
+<h2>Controls</h2>
 <button aria-label="Edit selected layout" class="small-icon-btn" id="editActiveLayoutProfileBtn" type="button">
 <svg viewbox="0 0 24 24"><path d="m4 20 4.5-1 10-10-3.5-3.5-10 10L4 20Z"></path><path d="m13.5 7 3.5 3.5"></path></svg>
 </button>
@@ -1082,15 +1070,10 @@
 <button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
 </button>
-<h2>Misc</h2>
+<h2>Gameplay</h2>
 </div>
-<div class="detail-list">
-<div class="detail-row"><div><strong>Enable cheats</strong><span>Allow cheat codes while playing</span></div><label class="switch"><input checked="" id="enableCheatsToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>ROM patching</strong><span>Auto IPS/UPS/BPS patching when a matching patch is available</span></div><label class="check-control"><input checked="" id="romPatchingToggle" type="checkbox"/><span></span></label></div>
-<div class="detail-row"><div><strong>Automatic game artwork</strong><span>Find and cache matching covers in the background</span></div><label class="switch"><input checked="" id="automaticArtworkToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Artwork on Wi-Fi only</strong><span>Reduce mobile-data use for automatic cover downloads</span></div><label class="switch"><input id="artworkWifiOnlyToggle" type="checkbox"/><span class="slider"></span></label></div>
-<button class="detail-row tappable" id="retryArtworkBtn"><div><strong>Retry missing artwork</strong><span>Search again for ROMs that still use fallback colors</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
-<div class="detail-row"><div><strong>Auto save &amp; load</strong><span>Quick-save on background/exit and keep automatic resume available on next launch</span></div><label class="switch"><input checked="" id="autoSaveLoadToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="settings-section-label">Speed</div>
+<div class="detail-list settings-card">
 <button class="detail-row tappable" id="fastForwardSpeedBtn">
 <div>
 <strong>Emulation speed</strong>
@@ -1099,9 +1082,34 @@
 <svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
 </button>
 <button class="detail-row tappable" id="fastForwardButtonBtn"><div><strong>Speed button</strong><span id="fastForwardButtonLabel">Press to toggle</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
-<div class="detail-row"><div><strong>Confirm on close/reset</strong><span>Ask before closing or resetting a game</span></div><label class="switch"><input checked="" id="confirmCloseResetToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Full screen mode</strong><span>Make games fullscreen by hiding system bars</span></div><label class="switch"><input checked="" id="fullScreenModeToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Immersive mode</strong><span>Hide gesture/navigation bars while a game is running</span></div><label class="switch"><input checked="" id="immersiveModeToggle" type="checkbox"/><span class="slider"></span></label></div>
+</div>
+<div class="settings-section-label">Saving</div>
+<div class="detail-list settings-card">
+<div class="detail-row"><div><strong>Auto save &amp; resume</strong><span>Save when you leave a game and continue where you left off next time</span></div><label class="switch"><input checked="" id="autoSaveLoadToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>Confirm before closing</strong><span>Ask before closing or resetting a running game</span></div><label class="switch"><input checked="" id="confirmCloseResetToggle" type="checkbox"/><span class="slider"></span></label></div>
+</div>
+<div class="settings-section-label">Cheats</div>
+<div class="detail-list settings-card">
+<div class="detail-row"><div><strong>Enable cheats</strong><span>Allow cheat codes while playing</span></div><label class="switch"><input checked="" id="enableCheatsToggle" type="checkbox"/><span class="slider"></span></label></div>
+</div>
+</section>
+<!-- LIBRARY -->
+<section class="page settings-detail-page" id="librarySettingsPage">
+<div class="sub-header">
+<button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
+<svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+</button>
+<h2>Library</h2>
+</div>
+<div class="settings-section-label">Cover art</div>
+<div class="detail-list settings-card">
+<div class="detail-row"><div><strong>Automatic cover art</strong><span>Find and save matching covers in the background</span></div><label class="switch"><input checked="" id="automaticArtworkToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="detail-row"><div><strong>Cover art on Wi-Fi only</strong><span>Save mobile data by waiting for Wi-Fi</span></div><label class="switch"><input id="artworkWifiOnlyToggle" type="checkbox"/><span class="slider"></span></label></div>
+<button class="detail-row tappable" id="retryArtworkBtn"><div><strong>Find missing covers</strong><span>Search again for games that still show a color tile</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+</div>
+<div class="settings-section-label">Files</div>
+<div class="detail-list settings-card">
+<div class="detail-row"><div><strong>Automatic ROM patching</strong><span>Apply a matching IPS, UPS or BPS patch when you open a game</span></div><label class="switch"><input checked="" id="romPatchingToggle" type="checkbox"/><span class="slider"></span></label></div>
 <button class="detail-row tappable" id="openAppFolderBtn"><div><strong>Open app folder</strong><span>Open Retra storage in Android Files</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
 </section>
@@ -1113,26 +1121,28 @@
 </button>
 <h2>Advanced</h2>
 </div>
-<div class="detail-list">
-<button class="detail-row tappable" id="cpuCoreBtn"><div><strong>CPU profile</strong><span id="cpuCoreLabel">Automatic</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+<div class="settings-section-label">BIOS</div>
+<div class="detail-list settings-card">
 <div class="detail-row"><div><strong>Use BIOS</strong><span>Enable low-level BIOS emulation</span></div><label class="switch"><input id="biosToggle" type="checkbox"/><span class="slider"></span></label></div>
 <div class="detail-row disabled-row" id="bootBiosRow"><div><strong>Boot BIOS</strong><span>Show BIOS screen on game start</span></div><label class="switch"><input disabled="" id="bootBiosToggle" type="checkbox"/><span class="slider"></span></label></div>
 <button class="detail-row tappable disabled-row" disabled="" id="biosFileRow"><div><strong>BIOS file</strong><span id="biosFileSummary">No BIOS selected</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
+</div>
+<div class="settings-section-label">Cartridge</div>
+<div class="detail-list settings-card">
 <button class="detail-row tappable" id="cartridgeSaveTypeBtn"><div><strong>Cartridge save type</strong><span id="cartridgeSaveTypeLabel">Automatic</span></div><svg class="chevron" viewbox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></button>
-<div class="detail-range-row"><div class="range-copy"><strong>Link sync check</strong><span>Remote Link state-integrity interval; smaller values check more often</span></div><div class="range-line"><input id="smcCheckRange" max="10" min="0" type="range" value="4"/><output id="smcCheckValue">4</output></div></div>
-<div class="detail-row"><div><strong>Speed optimization</strong><span>Enable mGBA idle-loop optimization</span></div><label class="switch"><input checked="" id="speedHackToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="detail-row"><div><strong>Mosaic effect</strong><span>Enable GBA mosaic rendering</span></div><label class="switch"><input checked="" id="mosaicEffectToggle" type="checkbox"/><span class="slider"></span></label></div>
-<div class="section-label">RESET</div>
-<button class="detail-row tappable danger-row" data-action="Reset advanced settings"><div><strong>Reset advanced settings</strong><span>Restore advanced options to defaults</span></div></button>
+</div>
+<div class="settings-section-label">Reset</div>
+<div class="detail-list settings-card">
+<button class="detail-row tappable danger-row" data-action="Reset advanced settings"><div><strong>Reset advanced settings</strong><span>Turn BIOS off and set the save type back to Automatic</span></div></button>
 </div>
 </section>
 <!-- FONTS -->
 <section class="page settings-detail-page" id="fontsSettingsPage">
 <div class="sub-header">
-<button aria-label="Back" class="back-btn" data-back-to="settingsHomePage">
+<button aria-label="Back" class="back-btn" data-back-to="appearanceSettingsPage">
 <svg class="ms" viewbox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
 </button>
-<h2>Fonts</h2>
+<h2>Interface font</h2>
 </div>
 <div class="detail-list font-settings-list" id="fontSettingsList">
 <button class="detail-row tappable font-option" data-font-name="Poppins" type="button">
@@ -1187,10 +1197,10 @@
 <div class="about-panel">
 <img alt="Retra logo" class="about-logo" src="assets/branding/retra-logo.png"/>
 <h3>Retra</h3>
-<p class="about-version" data-retra-version-label>Retra v1.0.4</p>
+<p class="about-version" data-retra-version-label>Retra v1.0.5</p>
 <div class="about-update-list">
   <div class="about-update-row about-version-row">
-    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.4</span></div>
+    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.5</span></div>
   </div>
   <button class="about-update-row about-update-button" data-check-updates type="button">
     <div><strong>Check for updates</strong><span data-update-status>Automatically checked in the background</span></div>
@@ -1261,86 +1271,74 @@
 <h2>Statistics</h2>
 </div>
 <div class="stats-sections">
+<section class="stats-hero" id="statsHero" hidden="" aria-label="Most played game">
+<div class="stats-hero-backdrop" id="statsHeroBackdrop" aria-hidden="true"></div>
+<div class="stats-hero-cover" id="statsHeroCover"><div class="playtime-cover-placeholder">R</div></div>
+<div class="stats-hero-copy">
+<span class="stats-hero-eyebrow">Most played</span>
+<strong class="stats-hero-title" id="statsHeroTitle"></strong>
+<span class="stats-hero-meta" id="statsHeroMeta"></span>
+<div class="stats-hero-time"><strong id="statsHeroTime">0m</strong><span id="statsHeroShare"></span></div>
+</div>
+</section>
 <section class="stats-section">
 <h3>Overview</h3>
-<div class="stats-panel stats-panel-three compact-stats">
-<div class="stats-metric">
-<strong id="statLibraryCount">0</strong>
-<span>In library</span>
-<div class="stats-icon">
-<svg viewbox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"></path><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"></path></svg>
-</div>
-</div>
-<div class="stats-metric">
-<strong id="statTotalPlaytime">0m</strong>
+<div class="stats-panel stats-tiles">
+<div class="stats-metric stats-tile">
+<div class="stats-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg></div>
+<strong id="statTotalPlaytime">0</strong>
 <span>Total playtime</span>
-<div class="stats-icon">
-<svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg>
 </div>
+<div class="stats-metric stats-tile">
+<div class="stats-icon"><svg viewbox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"></path><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"></path></svg></div>
+<strong id="statLibraryCount">0</strong>
+<span>Games in library</span>
 </div>
-<div class="stats-metric">
+<div class="stats-metric stats-tile">
+<div class="stats-icon"><svg viewbox="0 0 24 24"><path d="M6 12.5 10 16l8-8"></path></svg></div>
 <strong id="statCompletedGames">0</strong>
-<span>Completed games</span>
-<div class="stats-icon">
-<svg viewbox="0 0 24 24"><path d="M6 12.5 10 16l8-8"></path></svg>
+<span>Completed</span>
+<div class="stats-progress" aria-hidden="true"><span id="statCompletionBar"></span></div>
 </div>
+<div class="stats-metric stats-tile">
+<div class="stats-icon"><svg viewbox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"></path></svg></div>
+<strong id="statRecentCount">0</strong>
+<span>Played in the last 30 days</span>
 </div>
 </div>
 </section>
 <section class="stats-section">
-<h3>Entries</h3>
+<h3>Activity</h3>
 <div class="stats-panel stats-panel-three compact-stats">
-<div class="stats-metric">
-<strong id="statStartedCount">0</strong>
-<span>Started</span>
+<div class="stats-metric"><strong id="statStartedCount">0</strong><span>Games started</span></div>
+<div class="stats-metric"><strong id="statPlayCount">0</strong><span>Play sessions</span></div>
+<div class="stats-metric"><strong id="statFavoritesCount">0</strong><span>Favorites</span></div>
 </div>
-<div class="stats-metric">
-<strong id="statFavoritesCount">0</strong>
-<span>Favorites</span>
+</section>
+<section class="stats-section">
+<h3>Systems</h3>
+<div class="stats-panel stats-systems">
+<div class="stats-system-bar" id="statSystemBar" role="img" aria-label="Games by system">
+<span class="system-gba" id="statGbaBar"></span><span class="system-gbc" id="statGbcBar"></span><span class="system-gb" id="statGbBar"></span>
 </div>
-<div class="stats-metric">
-<strong id="statRecentCount">0</strong>
-<span>Recently played</span>
+<div class="stats-system-legend">
+<div class="stats-system-item"><i class="system-gba"></i><span>GBA</span><strong id="statGbaCount">0</strong></div>
+<div class="stats-system-item"><i class="system-gbc"></i><span>GBC</span><strong id="statGbcCount">0</strong></div>
+<div class="stats-system-item"><i class="system-gb"></i><span>GB</span><strong id="statGbCount">0</strong></div>
 </div>
 </div>
 </section>
 <section class="stats-section">
 <h3>Saves</h3>
 <div class="stats-panel stats-panel-three compact-stats">
-<div class="stats-metric">
-<strong id="statSaveStateCount">0</strong>
-<span>Save states</span>
-</div>
-<div class="stats-metric">
-<strong id="statBatterySaveCount">0</strong>
-<span>Battery saves</span>
-</div>
-<div class="stats-metric">
-<strong id="statBackupCount">0</strong>
-<span>Backups</span>
-</div>
+<div class="stats-metric"><strong id="statSaveStateCount">0</strong><span>Save states</span></div>
+<div class="stats-metric"><strong id="statBatterySaveCount">0</strong><span>Battery saves</span></div>
+<div class="stats-metric"><strong id="statBackupCount">0</strong><span>Backups</span></div>
 </div>
 </section>
 <section class="stats-section">
-<h3>Systems</h3>
-<div class="stats-panel stats-panel-three compact-stats">
-<div class="stats-metric">
-<strong id="statGbaCount">0</strong>
-<span>GBA</span>
-</div>
-<div class="stats-metric">
-<strong id="statGbcCount">0</strong>
-<span>GBC</span>
-</div>
-<div class="stats-metric">
-<strong id="statGbCount">0</strong>
-<span>GB</span>
-</div>
-</div>
-</section>
-<section class="stats-section">
-<h3>Playtime by ROM</h3>
-<div class="playtime-list" id="playtimeList"><div class="stats-empty-message" id="playtimeEmpty">No playtime data yet.</div></div>
+<h3>Most played</h3>
+<div class="playtime-list" id="playtimeList"><div class="stats-empty-message" id="playtimeEmpty">Play a game to see your playtime here.</div></div>
 </section>
 </div>
 </section>
@@ -1369,10 +1367,10 @@
 <div class="about-panel">
 <img alt="Retra logo" class="about-logo" src="assets/branding/retra-logo.png"/>
 <h3>Retra</h3>
-<p class="about-version" data-retra-version-label>Retra v1.0.4</p>
+<p class="about-version" data-retra-version-label>Retra v1.0.5</p>
 <div class="about-update-list">
   <div class="about-update-row about-version-row">
-    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.4</span></div>
+    <div><strong>Version</strong><span data-retra-version-detail>Stable 1.0.5</span></div>
   </div>
   <button class="about-update-row about-update-button" data-check-updates type="button">
     <div><strong>Check for updates</strong><span data-update-status>Automatically checked in the background</span></div>
@@ -1494,16 +1492,17 @@
 </div>
 </div>
 <!-- APP UPDATE MODAL -->
-<div class="modal-backdrop confirm-modal" id="appUpdateModal" aria-hidden="true">
-  <div class="confirm-modal-card app-update-card" role="dialog" aria-modal="true" aria-labelledby="appUpdateTitle">
-    <span class="app-update-kicker">UPDATE AVAILABLE</span>
-    <h3 class="modal-title" id="appUpdateTitle">A new Retra version is available</h3>
-    <p class="modal-copy" id="appUpdateMessage">Update Retra to get the latest improvements.</p>
+<div class="app-update-screen" id="appUpdateModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="appUpdateTitle">
+  <div class="app-update-scroll" id="appUpdateScroll">
+    <svg class="app-update-icon" viewbox="0 0 24 24" aria-hidden="true"><path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-2.62 1.33-1.64 1.86.23 2.47-2.43.55-1.27 2.14L12 19.36l-2.27.98-1.27-2.14-2.43-.55.23-2.48-1.64-1.85L2.98 12l1.64-1.87-.23-2.46 2.43-.54 1.27-2.14L12 4.64l2.27-.98 1.27 2.14 2.43.55-.23 2.47 1.64 1.86L21.02 12l-1.64 1.33zM11 15h2v2h-2zm0-8h2v6h-2z"></path></svg>
+    <h1 class="app-update-title" id="appUpdateTitle">New version available!</h1>
+    <p class="app-update-version" id="appUpdateVersion"></p>
+    <p class="app-update-intro" id="appUpdateMessage">Consider supporting Retra on <a href="https://buymeacoffee.com/zense" data-update-link="">Buy Me a Coffee</a> to keep it improving! Check out the <a href="https://github.com/Layfate/Retra/releases" data-update-link="">past release notes</a> if you're upgrading from an earlier version.</p>
     <div class="app-update-notes" id="appUpdateNotes"></div>
-    <div class="confirm-actions">
-      <button class="modal-btn secondary" id="appUpdateLaterBtn" type="button">Later</button>
-      <button class="modal-btn primary" id="appUpdateInstallBtn" type="button">Update</button>
-    </div>
+  </div>
+  <div class="app-update-actions">
+    <button class="app-update-download" id="appUpdateInstallBtn" type="button">Download</button>
+    <button class="app-update-later" id="appUpdateLaterBtn" type="button">Not now</button>
   </div>
 </div>
 <!-- SCREEN ORIENTATION MODAL -->
@@ -1587,28 +1586,6 @@
 </div>
 </div>
 <!-- CPU CORE MODAL -->
-<div class="modal-backdrop selection-modal" id="cpuCoreModal">
-<div class="selection-modal-card compact myboy-dialog-card">
-<h3>CPU profile</h3>
-<div class="selection-options" id="cpuCoreOptions">
-<button class="selection-option" data-cpu-core-value="Automatic" type="button">
-<span class="selection-radio"></span>
-<span>Automatic</span>
-</button>
-<button class="selection-option" data-cpu-core-value="Performance" type="button">
-<span class="selection-radio"></span>
-<span>Performance</span>
-</button>
-<button class="selection-option" data-cpu-core-value="Compatibility" type="button">
-<span class="selection-radio"></span>
-<span>Compatibility</span>
-</button>
-</div>
-<div class="selection-actions single-end">
-<button class="text-action-btn" id="closeCpuCoreModal" type="button">Cancel</button>
-</div>
-</div>
-</div>
 <!-- CARTRIDGE SAVE TYPE MODAL -->
 <div class="modal-backdrop selection-modal" id="cartridgeSaveTypeModal">
 <div class="selection-modal-card compact myboy-dialog-card tall">

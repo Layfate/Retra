@@ -22,9 +22,9 @@ test('range previews update runtime state without persisting DataStore until com
   const settings = read('app/src/main/java/com/retra/emulator/SettingsController.kt');
   const persistBlock = settings.match(/if \(commit\) \{\n\s*when \(key\) \{([\s\S]*?)\n\s*\}\n\s*\}/)?.[1] || '';
   assert.match(persistBlock, /BUTTON_OPACITY_PREF/);
-  assert.match(persistBlock, /FRAME_SKIP_PREF/);
   assert.match(persistBlock, /VOLUME_PREF/);
-  assert.match(persistBlock, /SMC_CHECK_PREF/);
+  // Frameskip and Link sync check sliders were retired.
+  assert.doesNotMatch(persistBlock, /FRAME_SKIP_PREF|SMC_CHECK_PREF/);
   assert.match(settings, /if \(commit\) syncAppFolderAsync\(showResult = false\)/);
 });
 

@@ -21,7 +21,6 @@ const models = read('app/src/main/java/com/retra/emulator/RetraModels.kt');
   assert.match(manager, /HapticFeedbackConstants\.SEGMENT_FREQUENT_TICK/);
   assert.match(manager, /Build\.VERSION\.SDK_INT >= 34/);
   assert.match(manager, /R\.raw\.controller_click/);
-  assert.match(manager, /HAPTIC_GAP_MS = 26L/);
   assert.match(manager, /SOUND_GAP_MS = 28L/);
   assert.doesNotMatch(touch, /AudioManager|SoundPool|Vibrator|performHapticFeedback|SystemClock/);
   assert.match(touch, /controllerFeedback\.perform/);
@@ -33,7 +32,7 @@ test('controller haptics are independently configurable and portable', () => {
   assert.match(settings, /"controllerHaptics" -> editor\.putBoolean\(CONTROLLER_HAPTICS_PREF/);
   assert.match(prefs, /"controller_haptics_v1"/);
   assert.match(html, /id="controllerHapticsToggle"/);
-  assert.match(html, /Light smooth vibration feedback for every on-screen control/);
+  assert.match(html, /<strong>D-pad vibration<\/strong><span>A light tick when you press the D-pad or slide to a new direction<\/span>/);
   assert.match(js, /controllerHapticsToggle/);
   assert.match(js, /'controllerHaptics'/);
 });
@@ -50,7 +49,7 @@ test('D-pad gives a light tick on press and each direction change, never while h
   assert.match(manager, /fun performDpad\(view: View, previousMask: Int, nextMask: Int\)/);
   assert.match(manager, /DPAD_HAPTIC_GAP_MS = 40L/);
   assert.match(manager, /nextMask != 0 && nextMask != previousMask && nowMs - lastTickMs >= DPAD_HAPTIC_GAP_MS/);
-  // Its own rate limit: an A/B tick never swallows a direction change.
+  // Its own rate limit for a fast roll through a diagonal.
   assert.match(manager, /lastDpadHapticAtMs/);
   // The D-pad reports every mask change once; held MOVE events return early before feedback.
   assert.match(touch, /if \(gameplayInputState\.activeDpadMask == nextMask\) return/);

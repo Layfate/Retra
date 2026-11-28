@@ -40,12 +40,7 @@ def main() -> int:
         "CHANGELOG.md",
         "SECURITY.md",
         "CONTRIBUTING.md",
-        "docs/RELEASE_NOTES_v1.0.0.md",
-        "docs/RELEASE_CHECKLIST_v1.0.0.md",
-        "docs/DEVELOPMENT_HISTORY.md",
         "docs/README.md",
-        "docs/ARCHITECTURE.md",
-        "docs/CONTROLLER_FEEDBACK.md",
     ]
     missing = [name for name in required if not (ROOT / name).is_file()]
     if missing:

@@ -1048,6 +1048,21 @@ function applyCoverToRenderedRom(rom, coverUrl, card = null){
       statisticsImage.alt = `${rom.title || 'ROM'} cover`;
     }
   }
+  // The Statistics "Most played" header shows the same cover (and a blurred copy behind it).
+  const statisticsHero = document.getElementById('statsHero');
+  if (statisticsHero && String(statisticsHero.dataset?.romId || '') === id) {
+    const heroCover = document.getElementById('statsHeroCover');
+    if (heroCover) {
+      const heroImage = document.createElement('img');
+      heroImage.decoding = 'async';
+      heroImage.src = url;
+      heroImage.alt = `${rom.title || 'ROM'} cover`;
+      heroCover.replaceChildren(heroImage);
+    }
+    const heroBackdrop = document.getElementById('statsHeroBackdrop');
+    if (heroBackdrop) heroBackdrop.style.backgroundImage = `url("${String(url).replace(/"/g, '%22')}")`;
+    statisticsHero.classList.add('has-cover');
+  }
 
   return true;
 }

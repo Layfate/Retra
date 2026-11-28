@@ -21,8 +21,9 @@ test('visible slice density is derived only from speed and stable presentation c
   assert.doesNotMatch(session, /TurboPerformanceMonitor|adaptiveCoreFrameSkip|sample\.constrained/);
 });
 
-test('user frameskip remains authoritative during turbo', () => {
-  assert.match(session, /userFrameSkip = prefs\.getInt\(FRAME_SKIP_PREF, 0\)/);
+test('frameskip stays pinned at 0 during turbo (the setting was retired)', () => {
+  assert.match(session, /userFrameSkip = RetiredSettings\.FRAME_SKIP/);
+  assert.doesNotMatch(session, /FRAME_SKIP_PREF/);
   assert.match(session, /setCoreConfigOption\("frameskip", userFrameSkip\.toString\(\)\)/);
   assert.doesNotMatch(session, /speedProtectingCoreFrameSkip|adaptiveCoreFrameSkip/);
 });

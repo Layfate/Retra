@@ -12,6 +12,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,7 +58,13 @@ class BackupRepository(
     data class Result(
         val fileCount: Int,
         val byteCount: Long,
-        val included: Set<String>
+        val included: Set<String>,
+        /**
+         * SHA-256 over the backed-up data only (entry names + contents). Unlike the archive's own
+         * hash it ignores the manifest time, ZIP timestamps and the "generatedAt" field of the
+         * metadata files, so two backups of unchanged data get the same fingerprint.
+         */
+        val contentFingerprint: String = ""
     )
 
     fun parseSelection(json: String): Selection {
@@ -107,6 +114,7 @@ class BackupRepository(
         val included = linkedSetOf<String>()
         var fileCount = 0
         var byteCount = 0L
+        val fingerprint = MessageDigest.getInstance("SHA-256")
 
         ZipOutputStream(BufferedOutputStream(raw, BUFFER_SIZE)).use { zip ->
             val manifest = JSONObject()
@@ -123,7 +131,7 @@ class BackupRepository(
                 val dir = File(fileOps.persistentDataRoot(), name)
                 if (!dir.exists()) return
                 included += name
-                val result = addDirectory(zip, dir, "data/$name")
+                val result = addDirectory(zip, dir, "data/$name", fingerprint)
                 fileCount += result.first
                 byteCount += result.second
             }
@@ -144,7 +152,7 @@ class BackupRepository(
                 listOf("library.json", "unmatched_legacy.json").forEach { name ->
                     val metadataFile = File(metadataDir, name)
                     if (metadataFile.isFile) {
-                        addFile(zip, metadataFile, "data/Metadata/$name")
+                        addFile(zip, metadataFile, "data/Metadata/$name", fingerprint)
                         fileCount++
                         byteCount += metadataFile.length()
                     }
@@ -154,7 +162,7 @@ class BackupRepository(
                 included += "Settings"
                 val settingsFile = File(metadataDir, "settings.json")
                 if (settingsFile.isFile) {
-                    addFile(zip, settingsFile, "data/Metadata/settings.json")
+                    addFile(zip, settingsFile, "data/Metadata/settings.json", fingerprint)
                     fileCount++
                     byteCount += settingsFile.length()
                 }
@@ -173,7 +181,9 @@ class BackupRepository(
             fileCount++
         }
 
-        return Result(fileCount, byteCount, included)
+        fingerprint.update(selection.toJson().toString().toByteArray(Charsets.UTF_8))
+        val contentFingerprint = fingerprint.digest().joinToString("") { "%02x".format(Locale.US, it) }
+        return Result(fileCount, byteCount, included, contentFingerprint)
     }
 
     fun restore(uri: Uri): Result {
@@ -513,7 +523,7 @@ class BackupRepository(
         }
     }
 
-    private fun addDirectory(zip: ZipOutputStream, directory: File, prefix: String): Pair<Int, Long> {
+    private fun addDirectory(zip: ZipOutputStream, directory: File, prefix: String, fingerprint: MessageDigest): Pair<Int, Long> {
         var count = 0
         var bytes = 0L
         directory.walkTopDown()
@@ -521,17 +531,38 @@ class BackupRepository(
             .sortedBy { it.relativeTo(directory).invariantSeparatorsPath }
             .forEach { file ->
                 val relative = file.relativeTo(directory).invariantSeparatorsPath
-                addFile(zip, file, "$prefix/$relative")
+                addFile(zip, file, "$prefix/$relative", fingerprint)
                 count++
                 bytes += file.length()
             }
         return count to bytes
     }
 
-    private fun addFile(zip: ZipOutputStream, file: File, entryName: String) {
+    private fun addFile(zip: ZipOutputStream, file: File, entryName: String, fingerprint: MessageDigest) {
         val entry = ZipEntry(entryName).apply { time = file.lastModified() }
         zip.putNextEntry(entry)
-        FileInputStream(file).use { input -> input.copyTo(zip, BUFFER_SIZE) }
+        fingerprint.update(entryName.toByteArray(Charsets.UTF_8))
+        fingerprint.update(0.toByte())
+        if (entryName.startsWith("data/Metadata/") && entryName.endsWith(".json")) {
+            // Metadata is regenerated before every backup with a fresh "generatedAt" time; leave
+            // that field out of the fingerprint so unchanged data is recognized as unchanged.
+            val bytes = file.readBytes()
+            zip.write(bytes)
+            val stable = runCatching { JSONObject(String(bytes, Charsets.UTF_8)).apply { remove("generatedAt") }.toString() }
+                .getOrNull()?.toByteArray(Charsets.UTF_8) ?: bytes
+            fingerprint.update(stable)
+        } else {
+            FileInputStream(file).use { input ->
+                val buffer = ByteArray(BUFFER_SIZE)
+                while (true) {
+                    val read = input.read(buffer)
+                    if (read <= 0) break
+                    zip.write(buffer, 0, read)
+                    fingerprint.update(buffer, 0, read)
+                }
+            }
+        }
+        fingerprint.update(0.toByte())
         zip.closeEntry()
     }
 

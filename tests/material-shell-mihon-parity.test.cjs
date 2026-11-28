@@ -8,9 +8,10 @@ const assets = path.join(root, 'app/src/main/assets/retra');
 const html = fs.readFileSync(path.join(assets, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(assets, 'style-material-shell.css'), 'utf8');
 
-test('Material shell stylesheet loads last so it owns the app chrome', () => {
+test('Material shell stylesheet owns the app chrome; only the modern-surfaces layer loads after it', () => {
   const links = [...html.matchAll(/<link href="([^"]+\.css)" rel="stylesheet"\/>/g)].map(m => m[1]);
-  assert.equal(links.at(-1), 'style-material-shell.css');
+  assert.equal(links.at(-2), 'style-material-shell.css');
+  assert.equal(links.at(-1), 'style-modern-surfaces.css');
 });
 
 test('top app bar has no divider line (no header border, no tab-row divider)', () => {
@@ -75,7 +76,9 @@ test('Add control dialog is one themed surface (no black list, readable footer)'
   assert.match(css, /\.add-control-dialog,\nbody\[data-resolved-mode="light"\] \.add-control-dialog\{[\s\S]*?background:var\(--m3-surface-container-high\)/);
   assert.match(css, /\.add-control-list,[\s\S]*?background:transparent;/);
   assert.match(css, /\.add-control-footer-btn\{[\s\S]*?color:var\(--accent\)/);
-  assert.match(css, /body\[data-resolved-mode="light"\] #screenSizePage \.add-control-icon\.circle,[\s\S]*?background:#2b303b !important/);
+  // Thumbnails keep the light gray in-game controller face in Light mode too.
+  assert.match(css, /body\[data-resolved-mode="light"\] #screenSizePage \.add-control-icon\.circle,[\s\S]*?background:var\(--native-controller-solid\) !important/);
+  assert.doesNotMatch(css, /#2b303b/);
 });
 
 test('Layouts profiles are inset, slightly larger cards with a Material FAB', () => {

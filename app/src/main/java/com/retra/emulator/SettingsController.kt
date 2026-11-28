@@ -26,21 +26,16 @@ import com.retra.emulator.MainActivity.Companion.COLOR_STYLE_PREF
 import com.retra.emulator.MainActivity.Companion.CONFIRM_CLOSE_RESET_PREF
 import com.retra.emulator.MainActivity.Companion.CONTROLLER_SOUND_PREF
 import com.retra.emulator.MainActivity.Companion.CONTROLLER_HAPTICS_PREF
-import com.retra.emulator.MainActivity.Companion.CPU_CORE_PREF
+import com.retra.emulator.MainActivity.Companion.CONTROLLER_HAPTIC_STRENGTH_PREF
 import com.retra.emulator.MainActivity.Companion.ENABLE_CHEATS_PREF
 import com.retra.emulator.MainActivity.Companion.ENABLE_SOUND_PREF
 import com.retra.emulator.MainActivity.Companion.FAST_FORWARD_BUTTON_MODE_PREF
-import com.retra.emulator.MainActivity.Companion.FRAME_SKIP_PREF
 import com.retra.emulator.MainActivity.Companion.FULLSCREEN_PREF
-import com.retra.emulator.MainActivity.Companion.HARDWARE_RENDERING_PREF
 import com.retra.emulator.MainActivity.Companion.IMMERSIVE_PREF
 import com.retra.emulator.MainActivity.Companion.LINEAR_FILTERING_PREF
-import com.retra.emulator.MainActivity.Companion.MOSAIC_EFFECT_PREF
+import com.retra.emulator.MainActivity.Companion.MUTE_FAST_FORWARD_PREF
 import com.retra.emulator.MainActivity.Companion.ORIENTATION_PREF
 import com.retra.emulator.MainActivity.Companion.ROM_PATCHING_PREF
-import com.retra.emulator.MainActivity.Companion.SMC_CHECK_PREF
-import com.retra.emulator.MainActivity.Companion.SOUND_FREQUENCY_PREF
-import com.retra.emulator.MainActivity.Companion.SPEED_OPTIMIZATION_PREF
 import com.retra.emulator.MainActivity.Companion.STRETCH_TO_FIT_PREF
 import com.retra.emulator.MainActivity.Companion.USE_BIOS_PREF
 import com.retra.emulator.MainActivity.Companion.VOLUME_PREF
@@ -95,28 +90,28 @@ internal fun MainActivity.settingsStateJson(): String = JSONObject().apply {
     put("cloudTransferActive", cloudSync.transferActive())
     put("cloudTransferLabel", cloudSync.transferLabel())
     put("cloudTransferProgress", cloudSync.transferProgress())
+    put("cloudWifiOnly", cloudSync.isWifiOnly())
     put("enableCheats", prefs.getBoolean(ENABLE_CHEATS_PREF, true))
     put("romPatching", prefs.getBoolean(ROM_PATCHING_PREF, true))
     put("autoSaveLoad", prefs.getBoolean(AUTO_SAVE_LOAD_PREF, true))
     put("confirmCloseReset", prefs.getBoolean(CONFIRM_CLOSE_RESET_PREF, true))
     put("controllerSound", prefs.getBoolean(CONTROLLER_SOUND_PREF, true))
     put("controllerHaptics", prefs.getBoolean(CONTROLLER_HAPTICS_PREF, true))
-    put("fullScreenMode", prefs.getBoolean(FULLSCREEN_PREF, true))
-    put("immersiveMode", prefs.getBoolean(IMMERSIVE_PREF, true))
+    put(
+        "controllerHapticStrength",
+        prefs.getInt(CONTROLLER_HAPTIC_STRENGTH_PREF, ControllerFeedbackManager.HAPTIC_STRENGTH_DEFAULT)
+            .coerceIn(ControllerFeedbackManager.HAPTIC_STRENGTH_MIN, ControllerFeedbackManager.HAPTIC_STRENGTH_MAX)
+    )
+    // One modern toggle hides both system bars during play (formerly "Full screen" + "Immersive").
+    put("immersiveFullscreen", prefs.getBoolean(FULLSCREEN_PREF, true) && prefs.getBoolean(IMMERSIVE_PREF, true))
     put("stretchToFit", prefs.getBoolean(STRETCH_TO_FIT_PREF, false))
-    put("hardwareRendering", prefs.getBoolean(HARDWARE_RENDERING_PREF, true))
     put("linearFiltering", prefs.getBoolean(LINEAR_FILTERING_PREF, false))
     put("enableSound", prefs.getBoolean(ENABLE_SOUND_PREF, true))
-    put("frameSkip", prefs.getInt(FRAME_SKIP_PREF, 0).coerceIn(0, 10))
     put("volume", prefs.getInt(VOLUME_PREF, 100).coerceIn(0, 100))
-    put("soundFrequency", prefs.getInt(SOUND_FREQUENCY_PREF, 44100))
-    put("cpuCore", prefs.getString(CPU_CORE_PREF, "Automatic") ?: "Automatic")
+    put("muteFastForward", prefs.getBoolean(MUTE_FAST_FORWARD_PREF, false))
     put("cartridgeSaveType", prefs.getString(CARTRIDGE_SAVE_TYPE_PREF, "Automatic") ?: "Automatic")
     put("useBios", prefs.getBoolean(USE_BIOS_PREF, false))
     put("bootBios", prefs.getBoolean(BOOT_BIOS_PREF, false))
-    put("smcCheck", prefs.getInt(SMC_CHECK_PREF, 4).coerceIn(0, 10))
-    put("speedOptimization", prefs.getBoolean(SPEED_OPTIMIZATION_PREF, true))
-    put("mosaicEffect", prefs.getBoolean(MOSAIC_EFFECT_PREF, true))
     put("fastForwardButtonMode", prefs.getString(FAST_FORWARD_BUTTON_MODE_PREF, "Press to toggle") ?: "Press to toggle")
     put("fastForwardSpeed", EmulationSpeedPolicy.token(preferredEmulationSpeed))
     put("emulationSpeed", EmulationSpeedPolicy.token(preferredEmulationSpeed))
@@ -149,11 +144,9 @@ internal fun MainActivity.notifyWebSettingsState() {
 }
 
 internal fun MainActivity.applyRuntimeSettingsToNative() {
-    val frameSkip = prefs.getInt(FRAME_SKIP_PREF, 0).coerceIn(0, 10)
-    val sampleRate = prefs.getInt(SOUND_FREQUENCY_PREF, 44100).coerceIn(8000, 96000)
+    val frameSkip = RetiredSettings.FRAME_SKIP
+    val sampleRate = RetiredSettings.SAMPLE_RATE
     val soundEnabled = prefs.getBoolean(ENABLE_SOUND_PREF, true)
-    val speedOptimization = prefs.getBoolean(SPEED_OPTIMIZATION_PREF, true)
-    val cpuMode = prefs.getString(CPU_CORE_PREF, "Automatic") ?: "Automatic"
 
     try { setCoreConfigOption("frameskip", frameSkip.toString()) } catch (_: Throwable) {}
     // Keep mGBA's mixer at full scale and apply the user's master volume once
@@ -174,18 +167,12 @@ internal fun MainActivity.applyRuntimeSettingsToNative() {
         try { setCoreConfigOption("gbc.bios", it) } catch (_: Throwable) {}
     }
 
-    val idleMode = when {
-        !speedOptimization -> "ignore"
-        cpuMode.equals("Compatibility", ignoreCase = true) -> "ignore"
-        cpuMode.equals("Performance", ignoreCase = true) -> "detect"
-        else -> "detect"
-    }
-    try { setCoreConfigOption("idleOptimization", idleMode) } catch (_: Throwable) {}
+    try { setCoreConfigOption("idleOptimization", RetiredSettings.IDLE_OPTIMIZATION) } catch (_: Throwable) {}
     // Retra-native settings that mGBA does not expose as generic config
     // keys are applied directly in native-lib.cpp.
     try { setCoreConfigOption("retra.cartridgeSaveType", prefs.getString(CARTRIDGE_SAVE_TYPE_PREF, "Automatic") ?: "Automatic") } catch (_: Throwable) {}
-    try { setCoreConfigOption("retra.mosaicEffect", if (prefs.getBoolean(MOSAIC_EFFECT_PREF, true)) "1" else "0") } catch (_: Throwable) {}
-    try { setCoreConfigOption("retra.syncCheckLevel", prefs.getInt(SMC_CHECK_PREF, 4).coerceIn(0, 10).toString()) } catch (_: Throwable) {}
+    try { setCoreConfigOption("retra.mosaicEffect", "1") } catch (_: Throwable) {}
+    try { setCoreConfigOption("retra.syncCheckLevel", RetiredSettings.SYNC_CHECK_LEVEL.toString()) } catch (_: Throwable) {}
     applyGameplayVisualSettings()
 }
 
@@ -195,7 +182,7 @@ internal fun MainActivity.applyGameplayVisualSettings() {
     binding.gameScreen.scaleType = if (stretch) ImageView.ScaleType.FIT_XY else ImageView.ScaleType.FIT_CENTER
     val filter = prefs.getBoolean(LINEAR_FILTERING_PREF, false)
     (binding.gameScreen.drawable as? android.graphics.drawable.BitmapDrawable)?.isFilterBitmap = filter
-    val hardware = prefs.getBoolean(HARDWARE_RENDERING_PREF, true)
+    val hardware = true // Software rendering was a legacy fallback; every supported device composites on the GPU.
     // The Activity window is already hardware accelerated. A forced hardware
     // layer is counterproductive for a bitmap that changes every frame because
     // Android must rebuild/re-upload that cached layer continuously. NONE uses
@@ -207,6 +194,11 @@ internal fun MainActivity.applyGameplayVisualSettings() {
 }
 
 internal fun MainActivity.updateSetting(key: String, value: String): Boolean {
+    if (key == "cloudWifiOnly") {
+        // Device-local (not a portable setting): each phone decides whether to use mobile data.
+        cloudSync.setWifiOnly(value.toBoolean())
+        return true
+    }
     val editor = prefs.edit()
     when (key) {
         "cloudSync" -> editor.putBoolean(CLOUD_SYNC_ENABLED_PREF, value.toBoolean())
@@ -218,10 +210,8 @@ internal fun MainActivity.updateSetting(key: String, value: String): Boolean {
         "confirmCloseReset" -> editor.putBoolean(CONFIRM_CLOSE_RESET_PREF, value.toBoolean())
         "controllerSound" -> editor.putBoolean(CONTROLLER_SOUND_PREF, value.toBoolean())
         "controllerHaptics" -> editor.putBoolean(CONTROLLER_HAPTICS_PREF, value.toBoolean())
-        "fullScreenMode" -> editor.putBoolean(FULLSCREEN_PREF, value.toBoolean())
-        "immersiveMode" -> editor.putBoolean(IMMERSIVE_PREF, value.toBoolean())
+        "immersiveFullscreen" -> editor.putBoolean(FULLSCREEN_PREF, value.toBoolean()).putBoolean(IMMERSIVE_PREF, value.toBoolean())
         "stretchToFit" -> editor.putBoolean(STRETCH_TO_FIT_PREF, value.toBoolean())
-        "hardwareRendering" -> editor.putBoolean(HARDWARE_RENDERING_PREF, value.toBoolean())
         "linearFiltering" -> editor.putBoolean(LINEAR_FILTERING_PREF, value.toBoolean())
         "colorStyle" -> editor.putString(
             COLOR_STYLE_PREF,
@@ -229,16 +219,11 @@ internal fun MainActivity.updateSetting(key: String, value: String): Boolean {
                 ?: ColorStyleController.CLASSIC
         )
         "enableSound" -> editor.putBoolean(ENABLE_SOUND_PREF, value.toBoolean())
-        "frameSkip" -> editor.putInt(FRAME_SKIP_PREF, value.toIntOrNull()?.coerceIn(0, 10) ?: 0)
         "volume" -> editor.putInt(VOLUME_PREF, value.toIntOrNull()?.coerceIn(0, 100) ?: 100)
-        "soundFrequency" -> editor.putInt(SOUND_FREQUENCY_PREF, value.toIntOrNull()?.coerceIn(8000, 96000) ?: 44100)
-        "cpuCore" -> editor.putString(CPU_CORE_PREF, value)
+        "muteFastForward" -> editor.putBoolean(MUTE_FAST_FORWARD_PREF, value.toBoolean())
         "cartridgeSaveType" -> editor.putString(CARTRIDGE_SAVE_TYPE_PREF, value)
         "useBios" -> editor.putBoolean(USE_BIOS_PREF, value.toBoolean())
         "bootBios" -> editor.putBoolean(BOOT_BIOS_PREF, value.toBoolean())
-        "smcCheck" -> editor.putInt(SMC_CHECK_PREF, value.toIntOrNull()?.coerceIn(0, 10) ?: 4)
-        "speedOptimization" -> editor.putBoolean(SPEED_OPTIMIZATION_PREF, value.toBoolean())
-        "mosaicEffect" -> editor.putBoolean(MOSAIC_EFFECT_PREF, value.toBoolean())
         "fastForwardButtonMode" -> editor.putString(FAST_FORWARD_BUTTON_MODE_PREF, value)
         else -> return false
     }
@@ -251,7 +236,8 @@ internal fun MainActivity.updateSetting(key: String, value: String): Boolean {
     }
     runOnUiThread {
         applyRuntimeSettingsToNative()
-        if (key == "enableSound" || key == "soundFrequency") {
+        if (key == "muteFastForward") audioController.refreshFastForwardMute()
+        if (key == "enableSound") {
             audioController.configure(romLoaded)
             if (romLoaded && emulatorRunning) audioController.play()
         } else if (key == "volume") {
@@ -286,9 +272,11 @@ internal fun MainActivity.updateSetting(key: String, value: String): Boolean {
 internal fun MainActivity.updateRangeSetting(key: String, rawValue: Int, commit: Boolean): Boolean {
     val value = when (key) {
         "buttonsOpacity" -> rawValue.coerceIn(25, 100)
-        "frameSkip" -> rawValue.coerceIn(0, 10)
         "volume" -> rawValue.coerceIn(0, 100)
-        "smcCheck" -> rawValue.coerceIn(0, 10)
+        "controllerHapticStrength" -> rawValue.coerceIn(
+            ControllerFeedbackManager.HAPTIC_STRENGTH_MIN,
+            ControllerFeedbackManager.HAPTIC_STRENGTH_MAX
+        )
         else -> return false
     }
 
@@ -299,9 +287,8 @@ internal fun MainActivity.updateRangeSetting(key: String, rawValue: Int, commit:
     if (commit) {
         when (key) {
             "buttonsOpacity" -> prefs.edit().putInt(BUTTON_OPACITY_PREF, value).apply()
-            "frameSkip" -> prefs.edit().putInt(FRAME_SKIP_PREF, value).apply()
             "volume" -> prefs.edit().putInt(VOLUME_PREF, value).apply()
-            "smcCheck" -> prefs.edit().putInt(SMC_CHECK_PREF, value).apply()
+            "controllerHapticStrength" -> prefs.edit().putInt(CONTROLLER_HAPTIC_STRENGTH_PREF, value).apply()
         }
     }
 
@@ -311,13 +298,9 @@ internal fun MainActivity.updateRangeSetting(key: String, rawValue: Int, commit:
                 preferredButtonsOpacity = value / 100f
                 applyNativeButtonsOpacity()
             }
-            "frameSkip" -> {
-                try { setCoreConfigOption("frameskip", value.toString()) } catch (_: Throwable) {}
-            }
             "volume" -> audioController.setVolume(value / 100f)
-            "smcCheck" -> {
-                try { setCoreConfigOption("retra.syncCheckLevel", value.toString()) } catch (_: Throwable) {}
-            }
+            // A sample tick at the slider's value, so the strength can be felt while dragging.
+            "controllerHapticStrength" -> controllerFeedback.previewHaptic(binding.webView, value)
         }
     }
 
@@ -330,13 +313,9 @@ internal fun MainActivity.updateRangeSetting(key: String, rawValue: Int, commit:
 
 internal fun MainActivity.resetAdvancedSettingsInternal() {
     prefs.edit()
-        .putString(CPU_CORE_PREF, "Automatic")
         .putString(CARTRIDGE_SAVE_TYPE_PREF, "Automatic")
         .putBoolean(USE_BIOS_PREF, false)
         .putBoolean(BOOT_BIOS_PREF, false)
-        .putInt(SMC_CHECK_PREF, 4)
-        .putBoolean(SPEED_OPTIMIZATION_PREF, true)
-        .putBoolean(MOSAIC_EFFECT_PREF, true)
         .apply()
     applyRuntimeSettingsToNative()
     notifyWebSettingsState()
@@ -479,4 +458,22 @@ internal fun MainActivity.exportSaveDataToTreeAsync(uri: Uri, showResult: Boolea
             RetraNotice.makeText(this, "$exported Retra data file${if (exported == 1) "" else "s"} exported", RetraNotice.LENGTH_LONG).show()
         }
     }
+}
+
+/**
+ * Options from the original My Boy-style settings that are no longer shown. Each is pinned to the value
+ * modern devices should always use, so a value saved by an older Retra version (or restored from an old
+ * backup) can no longer leave a game choppy, quiet or inaccurate.
+ */
+internal object RetiredSettings {
+    /** Frameskip: every frame is rendered; current phones run GBA at full speed. */
+    const val FRAME_SKIP = 0
+    /** Sound frequency: 44.1 kHz; AudioController resamples to the device's output rate. */
+    const val SAMPLE_RATE = 44100
+    /** CPU profile: the automatic emulation-thread priority and frame pacing. */
+    const val CPU_PROFILE = "Automatic"
+    /** Speed optimization: mGBA idle-loop detection stays on (accurate and saves battery). */
+    const val IDLE_OPTIMIZATION = "detect"
+    /** Remote Link state-integrity check interval (the former "Link sync check" default). */
+    const val SYNC_CHECK_LEVEL = 4
 }

@@ -49,4 +49,26 @@ class DpadHapticPolicyTest {
         }
         assertEquals(3, ticks)
     }
+
+    @Test
+    fun strengthScalesAmplitudeWithinMotorRange() {
+        assertEquals(70, ControllerFeedbackManager.tickAmplitude(ControllerFeedbackManager.HAPTIC_STRENGTH_MIN))
+        assertEquals(255, ControllerFeedbackManager.tickAmplitude(ControllerFeedbackManager.HAPTIC_STRENGTH_MAX))
+        assertEquals(70, ControllerFeedbackManager.tickAmplitude(0))
+        assertEquals(255, ControllerFeedbackManager.tickAmplitude(500))
+        assertTrue(ControllerFeedbackManager.tickAmplitude(30) < ControllerFeedbackManager.tickAmplitude(70))
+    }
+
+    @Test
+    fun ticksStayShortAndCrisp() {
+        for (strength in listOf(10, 55, 100)) {
+            assertTrue(ControllerFeedbackManager.tickDurationMs(strength, amplitudeControl = true) in 12L..20L)
+            assertTrue(ControllerFeedbackManager.tickDurationMs(strength, amplitudeControl = false) in 8L..22L)
+        }
+        // Without amplitude control, length carries the strength.
+        assertTrue(
+            ControllerFeedbackManager.tickDurationMs(20, amplitudeControl = false) <
+                ControllerFeedbackManager.tickDurationMs(90, amplitudeControl = false)
+        )
+    }
 }

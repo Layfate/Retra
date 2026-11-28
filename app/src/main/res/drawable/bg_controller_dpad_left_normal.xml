@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="60dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+    <!-- D-pad arrow piece (points up; the ImageButton rotation turns it). -->
+    <group android:translateX="-2.5" android:translateY="0">
+        <path android:fillColor="#FF8F959C" android:pathData="M7,12 Q7,3 16,3 L44,3 Q53,3 53,12 L53,37 L32.2,56 Q30,58 27.8,56 L7,37 Z" />
+    </group>
+    <group android:translateX="0" android:translateY="0">
+        <path
+            android:fillColor="#FFD4D7DB"
+            android:strokeColor="#FFEEF0F2"
+            android:strokeWidth="1"
+            android:pathData="M7,12 Q7,3 16,3 L44,3 Q53,3 53,12 L53,37 L32.2,56 Q30,58 27.8,56 L7,37 Z" />
+    </group>
+</vector>

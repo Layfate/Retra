@@ -69,6 +69,9 @@ class AppUpdateController(
                 }
                 onResult(payload.toString(), manual)
             } catch (error: Throwable) {
+                // Usually offline at launch: let the next automatic request (the UI retries
+                // when Wi-Fi or mobile data returns) check again in this process.
+                if (!manual) automaticCheckStartedThisProcess.set(false)
                 val payload = JSONObject().apply {
                     put("status", "error")
                     put("message", friendlyError(error))
@@ -210,7 +213,7 @@ class AppUpdateController(
         private const val CONNECT_TIMEOUT_MS = 6000
         private const val READ_TIMEOUT_MS = 7000
         private const val MAX_RESPONSE_CHARS = 512 * 1024
-        private const val MAX_RELEASE_NOTES_CHARS = 1200
+        private const val MAX_RELEASE_NOTES_CHARS = 20_000
 
         internal fun normalizeVersionName(raw: String): String =
             raw.trim().removePrefix("v").removePrefix("V").substringBefore('+')

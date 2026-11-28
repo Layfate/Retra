@@ -666,8 +666,11 @@ internal fun MainActivity.clearSavedExtraActionControls() {
 internal fun MainActivity.makeExtraActionTextView(label: String): TextView {
     return TextView(this).apply {
         text = label
-        setTextColor(Color.WHITE)
-        textSize = 16f
+        // Embossed gray label on the light controller face, like activity_main.xml.
+        setTextColor(Color.rgb(0x76, 0x7D, 0x85))
+        setShadowLayer(0.01f, 0f, dp(1f), Color.argb(0xCC, 255, 255, 255))
+        setPadding(0, 0, 0, dp(2.5f).roundToInt())
+        textSize = 17f
         gravity = Gravity.CENTER
         // Same face as the native A/B/L/R labels (sans-serif-medium, bold).
         typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
@@ -871,6 +874,7 @@ internal fun MainActivity.makeScreenshotControl(): ImageButton {
         layoutParams = FrameLayout.LayoutParams(dp(56f).roundToInt(), dp(56f).roundToInt())
         setBackgroundResource(R.drawable.bg_controller_round_rect)
         setImageResource(R.drawable.ic_controller_screenshot)
+        imageTintList = android.content.res.ColorStateList.valueOf(Color.rgb(0x76, 0x7D, 0x85))
         setPadding(dp(13f).roundToInt(), dp(13f).roundToInt(), dp(13f).roundToInt(), dp(13f).roundToInt())
         scaleType = ImageView.ScaleType.CENTER_INSIDE
         contentDescription = "Screenshot"

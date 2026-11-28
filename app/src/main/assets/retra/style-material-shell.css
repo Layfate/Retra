@@ -744,17 +744,17 @@ body[data-resolved-mode="light"] .add-control-empty-state{
   color:var(--m3-on-surface-variant);
 }
 
-/* Controller thumbnails keep the in-game look (white glyph + white ring).
-   On a light dialog their translucent fill disappears, so Light mode gives
-   them a solid dark controller face to keep that look readable. */
+/* Controller thumbnails keep the in-game look in both modes: the light gray
+   controller face on its darker rim (style-gameplay-controller-parity.css).
+   The rim keeps them readable on a light dialog, so Light mode no longer
+   swaps in a dark face. Only the D-pad thumbnail draws its pieces as images. */
 body[data-resolved-mode="light"] #screenSizePage .add-control-icon.circle,
 body[data-resolved-mode="light"] #screenSizePage .add-control-icon.square,
 body[data-resolved-mode="light"] #screenSizePage .add-control-icon.duo > span,
 body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-shoulder-preview,
-body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-dpad-preview i,
 body[data-resolved-mode="light"] #screenSizePage .add-control-icon.native-start-select-preview i{
-  background:#2b303b !important;
-  border-color:rgba(255,255,255,.22) !important;
+  background:var(--native-controller-solid) !important;
+  border-color:var(--native-controller-border) !important;
 }
 
 /* ---------- Layouts ----------
@@ -968,3 +968,110 @@ body[data-resolved-mode] .selection-modal .myboy-dialog-card .text-action-btn:ac
   opacity:1;
   background:var(--m3-state-press);
 }
+
+/* ---------- Settings home groups ----------
+   Same accent section headers as Data and Storage, so Settings reads as a few
+   short groups (General, Playing, Library & system) instead of one long list. */
+#settingsHomePage .settings-group-label{
+  padding:20px var(--content-gutter) 4px;
+  color:var(--accent);
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.01em;
+  text-transform:none;
+  text-align:left;
+  justify-self:stretch;
+  align-self:stretch;
+  width:auto;
+}
+#settingsHomePage .settings-group-label:first-child{padding-top:4px}
+
+/* ---------- Statistics ----------
+   A "Most played" header with the game's cover over a blurred copy of the same
+   art, 2x2 overview tiles, a systems bar and ranked rows with playtime bars. */
+#statisticsPage .stats-sections{gap:22px}
+#statisticsPage .stats-hero{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;
+  min-height:164px;padding:16px;border-radius:28px;
+  background:color-mix(in srgb, var(--accent) 22%, #12141a);
+}
+#statisticsPage .stats-hero[hidden]{display:none}
+#statisticsPage .stats-hero-backdrop{
+  position:absolute;inset:-32px;z-index:-2;
+  background-size:cover;background-position:center;
+  filter:blur(26px) saturate(1.25);opacity:0;transform:scale(1.08);
+  transition:opacity .25s ease;
+}
+#statisticsPage .stats-hero.has-cover .stats-hero-backdrop{opacity:.6}
+#statisticsPage .stats-hero::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg, rgba(8,9,13,.78) 0%, rgba(8,9,13,.42) 100%);
+}
+#statisticsPage .stats-hero-cover{
+  width:96px;height:132px;border-radius:16px;overflow:hidden;
+  background:rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.45);
+}
+#statisticsPage .stats-hero-cover img{width:100%;height:100%;object-fit:cover;display:block}
+#statisticsPage .stats-hero-cover .playtime-cover-placeholder{font-size:38px;color:rgba(255,255,255,.8);background:transparent}
+#statisticsPage .stats-hero-copy{min-width:0;display:flex;flex-direction:column;gap:4px;color:#fff}
+#statisticsPage .stats-hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb, var(--accent) 60%, white)}
+#statisticsPage .stats-hero-title{
+  font-size:19px;line-height:1.22;font-weight:700;color:#fff;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+#statisticsPage .stats-hero-meta{font-size:12px;color:rgba(255,255,255,.76)}
+#statisticsPage .stats-hero-time{margin-top:8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+#statisticsPage .stats-hero-time strong{font-size:27px;line-height:1;font-weight:800;letter-spacing:-.02em;color:#fff}
+#statisticsPage .stats-hero-time span{font-size:12px;color:rgba(255,255,255,.76)}
+
+body[data-resolved-mode] #statisticsPage .stats-tiles{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+  padding:0;border:0;border-radius:0;background:none;box-shadow:none;
+}
+#statisticsPage .stats-tile{
+  min-height:0;align-items:flex-start;justify-content:flex-start;text-align:left;
+  padding:16px;border-radius:22px;
+  border:1px solid rgba(255,255,255,.05);
+  background:linear-gradient(180deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.025) 100%);
+}
+#statisticsPage .stats-tile .stats-icon{
+  margin:0 0 14px;width:38px;height:38px;border-radius:13px;
+  background:color-mix(in srgb, var(--accent) 16%, transparent);color:var(--accent);
+}
+#statisticsPage .stats-tile .stats-icon svg{width:21px;height:21px}
+#statisticsPage .stats-tile strong{margin-bottom:4px;font-size:24px}
+#statisticsPage .stats-tile > span{max-width:none;font-size:12px;line-height:1.35}
+#statisticsPage .stats-progress{margin-top:10px;width:100%;height:6px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.08)}
+#statisticsPage .stats-progress span{display:block;max-width:none;width:0;height:100%;border-radius:inherit;background:var(--accent);transition:width .3s ease}
+
+#statisticsPage .stats-systems{padding:16px}
+#statisticsPage .stats-system-bar{display:flex;gap:2px;height:12px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.07)}
+#statisticsPage .stats-system-bar span{flex:0 1 0;min-width:0;transition:flex-grow .3s ease}
+#statisticsPage .system-gba{background:var(--accent)}
+#statisticsPage .system-gbc{background:#e8a54b}
+#statisticsPage .system-gb{background:#7f9f12}
+#statisticsPage .stats-system-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+#statisticsPage .stats-system-item{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;font-size:12px;color:var(--muted)}
+#statisticsPage .stats-system-item i{flex:none;width:10px;height:10px;border-radius:3px}
+#statisticsPage .stats-system-item strong{font-size:15px;font-weight:700;color:#f5f5fb}
+
+#statisticsPage .playtime-left{flex:1}
+#statisticsPage .playtime-rank{flex:none;width:18px;text-align:center;font-size:12px;font-weight:700;color:var(--muted)}
+#statisticsPage .playtime-copy{flex:1}
+#statisticsPage .playtime-copy strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#statisticsPage .playtime-bar{margin-top:8px;height:4px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.07)}
+#statisticsPage .playtime-bar span{display:block;margin:0;height:100%;border-radius:inherit;background:var(--accent)}
+#statisticsPage .playtime-time{min-width:64px;text-align:right;color:var(--accent)}
+
+body[data-resolved-mode="light"] #statisticsPage .stats-tile{
+  border-color:color-mix(in srgb, var(--text) 8%, transparent);
+  background:linear-gradient(180deg, color-mix(in srgb,var(--light-surface,#fff) 98%, white 2%) 0%, color-mix(in srgb,var(--light-surface-2,#f1f3f7) 84%, var(--light-surface,#fff) 16%) 100%);
+  box-shadow:0 10px 22px rgba(35,41,58,.08);
+}
+body[data-resolved-mode="light"] #statisticsPage .stats-tile .stats-icon,
+body[data-resolved-mode="light"] #statisticsPage .stats-tile .stats-icon svg{color:var(--accent)}
+body[data-resolved-mode="light"] #statisticsPage .stats-progress,
+body[data-resolved-mode="light"] #statisticsPage .stats-system-bar,
+body[data-resolved-mode="light"] #statisticsPage .playtime-bar{background:color-mix(in srgb, var(--text) 9%, transparent)}
+body[data-resolved-mode="light"] #statisticsPage .stats-system-item strong{color:var(--text)}

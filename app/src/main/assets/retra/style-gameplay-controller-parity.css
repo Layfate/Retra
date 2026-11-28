@@ -10,24 +10,28 @@
    Native drawable constants
    -------------------------------------------------------------------------- */
 #screenSizePage {
-  /* One face palette for every control (bg_controller_* drawables):
-     fill #5C11171D, 1.5dp border #CCFFFFFF, pressed #7545525A + #FFFFFFFF. */
-  --native-controller-solid: rgba(17, 23, 29, .361);   /* #5C11171D */
+  /* One face palette for every control (bg_controller_* drawables): light gray
+     face #D4D7DB with a 1dp #EEF0F2 edge, on a #8F959C rim 2.5dp below it.
+     Pressed: face #A9AEB5 sunk onto the rim. Labels/glyphs #767D85, embossed. */
+  --native-controller-solid: #d4d7db;
   --native-controller-pill-solid: var(--native-controller-solid);
-  --native-controller-pressed: rgba(69, 82, 90, .459); /* #7545525A */
+  --native-controller-pressed: #a9aeb5;
   --native-controller-pill-pressed: var(--native-controller-pressed);
-  --native-controller-border: rgba(255,255,255,.800);  /* #CCFFFFFF */
+  --native-controller-border: #eef0f2;
   --native-controller-circle-border: var(--native-controller-border);
   --native-controller-square-border: var(--native-controller-border);
   --native-controller-round-border: var(--native-controller-border);
   --native-controller-pill-border: var(--native-controller-border);
+  --native-controller-depth: 0 2.5px 0 #8f959c;
+  --native-controller-depth-pressed: 0 .5px 0 #8f959c;
+  --native-controller-emboss: 0 1px 0 rgba(255,255,255,.8);
   /* One glyph spec (ic_controller_*): 24-unit grid, 2.4 stroke, round caps/joins. */
   --native-controller-stroke: 2.4;
-  --native-controller-glyph: #fff;
-  --native-controller-icon: #f7f9fc;
+  --native-controller-glyph: #767d85;
+  --native-controller-icon: #767d85;
 }
 
-/* Remove visual decoration that doesn't exist on the native gameplay views. */
+/* No glass blur on the native gameplay views; labels are embossed. */
 #screenSizePage .preview-shoulder,
 #screenSizePage .preview-dpad .dpad,
 #screenSizePage .preview-start-select span,
@@ -37,29 +41,28 @@
 #screenSizePage .extra-control-face > span {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  text-shadow: none !important;
+  text-shadow: var(--native-controller-emboss) !important;
 }
 
 /* L/R — activity_main.xml: 72 x 30dp, bg_controller_pill. */
 #screenSizePage .preview-shoulder {
   width: 72px !important;
   height: 30px !important;
-  border: 1.5px solid var(--native-controller-pill-border) !important;
+  border: 1px solid var(--native-controller-pill-border) !important;
   background: var(--native-controller-pill-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
   color: var(--native-controller-glyph) !important;
-  font: 700 17px/1 sans-serif !important;
+  font: 700 19px/1 sans-serif !important;
   letter-spacing: 0 !important;
 }
-#screenSizePage .preview-shoulder.left {
-  border-radius: 12px 28px 16px 12px !important;
-}
+#screenSizePage .preview-shoulder.left,
 #screenSizePage .preview-shoulder.right {
-  border-radius: 28px 12px 12px 16px !important;
+  border-radius: 999px !important;
 }
 #screenSizePage .preview-shoulder:active {
   background: var(--native-controller-pill-pressed) !important;
-  border-color: #fff !important;
+  border-color: var(--native-controller-border) !important;
+  box-shadow: var(--native-controller-depth-pressed) !important;
 }
 
 /* Menu wrapper is 44dp; the native ImageButton face inside is 42dp. */
@@ -77,10 +80,10 @@
   position: relative !important;
   width: 42px !important;
   height: 42px !important;
-  border: 1.5px solid var(--native-controller-round-border) !important;
+  border: 1px solid var(--native-controller-round-border) !important;
   border-radius: 14px !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
   color: var(--native-controller-icon) !important;
 }
 #screenSizePage .preview-toolbar.top.landscape-only .toolbar-icon::before,
@@ -89,7 +92,8 @@
 }
 #screenSizePage .preview-toolbar.top.landscape-only .toolbar-icon:active {
   background: var(--native-controller-pressed) !important;
-  border-color: #fff !important;
+  border-color: var(--native-controller-border) !important;
+  box-shadow: var(--native-controller-depth-pressed) !important;
 }
 #screenSizePage .myboy-menu-icon {
   width: 24px !important;
@@ -102,7 +106,8 @@
   filter: none !important;
 }
 
-/* D-pad — four native 44dp rounded-square ImageButtons in a 150dp container. */
+/* D-pad — four native 60dp arrow-piece ImageButtons in a 150dp container
+   (bg_controller_dpad_* vectors: up-pointing piece, rim always below). */
 #screenSizePage .preview-dpad {
   width: 150px !important;
   height: 150px !important;
@@ -114,24 +119,31 @@
   content: none !important;
 }
 #screenSizePage .preview-dpad .dpad {
-  width: 44px !important;
-  height: 44px !important;
-  border: 1.5px solid var(--native-controller-square-border) !important;
-  border-radius: 13px !important;
-  background: var(--native-controller-solid) !important;
+  width: 60px !important;
+  height: 60px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 60px 60px !important;
   box-shadow: none !important;
 }
-#screenSizePage .preview-dpad .dpad:active {
-  background: var(--native-controller-pressed) !important;
-  border-color: #fff !important;
-}
-#screenSizePage .preview-dpad .up { left: 53px !important; top: 0 !important; right: auto !important; bottom: auto !important; }
-#screenSizePage .preview-dpad .left { left: 0 !important; top: 53px !important; right: auto !important; bottom: auto !important; }
-#screenSizePage .preview-dpad .right { left: 106px !important; top: 53px !important; right: auto !important; bottom: auto !important; }
-#screenSizePage .preview-dpad .down { left: 53px !important; top: 106px !important; right: auto !important; bottom: auto !important; }
+#screenSizePage .preview-dpad .up { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 0) rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .up:active { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 2) rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23a9aeb5' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .right { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 0) rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .right:active { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 2) rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23a9aeb5' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .down { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 0) rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .down:active { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 2) rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23a9aeb5' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .left { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 0) rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .left:active { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='translate(0 2) rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23a9aeb5' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .preview-dpad .up { left: 45px !important; top: 0 !important; right: auto !important; bottom: auto !important; }
+#screenSizePage .preview-dpad .left { left: 0 !important; top: 45px !important; right: auto !important; bottom: auto !important; }
+#screenSizePage .preview-dpad .right { left: 90px !important; top: 45px !important; right: auto !important; bottom: auto !important; }
+#screenSizePage .preview-dpad .down { left: 45px !important; top: 90px !important; right: auto !important; bottom: auto !important; }
 
 /* Exact ic_controller_dpad_up.xml artwork: M5.5,15 L12,8.5 L18.5,15 on the
-   24-unit grid, 2.4 stroke, round caps and joins (rendered 24dp in the 44dp face). */
+   24-unit grid, 2.4 stroke, round caps and joins (rendered 24dp in the body of the 60dp piece). */
 #screenSizePage .preview-dpad .dpad::before {
   content: "" !important;
   position: absolute !important;
@@ -145,15 +157,15 @@
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: 24px 24px !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23f7f9fc' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23767d85' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
   box-shadow: none !important;
   filter: none !important;
   transform-origin: center center !important;
 }
-#screenSizePage .preview-dpad .up::before { transform: translate(-50%,-50%) rotate(0deg) !important; }
-#screenSizePage .preview-dpad .right::before { transform: translate(-50%,-50%) rotate(90deg) !important; }
-#screenSizePage .preview-dpad .down::before { transform: translate(-50%,-50%) rotate(180deg) !important; }
-#screenSizePage .preview-dpad .left::before { transform: translate(-50%,-50%) rotate(-90deg) !important; }
+#screenSizePage .preview-dpad .up::before { top: 20px !important; transform: translate(-50%,-50%) rotate(0deg) !important; }
+#screenSizePage .preview-dpad .right::before { left: 40px !important; transform: translate(-50%,-50%) rotate(90deg) !important; }
+#screenSizePage .preview-dpad .down::before { top: 40px !important; transform: translate(-50%,-50%) rotate(180deg) !important; }
+#screenSizePage .preview-dpad .left::before { left: 20px !important; transform: translate(-50%,-50%) rotate(-90deg) !important; }
 
 /* Start / Select — same two blank 50 x 24dp native pill buttons. */
 #screenSizePage .preview-start-select {
@@ -172,14 +184,23 @@
   width: 50px !important;
   height: 24px !important;
   inset: auto !important;
-  border: 1.5px solid var(--native-controller-pill-border) !important;
+  border: 1px solid var(--native-controller-pill-border) !important;
   border-radius: 999px !important;
   background: var(--native-controller-pill-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
+  display: grid !important;
+  place-items: center !important;
+  color: var(--native-controller-glyph) !important;
+  font: 700 8.5px/1 sans-serif !important;
+  letter-spacing: .06em !important;
+  text-shadow: var(--native-controller-emboss) !important;
 }
+#screenSizePage .preview-start-select span:nth-of-type(1)::after { content: "SELECT"; }
+#screenSizePage .preview-start-select span:nth-of-type(2)::after { content: "START"; }
 #screenSizePage .preview-start-select span:active {
   background: var(--native-controller-pill-pressed) !important;
-  border-color: #fff !important;
+  border-color: var(--native-controller-border) !important;
+  box-shadow: var(--native-controller-depth-pressed) !important;
 }
 
 /* A/B group — native 54dp circles, 150 x 94dp group. */
@@ -193,18 +214,19 @@
 #screenSizePage .preview-ab span {
   width: 54px !important;
   height: 54px !important;
-  border: 1.5px solid var(--native-controller-circle-border) !important;
+  border: 1px solid var(--native-controller-circle-border) !important;
   border-radius: 50% !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
   color: var(--native-controller-glyph) !important;
-  font: 700 20px/1 sans-serif !important;
+  font: 700 23px/1 sans-serif !important;
 }
 #screenSizePage .preview-ab span:active,
 #screenSizePage .extra-control-face.circle-text:active,
 #screenSizePage .extra-control-face.turbo-face > span:active {
   background: var(--native-controller-pressed) !important;
-  border-color: #fff !important;
+  border-color: var(--native-controller-border) !important;
+  box-shadow: var(--native-controller-depth-pressed) !important;
 }
 #screenSizePage .preview-ab .button-b { left: 0 !important; top: 20px !important; right: auto !important; bottom: auto !important; }
 #screenSizePage .preview-ab .button-a { left: auto !important; right: 0 !important; top: 20px !important; bottom: auto !important; }
@@ -224,17 +246,17 @@
   height: 56px !important;
   display: grid !important;
   place-items: center !important;
-  border: 1.5px solid var(--native-controller-circle-border) !important;
+  border: 1px solid var(--native-controller-circle-border) !important;
   border-radius: 50% !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
   color: var(--native-controller-glyph) !important;
   font: 700 16px/1 sans-serif !important;
   letter-spacing: 0 !important;
 }
 #screenSizePage .extra-control[data-control-type="buttonA"] .circle-text,
 #screenSizePage .extra-control[data-control-type="buttonB"] .circle-text {
-  font-size: 20px !important;
+  font-size: 23px !important;
 }
 
 /* Turbo A/B is two 56dp native circles inside a 122 x 58dp container. */
@@ -257,10 +279,10 @@
   height: 56px !important;
   display: grid !important;
   place-items: center !important;
-  border: 1.5px solid var(--native-controller-circle-border) !important;
+  border: 1px solid var(--native-controller-circle-border) !important;
   border-radius: 50% !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
   color: var(--native-controller-glyph) !important;
   font: 700 16px/1 sans-serif !important;
 }
@@ -282,17 +304,18 @@
   position: relative !important;
   display: grid !important;
   place-items: center !important;
-  border: 1.5px solid var(--native-controller-round-border) !important;
+  border: 1px solid var(--native-controller-round-border) !important;
   border-radius: 14px !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
 }
 #screenSizePage .extra-control-face.square-icon.myboy-menu-button.utility-menu-button::before {
   content: none !important;
 }
 #screenSizePage .extra-control-face.square-icon.myboy-menu-button.utility-menu-button:active {
   background: var(--native-controller-pressed) !important;
-  border-color: #fff !important;
+  border-color: var(--native-controller-border) !important;
+  box-shadow: var(--native-controller-depth-pressed) !important;
 }
 #screenSizePage .extra-control-face.square-icon.myboy-menu-button.utility-menu-button .control-svg {
   width: 24px !important;
@@ -317,10 +340,10 @@
 #screenSizePage .extra-control[data-control-type="screenshot"] .extra-control-face {
   display: grid !important;
   place-items: center !important;
-  border: 1.5px solid var(--native-controller-round-border) !important;
+  border: 1px solid var(--native-controller-round-border) !important;
   border-radius: 14px !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
+  box-shadow: var(--native-controller-depth) !important;
 }
 #screenSizePage .extra-control[data-control-type="screenshot"] .control-svg {
   width: 24px !important;
@@ -348,18 +371,18 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
    so the icon shown before adding a control doesn't falsely preview a different
    shape. These thumbnails remain slightly scaled for the list row. */
 #screenSizePage .add-control-icon.circle {
-  border: 1.5px solid var(--native-controller-circle-border) !important;
+  border: 1px solid var(--native-controller-circle-border) !important;
   border-radius: 50% !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
-  color: #fff !important;
+  box-shadow: var(--native-controller-depth) !important;
+  color: var(--native-controller-glyph) !important;
 }
 #screenSizePage .add-control-icon.square {
-  border: 1.5px solid var(--native-controller-round-border) !important;
+  border: 1px solid var(--native-controller-round-border) !important;
   border-radius: 14px !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
-  color: #fff !important;
+  box-shadow: var(--native-controller-depth) !important;
+  color: var(--native-controller-glyph) !important;
 }
 #screenSizePage .add-control-icon .control-svg {
   fill: none !important;
@@ -381,46 +404,51 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
   height: 30px !important;
   display: grid !important;
   place-items: center !important;
-  border: 1.5px solid var(--native-controller-pill-border) !important;
-  border-radius: 12px 26px 16px 12px !important;
+  border: 1px solid var(--native-controller-pill-border) !important;
+  border-radius: 999px !important;
   background: var(--native-controller-pill-solid) !important;
-  box-shadow: none !important;
-  color: #fff !important;
+  box-shadow: var(--native-controller-depth) !important;
+  color: var(--native-controller-glyph) !important;
   font: 700 17px/1 sans-serif !important;
 }
 #screenSizePage .add-control-icon.native-dpad-preview {
   position: relative !important;
-  width: 72px !important;
-  height: 72px !important;
+  width: 48px !important;
+  height: 48px !important;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
 }
 #screenSizePage .add-control-icon.native-dpad-preview i {
   position: absolute !important;
-  width: 22px !important;
-  height: 22px !important;
-  border: 1px solid var(--native-controller-square-border) !important;
-  border-radius: 7px !important;
-  background: var(--native-controller-solid) !important;
+  width: 19px !important;
+  height: 19px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 19px 19px !important;
+  box-shadow: none !important;
 }
 #screenSizePage .add-control-icon.native-dpad-preview i::before {
   content: "";
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 12px;
-  height: 12px;
-  background: center/12px 12px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23f7f9fc' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  width: 8px;
+  height: 8px;
+  background: center/8px 8px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 15 L12 8.5 L18.5 15' fill='none' stroke='%23767d85' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
-#screenSizePage .add-control-icon.native-dpad-preview .up { left:25px; top:0; }
-#screenSizePage .add-control-icon.native-dpad-preview .left { left:0; top:25px; }
-#screenSizePage .add-control-icon.native-dpad-preview .right { right:0; top:25px; }
-#screenSizePage .add-control-icon.native-dpad-preview .down { left:25px; bottom:0; }
-#screenSizePage .add-control-icon.native-dpad-preview .up::before { transform:translate(-50%,-50%); }
-#screenSizePage .add-control-icon.native-dpad-preview .right::before { transform:translate(-50%,-50%) rotate(90deg); }
-#screenSizePage .add-control-icon.native-dpad-preview .down::before { transform:translate(-50%,-50%) rotate(180deg); }
-#screenSizePage .add-control-icon.native-dpad-preview .left::before { transform:translate(-50%,-50%) rotate(-90deg); }
+#screenSizePage .add-control-icon.native-dpad-preview .up { left:14.5px; top:0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='rotate(0 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .add-control-icon.native-dpad-preview .left { left:0; top:14.5px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='rotate(-90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .add-control-icon.native-dpad-preview .right { right:0; top:14.5px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='rotate(90 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+#screenSizePage .add-control-icon.native-dpad-preview .down { left:14.5px; bottom:0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cpath transform='translate(0 2.5) rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%238f959c'/%3E%3Cpath transform='rotate(180 30 30)' d='M7 12 Q7 3 16 3 L44 3 Q53 3 53 12 L53 37 L32.2 56 Q30 58 27.8 56 L7 37 Z' fill='%23d4d7db' stroke='%23eef0f2'/%3E%3C/svg%3E") !important; }
+/* 48px thumbnail = the 150dp D-pad at 0.32: 19px pieces. The glyph sits in the body of each piece, as on the gameplay D-pad. */
+#screenSizePage .add-control-icon.native-dpad-preview .up::before { top:33%; transform:translate(-50%,-50%); }
+#screenSizePage .add-control-icon.native-dpad-preview .right::before { left:67%; transform:translate(-50%,-50%) rotate(90deg); }
+#screenSizePage .add-control-icon.native-dpad-preview .down::before { top:67%; transform:translate(-50%,-50%) rotate(180deg); }
+#screenSizePage .add-control-icon.native-dpad-preview .left::before { left:33%; transform:translate(-50%,-50%) rotate(-90deg); }
 #screenSizePage .add-control-icon.native-start-select-preview {
   width: 72px !important;
   height: 30px !important;
@@ -434,10 +462,11 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
 }
 #screenSizePage .add-control-icon.native-start-select-preview i {
   width: 30px !important;
-  height: 14px !important;
-  border: 1.2px solid var(--native-controller-pill-border) !important;
+  height: 13px !important;
+  border: 1px solid var(--native-controller-pill-border) !important;
   border-radius: 999px !important;
   background: var(--native-controller-pill-solid) !important;
+  box-shadow: 0 1.5px 0 #8f959c !important;
 }
 #screenSizePage .add-control-icon.duo {
   background: transparent !important;
@@ -445,11 +474,11 @@ body[data-resolved-mode="light"] #screenSizePage .extra-control-face {
   box-shadow: none !important;
 }
 #screenSizePage .add-control-icon.duo > span {
-  border: 1.5px solid var(--native-controller-circle-border) !important;
+  border: 1px solid var(--native-controller-circle-border) !important;
   border-radius: 50% !important;
   background: var(--native-controller-solid) !important;
-  box-shadow: none !important;
-  color: #fff !important;
+  box-shadow: var(--native-controller-depth) !important;
+  color: var(--native-controller-glyph) !important;
   font-family: sans-serif !important;
   font-weight: 700 !important;
 }

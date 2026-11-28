@@ -1734,8 +1734,8 @@ body[data-translucent="true"] .selection-modal .myboy-dialog-card:not(.import-sa
   height:150px !important;
 }
 #screenSizePage .preview-dpad .dpad{
-  width:44px !important;
-  height:44px !important;
+  width:60px !important;
+  height:60px !important;
 }
 #screenSizePage .preview-dpad .up{
   left:53px !important;

@@ -90,8 +90,10 @@ test('does not double-apply mGBA frameskip in Kotlin presentation', () => {
 });
 
 
-test('frameskip UI explains that zero is the smooth setting', () => {
+test('frameskip is retired: no setting, and the core always renders every frame', () => {
   const html = read('app/src/main/assets/retra/index.html');
-  assert.match(html, /<strong>Frameskip<\/strong>/);
-  assert.match(html, /0 = smoothest \(~60 FPS\); 1 = ~30 FPS/);
+  const settings = read('app/src/main/java/com/retra/emulator/SettingsController.kt');
+  assert.doesNotMatch(html, /Frameskip|frameSkipRange/);
+  assert.match(settings, /const val FRAME_SKIP = 0/);
+  assert.match(settings, /val frameSkip = RetiredSettings\.FRAME_SKIP/);
 });

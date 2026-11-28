@@ -34,11 +34,13 @@ test('compact-grid ROM titles are capped at two lines for dense items-per-row la
   assert.match(uiCss, /data-items-per-row="6"/);
 });
 
-test('Settings exposes Language directly below Fonts with English, Vietnamese and Indonesian', () => {
-  const fontsPos = html.indexOf('data-setting="Fonts"');
+test('Settings exposes Language under General (font moved into Appearance) with English, Vietnamese and Indonesian', () => {
+  const appearancePos = html.indexOf('data-setting="Appearance"');
   const languagePos = html.indexOf('data-setting="Language"');
   const aboutPos = html.indexOf('data-setting="About"');
-  assert.ok(fontsPos >= 0 && languagePos > fontsPos && aboutPos > languagePos);
+  assert.ok(appearancePos >= 0 && languagePos > appearancePos && aboutPos > languagePos);
+  assert.equal(html.indexOf('data-setting="Fonts"'), -1);
+  assert.match(html, /data-open-page=\"fontsSettingsPage\" id=\"interfaceFontBtn\"/);
   assert.match(html, /id="languageSettingsPage"/);
   assert.match(html, /data-language-code="en"/);
   assert.match(html, /data-language-code="vi"/);

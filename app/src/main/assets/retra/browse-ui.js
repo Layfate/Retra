@@ -265,6 +265,10 @@
       snapshot = await request(action, args);
       loaded = true;
       renderAll();
+      if (snapshot.retired?.length) {
+        showToast(`${snapshot.retired.join(', ')} is now one extension per website. Install the sites you want from Extensions.`, 'info', 7000);
+        selectTab('extensions');
+      }
       $('browseStatus').textContent = snapshot.errors?.length ? snapshot.errors.join('\n') : '';
     } catch (error) {
       if (!loaded) $('browseStatus').textContent = error.message;
@@ -991,6 +995,9 @@
   });
   $('browseFilterBtn').addEventListener('click', event => { event.stopPropagation(); updateSourceSheet(); setSourceSheetTab('filter'); openSheet($('browseFilterSheet')); });
   $('browseMoreBtn').addEventListener('click', event => { event.stopPropagation(); $('browseOverflowMenu').classList.toggle('open'); });
+  function repositoriesStale(current, now = Date.now()){
+    return (current.repositories || []).some(repo => now - (Number(repo.checkedAt) || 0) > 6 * 3600 * 1000);
+  }
   $('browseRefresh').addEventListener('click', () => {
     $('browseOverflowMenu').classList.remove('open');
     run(async () => {
@@ -1020,7 +1027,12 @@
       closeRepositoryModal(); showToast('Repository added');
     }, $('saveRepositoryBtn'));
   });
-  document.querySelector('.nav-item[data-page="browsePage"]').addEventListener('click', () => run(() => state()));
+  document.querySelector('.nav-item[data-page="browsePage"]').addEventListener('click', () => run(async () => {
+    await state();
+    // Check repositories in the background when they were last checked a while ago, so new
+    // extensions and updates show up without tapping Refresh.
+    if (repositoriesStale(snapshot)) { try { await state('refresh'); } catch (_) { /* Offline: keep the stored list. */ } }
+  }));
   $('catalogSearchButton').addEventListener('click', () => {
     const form = $('catalogSearchForm');
     const open = !form.classList.contains('open');

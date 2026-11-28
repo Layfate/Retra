@@ -49,8 +49,8 @@ test('Backup Now uploads an immutable validated .retra snapshot and preserves ol
   assert.match(main, /fun backupToGoogleDrive\(\)/);
   assert.match(cloud, /backupRepository\.create\(file, BackupRepository\.Selection\(\)\)/);
   assert.match(cloud, /backupRepository\.validate\(file\)/);
-  assert.match(drive, /uploadType=multipart/);
-  assert.match(drive, /open\(\"POST\", url, token\)/);
+  assert.match(drive, /uploadType=resumable/);
+  assert.match(drive, /open\(\"POST\", \"\$DRIVE_UPLOAD\/files\?uploadType=resumable/);
   assert.doesNotMatch(drive, /X-HTTP-Method-Override|method == "PATCH"|existingId/);
   assert.match(drive, /Protect every prior good backup/);
   assert.match(drive, /createdId\?\.let[\s\S]*deleteFile/);

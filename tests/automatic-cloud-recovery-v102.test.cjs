@@ -39,7 +39,9 @@ test('downloaded cloud archive is validated and restored through portable backup
 });
 
 test('automatic cloud protection is debounced and never drops a change made during backup', () => {
-  assert.match(coordinator, /AUTO_BACKUP_DEBOUNCE_MS = 1_500L/);
+  // Saves arrive in bursts while playing; one backup covers the burst. Leaving the app backs up at once.
+  assert.match(coordinator, /AUTO_BACKUP_DEBOUNCE_MS = 30_000L/);
+  assert.match(coordinator, /if \(urgent\) 0L else AUTO_BACKUP_DEBOUNCE_MS/);
   assert.match(coordinator, /pendingAutoBackup = true/);
   assert.match(coordinator, /if \(pendingAutoBackup && isAutomaticBackupEnabled\(\)\)/);
   assert.match(coordinator, /requestAutoSync\(urgent = true\)/);

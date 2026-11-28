@@ -7,8 +7,8 @@ const root = path.resolve(__dirname, '..');
 const css = fs.readFileSync(path.join(root, 'app/src/main/assets/retra/ui-polish.css'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'app/src/main/assets/retra/index.html'), 'utf8');
 
-test('advanced RESET section label is centered and cyan', () => {
-  assert.match(html, /<div class="section-label">RESET<\/div>/);
+test('advanced settings group the reset action under its own section label', () => {
+  assert.match(html, /<div class="settings-section-label">Reset<\/div>\n<div class="detail-list settings-card">\n<button class="detail-row tappable danger-row" data-action="Reset advanced settings">/);
   assert.match(css, /\.section-label\s*\{[\s\S]*?color:#78e8ee;[\s\S]*?text-align:center;[\s\S]*?\}/);
 });
 

@@ -11,6 +11,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.HapticFeedbackConstants
 import android.view.View
+import kotlin.math.roundToInt
 
 /**
  * Owns all on-screen controller feedback.
@@ -20,12 +21,17 @@ import android.view.View
  * prevents audio/haptic policy from leaking into pointer ownership and lets
  * rapid multi-touch be rate-limited consistently in one place.
  *
- * Haptics drive the vibrator directly with one short, light pulse. The view
- * haptic constants used before (CLOCK_TICK / SEGMENT_FREQUENT_TICK) are the
- * faintest effects Android has: many phones (Xiaomi/HyperOS among them) play
- * them too weakly to feel or not at all, and they are muted whenever the
- * system "Touch feedback" setting is off. Retra's own Controller haptics
- * switch decides instead.
+ * Haptics belong to the D-pad only: a tick when a direction is first pressed
+ * and one each time the thumb slides into another direction, so direction
+ * changes can be felt without looking. Buttons (A/B, L/R, Start/Select, menu
+ * and extra actions) only click.
+ *
+ * Ticks drive the vibrator directly with one short pulse whose strength the
+ * player sets. The view haptic constants (CLOCK_TICK / SEGMENT_FREQUENT_TICK)
+ * are the faintest effects Android has: many phones (Xiaomi/HyperOS among
+ * them) play them too weakly to feel or not at all, and they are muted whenever
+ * the system "Touch feedback" setting is off. Retra's own Vibration switch
+ * decides instead.
  *
  * The click plays from a bundled sample on the game audio stream (media
  * volume). The system key-click it replaces is silent when the phone's
@@ -35,7 +41,9 @@ import android.view.View
 internal class ControllerFeedbackManager(
     context: Context,
     private val soundEnabled: () -> Boolean,
-    private val hapticsEnabled: () -> Boolean
+    private val hapticsEnabled: () -> Boolean,
+    /** Vibration strength, 0..100 (see [HAPTIC_STRENGTH_DEFAULT]). */
+    private val hapticStrength: () -> Int
 ) {
     private val appContext = context.applicationContext
 
@@ -47,11 +55,23 @@ internal class ControllerFeedbackManager(
             appContext.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
         }
     }.getOrNull()?.takeIf { it.hasVibrator() }
+    private val amplitudeControl = vibrator?.hasAmplitudeControl() == true
 
-    /** One short pulse at a fixed, light strength: a crisp tick on every motor. */
-    private val tickEffect: VibrationEffect? = vibrator?.let {
-        val amplitude = if (it.hasAmplitudeControl()) TICK_AMPLITUDE else VibrationEffect.DEFAULT_AMPLITUDE
-        runCatching { VibrationEffect.createOneShot(TICK_MS, amplitude) }.getOrNull()
+    // The tick is built once per strength and reused, so a direction change
+    // only costs the vibrate() call itself.
+    private var cachedStrength = -1
+    private var cachedTick: VibrationEffect? = null
+
+    private fun tickEffect(requestedStrength: Int): VibrationEffect? {
+        val strength = requestedStrength.coerceIn(HAPTIC_STRENGTH_MIN, HAPTIC_STRENGTH_MAX)
+        if (strength != cachedStrength) {
+            cachedStrength = strength
+            val amplitude = if (amplitudeControl) tickAmplitude(strength) else VibrationEffect.DEFAULT_AMPLITUDE
+            cachedTick = runCatching {
+                VibrationEffect.createOneShot(tickDurationMs(strength, amplitudeControl), amplitude)
+            }.getOrNull()
+        }
+        return cachedTick
     }
 
     // Game/media usage: controller haptics follow Retra's switch, not the
@@ -74,41 +94,51 @@ internal class ControllerFeedbackManager(
     }.getOrDefault(0)
 
     private var lastSoundAtMs = 0L
-    private var lastHapticAtMs = 0L
     private var lastDpadHapticAtMs = 0L
+    private var lastPreviewHapticAtMs = 0L
 
-    /** One light, consistent profile for every controller button. */
-    fun perform(view: View) {
-        val now = SystemClock.uptimeMillis()
-
-        if (hapticsEnabled() && now - lastHapticAtMs >= HAPTIC_GAP_MS) {
-            lastHapticAtMs = now
-            tick(view)
-        }
-        click(now)
+    /** Buttons: the click sound only. Vibration is reserved for the D-pad. */
+    fun perform(@Suppress("UNUSED_PARAMETER") view: View) {
+        click(SystemClock.uptimeMillis())
     }
 
     /**
-     * D-pad feedback: one light tick when a direction is first pressed and one
-     * per change of direction (for example Right -> Up-Right -> Up). Nothing
-     * repeats while a direction is held, and releasing is silent.
+     * D-pad feedback: one tick when a direction is first pressed and one per
+     * change of direction while the thumb stays down (for example Right ->
+     * Up-Right -> Up). Nothing repeats while a direction is held, and
+     * releasing is silent.
      *
-     * The D-pad keeps its own rate limit so a tick for A/B never swallows a
-     * direction change, and a fast thumb roll through a diagonal produces a
-     * few crisp ticks instead of a buzz. Sound plays only on the first press.
+     * The caller reports each mask change once (held MOVE events return before
+     * reaching here), and [DPAD_HAPTIC_GAP_MS] turns a fast thumb roll through
+     * a diagonal into a few crisp ticks instead of a buzz.
+     *
+     * Sound and vibration are one event: both pass the same gate, so every
+     * tick you feel is a click you hear and vice versa. The click is queued
+     * first because the audio path has more output latency than the motor,
+     * which lands the two together instead of buzz-then-click.
      */
     fun performDpad(view: View, previousMask: Int, nextMask: Int) {
         if (nextMask == 0 || nextMask == previousMask) return
         val now = SystemClock.uptimeMillis()
-        if (hapticsEnabled() && dpadTickDue(previousMask, nextMask, now, lastDpadHapticAtMs)) {
-            lastDpadHapticAtMs = now
-            tick(view)
-        }
-        if (previousMask == 0) click(now)
+        if (!dpadTickDue(previousMask, nextMask, now, lastDpadHapticAtMs)) return
+        lastDpadHapticAtMs = now
+        click(now, ignoreGap = true)
+        if (hapticsEnabled()) tick(view, hapticStrength())
     }
 
-    private fun tick(view: View) {
-        val effect = tickEffect
+    /**
+     * A sample D-pad tick at [strength] while the strength slider moves, so the
+     * setting can be felt before it is saved. Call on the main thread.
+     */
+    fun previewHaptic(view: View, strength: Int) {
+        val now = SystemClock.uptimeMillis()
+        if (!hapticsEnabled() || now - lastPreviewHapticAtMs < PREVIEW_GAP_MS) return
+        lastPreviewHapticAtMs = now
+        tick(view, strength)
+    }
+
+    private fun tick(view: View, strength: Int) {
+        val effect = tickEffect(strength)
         val motor = vibrator
         if (motor != null && effect != null) {
             val played = runCatching {
@@ -130,8 +160,9 @@ internal class ControllerFeedbackManager(
         runCatching { view.performHapticFeedback(feedback) }
     }
 
-    private fun click(now: Long) {
-        if (!soundEnabled() || !clickLoaded || now - lastSoundAtMs < SOUND_GAP_MS) return
+    private fun click(now: Long, ignoreGap: Boolean = false) {
+        if (!soundEnabled() || !clickLoaded) return
+        if (!ignoreGap && now - lastSoundAtMs < SOUND_GAP_MS) return
         lastSoundAtMs = now
         runCatching { soundPool.play(clickSoundId, CLICK_VOLUME, CLICK_VOLUME, 1, 0, 1f) }
     }
@@ -145,12 +176,31 @@ internal class ControllerFeedbackManager(
     }
 
     companion object {
-        private const val HAPTIC_GAP_MS = 26L
         internal const val DPAD_HAPTIC_GAP_MS = 40L
+        private const val PREVIEW_GAP_MS = 110L
 
-        /** Pulse length and strength (of 255): short and light, but felt on LRA and ERM motors. */
-        internal const val TICK_MS = 14L
-        internal const val TICK_AMPLITUDE = 140
+        /** Vibration strength setting range and default (percent). */
+        internal const val HAPTIC_STRENGTH_MIN = 10
+        internal const val HAPTIC_STRENGTH_MAX = 100
+        internal const val HAPTIC_STRENGTH_DEFAULT = 55
+
+        /** Amplitude (of 255) for a strength: 70 at 10%, the full motor at 100%. */
+        internal fun tickAmplitude(strength: Int): Int {
+            val s = strength.coerceIn(HAPTIC_STRENGTH_MIN, HAPTIC_STRENGTH_MAX)
+            val t = (s - HAPTIC_STRENGTH_MIN) / (HAPTIC_STRENGTH_MAX - HAPTIC_STRENGTH_MIN).toFloat()
+            return (70 + t * (255 - 70)).roundToInt().coerceIn(1, 255)
+        }
+
+        /**
+         * Pulse length. With amplitude control the tick stays short and crisp
+         * (12-20 ms) and strength mostly comes from amplitude. Motors without it
+         * only run at full power, so length is the strength: 8-22 ms.
+         */
+        internal fun tickDurationMs(strength: Int, amplitudeControl: Boolean): Long {
+            val s = strength.coerceIn(HAPTIC_STRENGTH_MIN, HAPTIC_STRENGTH_MAX)
+            val t = (s - HAPTIC_STRENGTH_MIN) / (HAPTIC_STRENGTH_MAX - HAPTIC_STRENGTH_MIN).toFloat()
+            return if (amplitudeControl) (12 + t * 8).roundToInt().toLong() else (8 + t * 14).roundToInt().toLong()
+        }
 
         /**
          * Whether a D-pad mask change earns a haptic tick: a press or a change

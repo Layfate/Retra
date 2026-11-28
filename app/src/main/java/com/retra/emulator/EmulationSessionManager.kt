@@ -6,10 +6,8 @@ import android.view.View
 import java.io.File
 import java.util.Locale
 import com.retra.emulator.MainActivity.Companion.AUTO_SAVE_LOAD_PREF
-import com.retra.emulator.MainActivity.Companion.CPU_CORE_PREF
 import com.retra.emulator.MainActivity.Companion.ENABLE_CHEATS_PREF
 import com.retra.emulator.MainActivity.Companion.FRAME_TIME_NS
-import com.retra.emulator.MainActivity.Companion.FRAME_SKIP_PREF
 import com.retra.emulator.MainActivity.Companion.PLATFORM_GB
 import com.retra.emulator.MainActivity.Companion.PLATFORM_GBA
 
@@ -195,8 +193,9 @@ internal fun MainActivity.startEmulation() {
     }
     emulatorRunning = true
     emulatorThread = Thread {
-        val cpuProfile = prefs.getString(CPU_CORE_PREF, "Automatic")
-        val userFrameSkip = prefs.getInt(FRAME_SKIP_PREF, 0).coerceIn(0, 10)
+        // CPU profile and frameskip are no longer user settings (see RetiredSettings).
+        val cpuProfile = RetiredSettings.CPU_PROFILE
+        val userFrameSkip = RetiredSettings.FRAME_SKIP
         val framePacer = EmulationFramePacer()
         val turboGovernor = TurboThroughputGovernor(FRAME_TIME_NS)
         val turboSlicePlanner = TurboSlicePlanner()
@@ -322,11 +321,7 @@ internal fun MainActivity.startEmulation() {
         }
     }.apply {
         name = "Retra-mGBA"
-        priority = when (prefs.getString(CPU_CORE_PREF, "Automatic")) {
-            "Compatibility" -> Thread.NORM_PRIORITY
-            "Performance" -> Thread.MAX_PRIORITY
-            else -> Thread.MAX_PRIORITY - 1
-        }
+        priority = Thread.MAX_PRIORITY - 1
         start()
     }
 

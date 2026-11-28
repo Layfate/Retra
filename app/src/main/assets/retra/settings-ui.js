@@ -4,6 +4,8 @@ const settingsPageMap = {
   Audio: 'audioSettingsPage',
   Layouts: 'layoutsSettingsPage',
   Misc: 'miscSettingsPage',
+  Gameplay: 'miscSettingsPage',
+  Library: 'librarySettingsPage',
   Advanced: 'advancedSettingsPage',
   Fonts: 'fontsSettingsPage',
   Language: 'languageSettingsPage',
@@ -85,9 +87,11 @@ function applyUiFont(fontName, { persist = false, notify = false } = {}){
     option.classList.toggle('active', active);
     option.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
+  const fontSummary = document.getElementById('interfaceFontSummary');
+  if (fontSummary) fontSummary.textContent = selected;
 
   if (settingsVersionLabel) {
-    settingsVersionLabel.textContent = 'Retra v1.0.4';
+    settingsVersionLabel.textContent = 'Retra v1.0.5';
   }
 
   if (persist) { localStorage.setItem(fontStorageKey, selected); setNativeUiPreference('font', selected); }
@@ -115,14 +119,117 @@ const appUpdateMessage = document.getElementById('appUpdateMessage');
 const appUpdateNotes = document.getElementById('appUpdateNotes');
 const appUpdateLaterBtn = document.getElementById('appUpdateLaterBtn');
 const appUpdateInstallBtn = document.getElementById('appUpdateInstallBtn');
+const appUpdateVersion = document.getElementById('appUpdateVersion');
+const appUpdateScroll = document.getElementById('appUpdateScroll');
 let pendingOfficialUpdateUrl = '';
+let automaticUpdateCheckFailed = false;
+
+/** Emoji for the usual release-note headings, like Mihon's "✨ New Features". */
+function releaseHeadingEmoji(text){
+  if (/\p{Extended_Pictographic}/u.test(text)) return '';
+  const t = text.toLowerCase();
+  if (/new|feature|added/.test(t)) return '✨';
+  if (/fix|bug/.test(t)) return '🧩';
+  if (/improve|faster|performance|polish/.test(t)) return '🚀';
+  if (/change|update/.test(t)) return '⚙️';
+  if (/note|known|issue/.test(t)) return '📝';
+  return '';
+}
+
+/** Inline Markdown: **bold**, `code`, [links](https://...) and @mentions. Built with DOM nodes, never innerHTML. */
+function appendReleaseInline(parent, text){
+  const pattern = /\*\*([^*]+)\*\*|`([^`]+)`|\[([^\]]+)\]\((https:\/\/[^)\s]+)\)|(https:\/\/[^\s)]+)|(^|[\s(,])@([A-Za-z0-9-]{1,39})\b/g;
+  let last = 0;
+  for (const match of text.matchAll(pattern)) {
+    const start = match.index + (match[6] ? match[6].length : 0);
+    if (start > last) parent.append(text.slice(last, start));
+    if (match[1]) { const b = document.createElement('strong'); b.textContent = match[1]; parent.append(b); }
+    else if (match[2]) { const c = document.createElement('code'); c.textContent = match[2]; parent.append(c); }
+    else {
+      const a = document.createElement('a');
+      const href = match[4] || match[5] || `https://github.com/${match[7]}`;
+      a.href = href;
+      a.dataset.updateLink = '';
+      a.textContent = match[3] || (match[7] ? `@${match[7]}` : href);
+      parent.append(a);
+    }
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) parent.append(text.slice(last));
+}
+
+/**
+ * Renders a GitHub release body (Markdown) as headings, paragraphs and bullet lists.
+ * The "Install" section and the version footer are skipped: the Download button covers them.
+ */
+function renderReleaseNotes(container, markdown){
+  container.replaceChildren();
+  let list = null;
+  let skipping = false;
+  const lines = String(markdown || '').replace(/\r\n?/g, '\n').split('\n');
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) {
+      list = null;
+      const title = heading[2].trim();
+      skipping = heading[1].length === 1 || /^(install|installation|download)s?$/i.test(title.replace(/\p{Extended_Pictographic}/gu, '').trim());
+      if (skipping) continue;
+      const h = document.createElement('h2');
+      h.className = 'app-update-section';
+      const emoji = releaseHeadingEmoji(title);
+      if (emoji) { const e = document.createElement('span'); e.className = 'app-update-emoji'; e.textContent = emoji; e.setAttribute('aria-hidden', 'true'); h.append(e); }
+      appendReleaseInline(h, title);
+      container.append(h);
+      continue;
+    }
+    if (skipping || /^version:/i.test(line.trim())) continue;
+    const bullet = line.match(/^\s*[-*+]\s+(.+)$/);
+    if (bullet) {
+      if (!list) { list = document.createElement('ul'); container.append(list); }
+      const li = document.createElement('li');
+      appendReleaseInline(li, bullet[1]);
+      list.append(li);
+      continue;
+    }
+    if (!line.trim()) { list = null; continue; }
+    if (list && /^\s{2,}\S/.test(raw)) { list.lastElementChild?.append(' '); appendReleaseInline(list.lastElementChild, line.trim()); continue; }
+    list = null;
+    const p = document.createElement('p');
+    appendReleaseInline(p, line.trim());
+    container.append(p);
+  }
+  if (!container.children.length) {
+    const p = document.createElement('p');
+    p.textContent = 'See the GitHub release page for what changed.';
+    container.append(p);
+  }
+}
+
+function openExternalUpdateLink(url){
+  let opened = false;
+  try {
+    if (/^https:\/\/(www\.)?github\.com\//i.test(url) && window.AndroidBridge && typeof window.AndroidBridge.openUpdateUrl === 'function') {
+      opened = Boolean(window.AndroidBridge.openUpdateUrl(url));
+    }
+  } catch (_) {}
+  // WebUiController sends other HTTPS links to the system browser instead of loading them in Retra.
+  if (!opened) { try { window.location.href = url; opened = true; } catch (_) {} }
+  return opened;
+}
+appUpdateModal?.addEventListener('click', event => {
+  const link = event.target.closest?.('a[data-update-link]');
+  if (!link) return;
+  event.preventDefault();
+  openExternalUpdateLink(link.href);
+});
 
 function setUpdateStatus(text){
   updateStatusLabels.forEach(label => { label.textContent = text; });
 }
 
 function hydrateRetraVersion(){
-  let versionName = '1.0.4';
+  let versionName = '1.0.5';
   try {
     if (window.AndroidBridge && typeof window.AndroidBridge.getAppVersionInfo === 'function') {
       const info = JSON.parse(String(window.AndroidBridge.getAppVersionInfo() || '{}'));
@@ -137,21 +244,20 @@ function hydrateRetraVersion(){
 function closeAppUpdateModal(){
   appUpdateModal?.classList.remove('open');
   appUpdateModal?.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('app-update-open');
 }
 
 function openAppUpdateModal(result){
   const latest = String(result.latestVersionName || '').trim();
   pendingOfficialUpdateUrl = String(result.downloadUrl || result.releaseUrl || '').trim();
-  if (appUpdateTitle) appUpdateTitle.textContent = latest ? `Retra v${latest} is available` : 'A Retra update is available';
-  if (appUpdateMessage) appUpdateMessage.textContent = latest
-    ? `You are using Retra v${String(result.currentVersionName || '')}. Update to v${latest} for the latest fixes and improvements.`
-    : 'Update Retra to get the latest fixes and improvements.';
-  if (appUpdateNotes) {
-    const notes = String(result.notes || '').trim();
-    appUpdateNotes.textContent = notes || 'See the official GitHub release for details.';
-  }
+  const current = String(result.currentVersionName || '').trim();
+  if (appUpdateTitle) appUpdateTitle.textContent = 'New version available!';
+  if (appUpdateVersion) appUpdateVersion.textContent = latest ? `v${latest}${current ? ` • you have v${current}` : ''}` : '';
+  if (appUpdateNotes) renderReleaseNotes(appUpdateNotes, result.notes);
+  if (appUpdateScroll) appUpdateScroll.scrollTop = 0;
   appUpdateModal?.classList.add('open');
   appUpdateModal?.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('app-update-open');
 }
 
 function requestRetraUpdateCheck(manual = true){
@@ -173,6 +279,8 @@ window.retraOnUpdateCheck = function(payloadJson, manual){
   let result = {};
   try { result = JSON.parse(String(payloadJson || '{}')); } catch (_) {}
   const status = String(result.status || 'error');
+  // An automatic check that failed (usually offline at launch) runs again once the phone is online.
+  if (!manual) automaticUpdateCheckFailed = status === 'error';
 
   if (status === 'checking') {
     setUpdateStatus('Checking…');
@@ -200,25 +308,29 @@ window.retraOnUpdateCheck = function(payloadJson, manual){
 
 checkUpdateButtons.forEach(button => button.addEventListener('click', () => requestRetraUpdateCheck(true)));
 appUpdateLaterBtn?.addEventListener('click', closeAppUpdateModal);
-appUpdateModal?.addEventListener('click', event => { if (event.target === appUpdateModal) closeAppUpdateModal(); });
+function retryAutomaticUpdateCheck(){
+  if (!automaticUpdateCheckFailed || navigator.onLine === false) return;
+  automaticUpdateCheckFailed = false;
+  requestRetraUpdateCheck(false);
+}
+// Wi-Fi or mobile data came back, or Retra returned to the foreground.
+window.addEventListener('online', () => window.setTimeout(retryAutomaticUpdateCheck, 1200));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') retryAutomaticUpdateCheck(); });
+// Android back closes the update page first ("Not now").
+window.addEventListener('load', () => {
+  const previousBack = window.retraHandleAndroidBack;
+  window.retraHandleAndroidBack = function(){
+    if (appUpdateModal?.classList.contains('open')) { closeAppUpdateModal(); return true; }
+    return typeof previousBack === 'function' ? previousBack() : false;
+  };
+});
 appUpdateInstallBtn?.addEventListener('click', () => {
   const url = pendingOfficialUpdateUrl;
   if (!url) {
     showToast('Update download is unavailable', 'error');
     return;
   }
-  let opened = false;
-  try {
-    if (window.AndroidBridge && typeof window.AndroidBridge.openUpdateUrl === 'function') {
-      opened = Boolean(window.AndroidBridge.openUpdateUrl(url));
-    }
-  } catch (_) {}
-  if (!opened) {
-    // Browser/debug fallback; Android WebUiController routes external HTTPS URLs
-    // to the system browser rather than loading them inside Retra.
-    try { window.location.href = url; opened = true; } catch (_) {}
-  }
-  if (opened) closeAppUpdateModal();
+  if (openExternalUpdateLink(url)) closeAppUpdateModal();
 });
 
 hydrateRetraVersion();
@@ -618,11 +730,8 @@ document.querySelectorAll('[data-action]').forEach(btn => {
           setTimeout(() => { try { refreshNativeSettings(); } catch (_) {} }, 80);
         }
       } catch (_) {}
-      selectedCpuCore = 'Automatic';
       selectedCartridgeSaveType = 'Automatic';
-      localStorage.setItem('retraCpuCore', selectedCpuCore);
       localStorage.setItem('retraCartridgeSaveType', selectedCartridgeSaveType);
-      applyCpuCore();
       applyCartridgeSaveType();
       showToast('Advanced settings restored');
       return;
@@ -952,87 +1061,86 @@ let selectedButtonsOpacity = Number.parseInt(localStorage.getItem(buttonsOpacity
 if (!Number.isFinite(selectedButtonsOpacity)) selectedButtonsOpacity = 70;
 selectedButtonsOpacity = Math.min(100, Math.max(25, selectedButtonsOpacity));
 
-function applyButtonsOpacity(value, persistLocal = false){
-  const opacity = Math.min(100, Math.max(25, Number.parseInt(value, 10) || 70));
+/** Paints a slider's filled track. Only this element's style changes, so it is cheap on every frame. */
+function paintRangeFill(range){
+  if (!range) return;
+  const min = Number(range.min) || 0;
+  const max = Number(range.max) || 100;
+  const pct = max > min ? ((Number(range.value) - min) / (max - min)) * 100 : 0;
+  range.style.setProperty('--fill', `${Math.min(100, Math.max(0, pct)).toFixed(2)}%`);
+}
+
+/**
+ * Smooth slider: the thumb moves continuously (step="any") and the fill follows it in the same
+ * frame. The label, previews and native bridge calls run at most once per frame, with the value
+ * rounded; releasing the slider snaps to the whole number that is saved.
+ */
+function bindSmoothRange(range, { preview, commit }){
+  if (!range) return;
+  let frame = 0;
+  range.addEventListener('input', () => {
+    paintRangeFill(range);
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      preview(Math.round(Number(range.value)));
+    });
+  });
+  range.addEventListener('change', () => {
+    if (frame) { cancelAnimationFrame(frame); frame = 0; }
+    const value = Math.round(Number(range.value));
+    range.value = String(value);
+    paintRangeFill(range);
+    commit(value);
+  });
+  paintRangeFill(range);
+}
+
+const screenSizePageEl = document.getElementById('screenSizePage');
+
+function applyButtonsOpacity(value, persistLocal = false, fromSlider = false){
+  const opacity = Math.min(100, Math.max(25, Math.round(Number(value)) || 70));
   selectedButtonsOpacity = opacity;
-  if (buttonsOpacityRange) buttonsOpacityRange.value = String(opacity);
+  if (buttonsOpacityRange && !fromSlider) {
+    buttonsOpacityRange.value = String(opacity);
+    paintRangeFill(buttonsOpacityRange);
+  }
   if (buttonsOpacityValue) buttonsOpacityValue.value = `${opacity}%`;
 
   // Preview the exact setting in the Screen Editor without fading editor-only
   // controls such as Back, Add Controller, resize handles, or selection UI.
-  document.documentElement.style.setProperty('--retra-buttons-opacity', String(opacity / 100));
+  // Set on the editor page only: a :root custom property restyles the whole app
+  // on every slider frame.
+  (screenSizePageEl || document.documentElement).style.setProperty('--retra-buttons-opacity', String(opacity / 100));
   if (persistLocal) localStorage.setItem(buttonsOpacityStorageKey, String(opacity));
 }
 
-buttonsOpacityRange?.addEventListener('input', () => {
-  applyButtonsOpacity(buttonsOpacityRange.value, false);
-  buttonsOpacityDispatch.input(buttonsOpacityRange.value);
-});
-buttonsOpacityRange?.addEventListener('change', () => {
-  applyButtonsOpacity(buttonsOpacityRange.value, true);
-  buttonsOpacityDispatch.commit(buttonsOpacityRange.value);
+bindSmoothRange(buttonsOpacityRange, {
+  preview: value => {
+    applyButtonsOpacity(value, false, true);
+    buttonsOpacityDispatch.input(value);
+  },
+  commit: value => {
+    applyButtonsOpacity(value, true, true);
+    buttonsOpacityDispatch.commit(value);
+  }
 });
 
 applyButtonsOpacity(selectedButtonsOpacity, false);
 
-const frameSkipRange = document.getElementById('frameSkipRange');
-const frameSkipValue = document.getElementById('frameSkipValue');
-const frameSkipDispatch = createNativeRangeDispatcher('frameSkip', 72);
-if (frameSkipRange && frameSkipValue){
-  frameSkipRange.addEventListener('input', () => {
-    frameSkipValue.value = frameSkipRange.value;
-    frameSkipDispatch.input(frameSkipRange.value);
-  });
-  frameSkipRange.addEventListener('change', () => frameSkipDispatch.commit(frameSkipRange.value));
-}
-
 const volumeRange = document.getElementById('volumeRange');
 const volumeValue = document.getElementById('volumeValue');
 const volumeDispatch = createNativeRangeDispatcher('volume', 48);
-if (volumeRange && volumeValue){
-  volumeRange.addEventListener('input', () => {
-    volumeValue.value = `${volumeRange.value}%`;
-    volumeDispatch.input(volumeRange.value);
-  });
-  volumeRange.addEventListener('change', () => volumeDispatch.commit(volumeRange.value));
-}
-
-const soundFrequencyBtn = document.getElementById('soundFrequencyBtn');
-const frequencyOptions = document.getElementById('frequencyOptions');
-const soundFrequencyLabel = document.getElementById('soundFrequencyLabel');
-const frequencyOptionButtons = [...document.querySelectorAll('.frequency-option')];
-
-let selectedSoundFrequency = localStorage.getItem('retraSoundFrequency') || '44100';
-
-function applySoundFrequency(){
-  soundFrequencyLabel.textContent = `${selectedSoundFrequency} Hz`;
-
-  frequencyOptionButtons.forEach(button => {
-    button.classList.toggle(
-      'active',
-      button.dataset.frequency === selectedSoundFrequency
-    );
-  });
-}
-
-soundFrequencyBtn?.addEventListener('click', () => {
-  const open = frequencyOptions.classList.toggle('open');
-  soundFrequencyBtn.classList.toggle('open', open);
+bindSmoothRange(volumeRange, {
+  preview: value => {
+    if (volumeValue) volumeValue.value = `${value}%`;
+    volumeDispatch.input(value);
+  },
+  commit: value => {
+    if (volumeValue) volumeValue.value = `${value}%`;
+    volumeDispatch.commit(value);
+  }
 });
-
-frequencyOptionButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    selectedSoundFrequency = button.dataset.frequency;
-    localStorage.setItem('retraSoundFrequency', selectedSoundFrequency);
-    try { window.AndroidBridge?.setSetting?.('soundFrequency', selectedSoundFrequency); } catch (_) {}
-    applySoundFrequency();
-    frequencyOptions.classList.remove('open');
-    soundFrequencyBtn?.classList.remove('open');
-    showToast(`Sound frequency: ${selectedSoundFrequency} Hz`);
-  });
-});
-
-applySoundFrequency();
 
 applyFastForwardSpeed();
 
@@ -1041,12 +1149,6 @@ const fastForwardButtonLabel = document.getElementById('fastForwardButtonLabel')
 const fastForwardButtonModal = document.getElementById('fastForwardButtonModal');
 const closeFastForwardButtonModal = document.getElementById('closeFastForwardButtonModal');
 const fastForwardButtonOptions = [...document.querySelectorAll('[data-fastforward-button-value]')];
-
-const cpuCoreBtn = document.getElementById('cpuCoreBtn');
-const cpuCoreLabel = document.getElementById('cpuCoreLabel');
-const cpuCoreModal = document.getElementById('cpuCoreModal');
-const closeCpuCoreModal = document.getElementById('closeCpuCoreModal');
-const cpuCoreOptions = [...document.querySelectorAll('[data-cpu-core-value]')];
 
 const cartridgeSaveTypeBtn = document.getElementById('cartridgeSaveTypeBtn');
 const cartridgeSaveTypeLabel = document.getElementById('cartridgeSaveTypeLabel');
@@ -1060,6 +1162,8 @@ const selectImportFolderBtn = document.getElementById('selectImportFolderBtn');
 const skipImportSavesBtn = document.getElementById('skipImportSavesBtn');
 const openAppFolderBtn = document.getElementById('openAppFolderBtn');
 const cloudSyncToggle = document.getElementById('cloudSyncToggle');
+const cloudWifiOnlyToggle = document.getElementById('cloudWifiOnlyToggle');
+const cloudWifiOnlyRow = document.getElementById('cloudWifiOnlyRow');
 const cloudSyncSummary = document.getElementById('cloudSyncSummary');
 const cloudBackupNowBtn = document.getElementById('cloudBackupNowBtn');
 const cloudBackupNowSummary = document.getElementById('cloudBackupNowSummary');
@@ -1068,26 +1172,43 @@ const syncSettingsSummary = document.getElementById('syncSettingsSummary');
 const enableCheatsToggle = document.getElementById('enableCheatsToggle');
 const controllerSoundToggle = document.getElementById('controllerSoundToggle');
 const controllerHapticsToggle = document.getElementById('controllerHapticsToggle');
+const controllerHapticStrengthRange = document.getElementById('controllerHapticStrengthRange');
+const controllerHapticStrengthValue = document.getElementById('controllerHapticStrengthValue');
+const controllerHapticStrengthRow = document.getElementById('controllerHapticStrengthRow');
+const controllerHapticStrengthDispatch = createNativeRangeDispatcher('controllerHapticStrength', 48);
+bindSmoothRange(controllerHapticStrengthRange, {
+  preview: value => {
+    if (controllerHapticStrengthValue) controllerHapticStrengthValue.value = `${value}%`;
+    controllerHapticStrengthDispatch.input(value);
+  },
+  commit: value => {
+    if (controllerHapticStrengthValue) controllerHapticStrengthValue.value = `${value}%`;
+    controllerHapticStrengthDispatch.commit(value);
+  }
+});
+
+// The strength slider only matters while D-pad vibration is on.
+function applyControllerHapticsAvailability(){
+  const enabled = controllerHapticsToggle?.checked !== false;
+  if (controllerHapticStrengthRange) controllerHapticStrengthRange.disabled = !enabled;
+  controllerHapticStrengthRow?.classList.toggle('disabled-row', !enabled);
+}
+controllerHapticsToggle?.addEventListener('change', applyControllerHapticsAvailability);
 const romPatchingToggle = document.getElementById('romPatchingToggle');
 const automaticArtworkToggle = document.getElementById('automaticArtworkToggle');
 const artworkWifiOnlyToggle = document.getElementById('artworkWifiOnlyToggle');
 const retryArtworkBtn = document.getElementById('retryArtworkBtn');
 const autoSaveLoadToggle = document.getElementById('autoSaveLoadToggle');
 const confirmCloseResetToggle = document.getElementById('confirmCloseResetToggle');
-const fullScreenModeToggle = document.getElementById('fullScreenModeToggle');
-const immersiveModeToggle = document.getElementById('immersiveModeToggle');
+const immersiveFullscreenToggle = document.getElementById('immersiveFullscreenToggle');
+const muteFastForwardToggle = document.getElementById('muteFastForwardToggle');
 const stretchToFitToggle = document.getElementById('stretchToFitToggle');
-const hardwareRenderingToggle = document.getElementById('hardwareRenderingToggle');
 const linearFilteringToggle = document.getElementById('linearFilteringToggle');
 const enableSoundToggle = document.getElementById('enableSoundToggle');
 const biosToggle = document.getElementById('biosToggle');
 const bootBiosToggle = document.getElementById('bootBiosToggle');
 const bootBiosRow = document.getElementById('bootBiosRow');
 const biosFileSummary = document.getElementById('biosFileSummary');
-const smcCheckRange = document.getElementById('smcCheckRange');
-const smcCheckValue = document.getElementById('smcCheckValue');
-const speedHackToggle = document.getElementById('speedHackToggle');
-const mosaicEffectToggle = document.getElementById('mosaicEffectToggle');
 const colorStyleOptions = [...document.querySelectorAll('[data-color-style]')];
 const colorStyleMoreSummary = document.getElementById('colorStyleMoreSummary');
 const colorStyleStorageKey = 'retraColorStyle';
@@ -1112,7 +1233,6 @@ function applyColorStyleUi(value, { persist = false, notify = false } = {}){
 }
 
 let selectedFastForwardButtonMode = localStorage.getItem('retraFastForwardButtonMode') || 'Press to toggle';
-let selectedCpuCore = localStorage.getItem('retraCpuCore') || 'Automatic';
 let selectedCartridgeSaveType = localStorage.getItem('retraCartridgeSaveType') || 'Automatic';
 
 function setNativeSetting(key, value){
@@ -1130,6 +1250,7 @@ function applyNativeSettingsState(state){
   if (!state || typeof state !== 'object') return;
   const bool = (el, key, fallback) => { if (el) el.checked = key in state ? !!state[key] : fallback; };
   bool(cloudSyncToggle, 'cloudSync', false);
+  bool(cloudWifiOnlyToggle, 'cloudWifiOnly', false);
   bool(enableCheatsToggle, 'enableCheats', true);
   bool(controllerSoundToggle, 'controllerSound', true);
   bool(controllerHapticsToggle, 'controllerHaptics', true);
@@ -1138,16 +1259,13 @@ function applyNativeSettingsState(state){
   bool(artworkWifiOnlyToggle, 'artworkWifiOnly', false);
   bool(autoSaveLoadToggle, 'autoSaveLoad', true);
   bool(confirmCloseResetToggle, 'confirmCloseReset', true);
-  bool(fullScreenModeToggle, 'fullScreenMode', true);
-  bool(immersiveModeToggle, 'immersiveMode', true);
+  bool(immersiveFullscreenToggle, 'immersiveFullscreen', true);
+  bool(muteFastForwardToggle, 'muteFastForward', false);
   bool(stretchToFitToggle, 'stretchToFit', false);
-  bool(hardwareRenderingToggle, 'hardwareRendering', true);
   bool(linearFilteringToggle, 'linearFiltering', false);
   bool(enableSoundToggle, 'enableSound', true);
   bool(biosToggle, 'useBios', false);
   bool(bootBiosToggle, 'bootBios', false);
-  bool(speedHackToggle, 'speedOptimization', true);
-  bool(mosaicEffectToggle, 'mosaicEffect', true);
   applyColorStyleUi(state.colorStyle || selectedColorStyle);
 
   if (bootBiosToggle) bootBiosToggle.disabled = !biosToggle?.checked;
@@ -1180,33 +1298,30 @@ function applyNativeSettingsState(state){
     selectedFastForwardButtonMode = state.fastForwardButtonMode;
     applyFastForwardButtonMode();
   }
-  selectedCpuCore = state.cpuCore || selectedCpuCore;
   selectedCartridgeSaveType = state.cartridgeSaveType || selectedCartridgeSaveType;
-  applyCpuCore();
   applyCartridgeSaveType();
 
-  if (frameSkipRange && state.frameSkip != null) {
-    frameSkipRange.value = String(state.frameSkip);
-    if (frameSkipValue) frameSkipValue.value = String(state.frameSkip);
+  if (controllerHapticStrengthRange && state.controllerHapticStrength != null) {
+    controllerHapticStrengthRange.value = String(state.controllerHapticStrength);
+    paintRangeFill(controllerHapticStrengthRange);
+    if (controllerHapticStrengthValue) controllerHapticStrengthValue.value = `${state.controllerHapticStrength}%`;
   }
+  applyControllerHapticsAvailability();
+
   if (volumeRange && state.volume != null) {
     volumeRange.value = String(state.volume);
+    paintRangeFill(volumeRange);
     if (volumeValue) volumeValue.value = `${state.volume}%`;
-  }
-  if (state.soundFrequency) {
-    selectedSoundFrequency = String(state.soundFrequency);
-    applySoundFrequency();
-  }
-  if (smcCheckRange && state.smcCheck != null) {
-    smcCheckRange.value = String(state.smcCheck);
-    if (smcCheckValue) smcCheckValue.value = String(state.smcCheck);
   }
 
   const cloudConnected = !!state.cloudFolderConnected;
   const cloudAutoEnabled = !!state.cloudSync;
   const cloudAccount = String(state.cloudAccount || '').trim();
   const cloudLastBackupAt = Math.max(0, Number(state.cloudLastBackupAt) || 0);
-  const cloudLastError = String(state.cloudLastSyncError || '').trim();
+  const cloudStatus = String(state.cloudLastSyncError || '').trim();
+  // "Waiting for Wi-Fi" / "Waiting for a network connection" are normal states, not errors.
+  const cloudWaiting = /^Waiting for /.test(cloudStatus) ? cloudStatus : '';
+  const cloudLastError = cloudWaiting ? '' : cloudStatus;
   const cloudTransferActive = !!state.cloudTransferActive;
   const cloudTransferLabel = String(state.cloudTransferLabel || '').trim();
   const cloudTransferProgress = Math.max(0, Math.min(100, Number(state.cloudTransferProgress) || 0));
@@ -1217,10 +1332,16 @@ function applyNativeSettingsState(state){
     if (cloudTransferActive) cloudSyncSummary.textContent = `${cloudTransferLabel || 'Google Drive'} • ${cloudTransferProgress}%`;
     else if (!cloudConnected) cloudSyncSummary.textContent = 'Choose a Google account to back up directly to My Drive/Retra Backups';
     else if (!cloudAutoEnabled) cloudSyncSummary.textContent = `${cloudAccount} • automatic backup off`;
+    else if (cloudWaiting) cloudSyncSummary.textContent = `${cloudAccount} • ${cloudWaiting.toLowerCase()}${cloudLastBackupAt > 0 ? ` • last backup ${cloudBackupTime}` : ''}`;
     else if (cloudLastError && cloudLastBackupAt > 0) cloudSyncSummary.textContent = `${cloudAccount} • last backup ${cloudBackupTime} • needs attention`;
     else if (cloudLastError) cloudSyncSummary.textContent = `${cloudAccount} • backup needs attention`;
     else if (cloudLastBackupAt > 0) cloudSyncSummary.textContent = `${cloudAccount} • last successful backup ${cloudBackupTime}`;
-    else cloudSyncSummary.textContent = `${cloudAccount} • Drive API connected • waiting for first backup`;
+    else cloudSyncSummary.textContent = `${cloudAccount} • connected • waiting for first backup`;
+  }
+  if (cloudWifiOnlyRow) {
+    const usable = cloudConnected && cloudAutoEnabled;
+    cloudWifiOnlyRow.classList.toggle('disabled-row', !usable);
+    if (cloudWifiOnlyToggle) cloudWifiOnlyToggle.disabled = !usable;
   }
   if (cloudBackupNowSummary) {
     if (cloudTransferActive) cloudBackupNowSummary.textContent = `${cloudTransferLabel || 'Working'} • ${cloudTransferProgress}%`;
@@ -1235,7 +1356,7 @@ function applyNativeSettingsState(state){
   if (syncSettingsSummary) {
     if (!cloudConnected) syncSettingsSummary.textContent = 'Connect a Google account to manage Drive backup';
     else if (cloudLastError) syncSettingsSummary.textContent = `${cloudAccount} • ${cloudLastError}`;
-    else syncSettingsSummary.textContent = `${cloudAccount} • Backup Now, Restore, change account, or disconnect`;
+    else syncSettingsSummary.textContent = `${cloudAccount} • Backup now, restore, change account, or disconnect`;
   }
 }
 
@@ -1262,13 +1383,6 @@ function applyFastForwardButtonMode(){
   });
 }
 
-function applyCpuCore(){
-  if (cpuCoreLabel) cpuCoreLabel.textContent = selectedCpuCore;
-  cpuCoreOptions.forEach(button => {
-    button.classList.toggle('active', button.dataset.cpuCoreValue === selectedCpuCore);
-  });
-}
-
 function applyCartridgeSaveType(){
   if (cartridgeSaveTypeLabel) cartridgeSaveTypeLabel.textContent = selectedCartridgeSaveType;
   cartridgeSaveTypeOptions.forEach(button => {
@@ -1292,25 +1406,6 @@ fastForwardButtonOptions.forEach(button => {
     applyFastForwardButtonMode();
     closeSelectionModal(fastForwardButtonModal);
     showToast(`Fast-forward button: ${selectedFastForwardButtonMode}`);
-  });
-});
-
-cpuCoreBtn?.addEventListener('click', () => {
-  applyCpuCore();
-  cpuCoreModal?.classList.add('open');
-});
-closeCpuCoreModal?.addEventListener('click', () => closeSelectionModal(cpuCoreModal));
-cpuCoreModal?.addEventListener('click', event => {
-  if (event.target === cpuCoreModal) closeSelectionModal(cpuCoreModal);
-});
-cpuCoreOptions.forEach(button => {
-  button.addEventListener('click', () => {
-    selectedCpuCore = button.dataset.cpuCoreValue;
-    localStorage.setItem('retraCpuCore', selectedCpuCore);
-    setNativeSetting('cpuCore', selectedCpuCore);
-    applyCpuCore();
-    closeSelectionModal(cpuCoreModal);
-    showToast(`CPU profile: ${selectedCpuCore}`);
   });
 });
 
@@ -1365,6 +1460,7 @@ cloudSyncToggle?.addEventListener('change', () => {
     setNativeSetting('cloudSync', cloudSyncToggle.checked);
   }
 });
+cloudWifiOnlyToggle?.addEventListener('change', () => setNativeSetting('cloudWifiOnly', cloudWifiOnlyToggle.checked));
 cloudBackupNowBtn?.addEventListener('click', () => {
   if (window.AndroidBridge && typeof window.AndroidBridge.backupToGoogleDrive === 'function') {
     window.AndroidBridge.backupToGoogleDrive();
@@ -1387,14 +1483,11 @@ syncSettingsBtn?.addEventListener('click', () => {
   [artworkWifiOnlyToggle, 'artworkWifiOnly'],
   [autoSaveLoadToggle, 'autoSaveLoad'],
   [confirmCloseResetToggle, 'confirmCloseReset'],
-  [fullScreenModeToggle, 'fullScreenMode'],
-  [immersiveModeToggle, 'immersiveMode'],
+  [immersiveFullscreenToggle, 'immersiveFullscreen'],
+  [muteFastForwardToggle, 'muteFastForward'],
   [stretchToFitToggle, 'stretchToFit'],
-  [hardwareRenderingToggle, 'hardwareRendering'],
   [linearFilteringToggle, 'linearFiltering'],
-  [enableSoundToggle, 'enableSound'],
-  [speedHackToggle, 'speedOptimization'],
-  [mosaicEffectToggle, 'mosaicEffect']
+  [enableSoundToggle, 'enableSound']
 ].forEach(([el, key]) => el?.addEventListener('change', () => setNativeSetting(key, el.checked)));
 
 automaticArtworkToggle?.addEventListener('change', () => {
@@ -1429,15 +1522,8 @@ biosToggle?.addEventListener('change', () => {
   if (!biosToggle.checked) setNativeSetting('bootBios', false);
 });
 bootBiosToggle?.addEventListener('change', () => setNativeSetting('bootBios', bootBiosToggle.checked));
-const smcCheckDispatch = createNativeRangeDispatcher('smcCheck', 96);
-smcCheckRange?.addEventListener('input', () => {
-  if (smcCheckValue) smcCheckValue.value = smcCheckRange.value;
-  smcCheckDispatch.input(smcCheckRange.value);
-});
-smcCheckRange?.addEventListener('change', () => smcCheckDispatch.commit(smcCheckRange.value));
 
 applyFastForwardButtonMode();
-applyCpuCore();
 applyCartridgeSaveType();
 applyColorStyleUi(selectedColorStyle);
 refreshNativeSettings();

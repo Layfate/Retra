@@ -87,16 +87,19 @@ class BrowseController(private val activity: MainActivity) {
             "addRepository" -> repository.addRepository(args.getString("url"))
             "removeRepository" -> store.delete("repository", args.getString("url"))
             "trustRepository" -> repository.trust(args.getString("url"), args.getBoolean("trusted"))
-            "refresh" -> return snapshot().put("errors", repository.refresh()).also {
-                // Return the refreshed rows rather than the snapshot taken before the request.
-                it.put("repositories", JSONArray(store.all("repository")))
+            "refresh" -> {
+                val errors = repository.refresh()
+                val retired = repository.retireLegacyBundle()
+                // Snapshot after refreshing, so the UI gets the refreshed rows and installs.
+                return snapshot().put("errors", errors).put("retired", JSONArray(retired))
             }
             "install" -> repository.install(args.getString("url"), args.getString("id"))
             "uninstall" -> store.delete("installed", args.getString("id"))
             "enableSource" -> repository.setSourceEnabled(args.getString("source"), args.getBoolean("enabled"))
             "pin" -> {
                 val key = repository.source(args.getString("source")).getString("key")
-                if (args.getBoolean("pinned")) store.put("pin", key, JSONObject()) else store.delete("pin", key)
+                if (args.getBoolean("pinned")) store.put("pin", key, JSONObject())
+                else repository.pinKeys(key).forEach { store.delete("pin", it) }
             }
             "image" -> return imageRequests.withPermit { JSONObject().put("url", repository.cachedImage(args.getString("url"))) }
             "catalog" -> {

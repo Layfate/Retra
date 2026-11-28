@@ -1,3 +1,19 @@
+## Retra v1.0.5 — Per-site extensions, redesigned Settings, reliable Drive backups
+
+- Extensions: each website is now its own extension (Operation iDroid, PokéHarbor, PokeMundo, PokéCoders, PokéMerald, GameBrew, FE Universe, Roms Games, Romhacking.net, Hackdex, RHDI, PokéCommunity), published as `extensions/packages/<site>.json` with IDs `org.retra.<site>`. Install only the sites you want; their GB/GBC/GBA sources then appear in Sources. Source IDs are unchanged.
+- Extensions: once a refreshed repository no longer lists the all-in-one Retra Sources bundle (`org.retra.romhackplaza`), Retra uninstalls it and opens Extensions. Library games, downloads and pins saved from the bundle resolve to the same source in the per-site extension. Browse re-checks repositories in the background when they were last checked over 6 hours ago.
+- Settings: grouped home (General, Playing, Library & system) with renamed pages: Display, Sound & haptics, Controls, Gameplay and a new Library page (cover art, ROM patching, app folder). Interface font moved into Appearance.
+- Settings: retired My Boy-era options, each pinned to its modern value: Frameskip (0), Hardware rendering (on), Sound frequency (44.1 kHz), CPU profile (Automatic), Link sync check (4), Speed optimization (on) and Mosaic effect (on). Full screen and Immersive mode are one "Immersive fullscreen" toggle.
+- Settings: new "Mute while fast-forwarding" and "Back up on Wi-Fi only".
+- Statistics: a "Most played" header with the game's cover over a blurred copy of the art, 2x2 overview tiles with a completion bar, play sessions, a systems bar, and ranked Most played rows with cover art and playtime bars.
+- Google Drive: uploads are resumable and chunked (4 MiB) with retries, so backups larger than 5 MB no longer fail on the single-request upload. Each backup carries a content fingerprint that ignores timestamps; unchanged data is not uploaded again. Only the 10 newest automatic backups per device are kept (manual backups stay). Automatic backups wait 30 s for a quiet moment, wait for a network (or Wi-Fi), retry transient failures, and show "waiting" instead of an error. Restore lists the device and asks for confirmation; dismissing the chooser no longer leaves Drive busy. Drive errors such as a full Drive read as plain messages.
+- Updates: a newer GitHub release opens a full-screen "New version available!" page with the release notes rendered from Markdown and Download / Not now actions. An automatic check that failed offline runs again when Wi-Fi or mobile data returns.
+- Controller: a light controller face with embossed gray labels and new D-pad artwork for each direction. Vibration belongs to the D-pad only (a tick on press and on each direction change) with an adjustable strength; buttons click.
+- Dialogs: every dialog shares one Material card, title, body text and flat text buttons (Cancel / OK on the right, secondary actions on the left). Option lists are plain radio and checkbox rows. Dialogs use a solid scrim instead of a live blur and scroll in a single area with a fixed title and action bar.
+- Text fields: no glow ring outside a focused field; the field's own border shows focus.
+- Docs: the `docs/` folder is one developer guide (`docs/README.md`); release notes live in this changelog and on GitHub Releases. README and Troubleshooting rewritten for the current app.
+- `versionName 1.0.5`, `versionCode 456`.
+
 ## Retra v1.0.4 — More sources, felt haptics, unified controller
 
 - Extension repo: Retra Sources 6.0 adds PokéMerald (GBA/GBC, WordPress API), GameBrew (GBA hacks and translations, MediaWiki API), FE Universe (completed FE6/FE7/FE8-based Fire Emblem hacks, Discourse JSON), and website sources RHDI and PokéCommunity. Live build: PokéMerald 169, GameBrew 80, FE Universe 251 games, with artwork.
@@ -187,7 +203,7 @@
 - Added pre-upload/pre-restore backup validation and immutable cloud snapshots so a failed upload cannot replace the previous good backup.
 - Added fresh-install protection: Retra checks cloud snapshots before allowing an empty local installation to create a cloud backup.
 - Kept Android's document/folder pickers only for local backup/export/import flows.
-- Added `docs/GOOGLE_DRIVE_SETUP.md` with required Google Cloud, OAuth, package-name, and signing-certificate setup.
+- Added Google Drive setup documentation (now in [`docs/README.md`](docs/README.md#google-drive-setup)) with required Google Cloud, OAuth, package-name, and signing-certificate setup.
 
 ## v1.0.3 — ROM title editing and storage polish
 
@@ -529,7 +545,7 @@ The entries below organize Retra's pre-1.0 development milestones into a clean `
 - Introduced permanent ROM identities and persistent per-game data organization.
 - Established the storage model that allows compatible user data to survive normal ROM file lifecycle changes.
 
-For detailed engineering notes from development, see [`docs/README.md`](docs/README.md) and the archived files under `docs/history/`.
+For developer documentation, see [`docs/README.md`](docs/README.md).
 
 ### Audio distortion hardening
 - Replaced Retra's final mGBA-to-Android utility sinc conversion with a normalized 16-tap/1024-phase band-limited converter.

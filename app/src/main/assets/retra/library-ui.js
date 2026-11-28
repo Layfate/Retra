@@ -244,10 +244,25 @@ function setStatisticValue(id, value){
 }
 
 function updateLibraryStats(){
+  const counts = {
+    GBA: libraryRoms.filter(rom => rom.system === 'GBA').length,
+    GBC: libraryRoms.filter(rom => rom.system === 'GBC').length,
+    GB: libraryRoms.filter(rom => rom.system === 'GB').length
+  };
   setStatisticValue('statLibraryCount', libraryRoms.length);
-  setStatisticValue('statGbaCount', libraryRoms.filter(rom => rom.system === 'GBA').length);
-  setStatisticValue('statGbcCount', libraryRoms.filter(rom => rom.system === 'GBC').length);
-  setStatisticValue('statGbCount', libraryRoms.filter(rom => rom.system === 'GB').length);
+  setStatisticValue('statGbaCount', counts.GBA);
+  setStatisticValue('statGbcCount', counts.GBC);
+  setStatisticValue('statGbCount', counts.GB);
+  const total = counts.GBA + counts.GBC + counts.GB;
+  [['statGbaBar', counts.GBA], ['statGbcBar', counts.GBC], ['statGbBar', counts.GB]].forEach(([id, count]) => {
+    const bar = document.getElementById(id);
+    if (bar) bar.style.flexGrow = String(total ? count : 0);
+  });
+  const systemBar = document.getElementById('statSystemBar');
+  if (systemBar) {
+    systemBar.classList.toggle('empty', !total);
+    systemBar.setAttribute('aria-label', `Games by system: GBA ${counts.GBA}, GBC ${counts.GBC}, GB ${counts.GB}`);
+  }
 }
 
 function formatPlaytimeDuration(milliseconds){
@@ -281,31 +296,84 @@ function getNativeStatistics(){
   }
 }
 
-async function hydratePlaytimeCover(row, rom, nativeAlreadyChecked = false){
-  if (!row || !rom?.id) return;
+/** Same cover sources as Library and History: Change Cover (native), cached art, then the ROM's own cover. */
+function statisticsCoverUrl(rom){
+  return getNativeRomMediaUrl(rom.id, 'cover') || romCoverObjectUrls.get(rom.id) || rom.cover || '';
+}
+
+function statisticsCoverImage(url, rom){
+  const image = document.createElement('img');
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  image.fetchPriority = 'low';
+  image.src = url;
+  image.alt = `${rom.title || 'ROM'} cover`;
+  return image;
+}
+
+function coverPlaceholder(rom){
+  const placeholder = document.createElement('div');
+  placeholder.className = 'playtime-cover-placeholder';
+  placeholder.textContent = String(rom.title || 'R').trim().charAt(0).toUpperCase() || 'R';
+  return placeholder;
+}
+
+/** Fills one cover holder (a Most played row or the hero) with the ROM's cover, waiting for cached art if needed. */
+async function hydrateStatisticsCover(holder, rom, onCover){
+  if (!holder || !rom?.id) return;
   try {
-    // Statistics resolves artwork from the exact same sources as Library/History.
-    // Native media is checked first because Change Cover persists there even when
-    // this WebView has not hydrated its legacy IndexedDB cover metadata yet.
-    let cover = (nativeAlreadyChecked ? '' : getNativeRomMediaUrl(rom.id, 'cover')) || romCoverObjectUrls.get(rom.id) || rom.cover || '';
+    let cover = statisticsCoverUrl(rom);
     if (!cover && rom.coverCached) {
       const blob = await getStoredRomCoverBlob(rom.id);
       if (blob) cover = setRomCoverObjectUrl(rom.id, blob);
     }
-    if (!cover || !row.isConnected) return;
-    const media = row.querySelector('.playtime-cover');
-    if (!media) return;
-    const image = document.createElement('img');
-    image.loading = 'lazy';
-    image.decoding = 'async';
-    image.fetchPriority = 'low';
-    image.src = cover;
-    image.alt = `${rom.title || 'ROM'} cover`;
-    media.replaceChildren(image);
+    if (!cover || !holder.isConnected) return;
+    holder.replaceChildren(statisticsCoverImage(cover, rom));
+    if (onCover) onCover(cover);
   } catch (error) {}
 }
 
-function renderPlaytimeByRom(playtimeByRom){
+async function hydratePlaytimeCover(row, rom){
+  await hydrateStatisticsCover(row?.querySelector('.playtime-cover'), rom);
+}
+
+function playCountFor(rom){
+  const history = playHistory.find(entry => String(entry.romId) === String(rom.id));
+  return Math.max(0, Number(history?.playCount) || 0);
+}
+
+/** Header card for the most played game: its cover over a blurred copy of the same art. */
+function renderStatisticsHero(top, totalPlaytime){
+  const hero = document.getElementById('statsHero');
+  if (!hero) return;
+  if (!top) {
+    hero.hidden = true;
+    delete hero.dataset.romId;
+    return;
+  }
+  const { rom, millis } = top;
+  hero.hidden = false;
+  hero.dataset.romId = String(rom.id || '');
+  setStatisticValue('statsHeroTitle', rom.title || 'ROM');
+  const plays = playCountFor(rom);
+  setStatisticValue('statsHeroMeta', `${rom.system || 'ROM'}${plays ? ` • ${plays} play${plays === 1 ? '' : 's'}` : ''}${rom.completed ? ' • Completed' : ''}`);
+  setStatisticValue('statsHeroTime', formatPlaytimeDuration(millis));
+  const share = totalPlaytime > 0 ? Math.round((millis / totalPlaytime) * 100) : 0;
+  setStatisticValue('statsHeroShare', share > 0 && share < 100 ? `${share}% of your playtime` : share >= 100 ? 'All of your playtime' : '');
+  const cover = document.getElementById('statsHeroCover');
+  const backdrop = document.getElementById('statsHeroBackdrop');
+  const showBackdrop = url => {
+    if (!backdrop) return;
+    backdrop.style.backgroundImage = url ? `url("${String(url).replace(/"/g, '%22')}")` : '';
+    hero.classList.toggle('has-cover', Boolean(url));
+  };
+  const url = statisticsCoverUrl(rom);
+  if (cover) cover.replaceChildren(url ? statisticsCoverImage(url, rom) : coverPlaceholder(rom));
+  showBackdrop(url);
+  if (!url) hydrateStatisticsCover(cover, rom, showBackdrop);
+}
+
+function renderPlaytimeByRom(playtimeByRom, totalPlaytime = 0){
   const list = document.getElementById('playtimeList');
   if (!list) return;
 
@@ -317,62 +385,61 @@ function renderPlaytimeByRom(playtimeByRom){
     .filter(entry => entry.millis > 0)
     .sort((a, b) => b.millis - a.millis);
 
+  renderStatisticsHero(entries[0] || null, totalPlaytime);
   list.innerHTML = '';
 
   if (!entries.length) {
     const empty = document.createElement('div');
     empty.className = 'stats-empty-message';
     empty.id = 'playtimeEmpty';
-    empty.textContent = 'No playtime data yet.';
+    empty.textContent = 'Play a game to see your playtime here.';
     list.appendChild(empty);
     return;
   }
 
-  entries.forEach(({ rom, millis }) => {
+  const longest = entries[0].millis;
+  entries.forEach(({ rom, millis }, index) => {
     const row = document.createElement('article');
     row.className = 'playtime-item';
     row.dataset.playtimeRom = String(rom.id || '');
+
+    const rank = document.createElement('span');
+    rank.className = 'playtime-rank';
+    rank.textContent = String(index + 1);
 
     const left = document.createElement('div');
     left.className = 'playtime-left';
 
     const coverWrap = document.createElement('div');
     coverWrap.className = 'playtime-cover';
-    const cover = getNativeRomMediaUrl(rom.id, 'cover') || romCoverObjectUrls.get(rom.id) || rom.cover || '';
-    if (cover) {
-      const image = document.createElement('img');
-      image.loading = 'lazy';
-      image.decoding = 'async';
-      image.fetchPriority = 'low';
-      image.src = cover;
-      image.alt = `${rom.title || 'ROM'} cover`;
-      coverWrap.appendChild(image);
-    } else {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'playtime-cover-placeholder';
-      placeholder.textContent = String(rom.title || 'R').trim().charAt(0).toUpperCase() || 'R';
-      coverWrap.appendChild(placeholder);
-    }
+    const cover = statisticsCoverUrl(rom);
+    coverWrap.appendChild(cover ? statisticsCoverImage(cover, rom) : coverPlaceholder(rom));
 
     const copy = document.createElement('div');
     copy.className = 'playtime-copy';
     const title = document.createElement('strong');
     title.textContent = rom.title || 'ROM';
     const meta = document.createElement('span');
-    const history = playHistory.find(entry => String(entry.romId) === String(rom.id));
-    const plays = Math.max(0, Number(history?.playCount) || 0);
-    meta.textContent = `${rom.system || 'ROM'}${plays ? ` • ${plays} play${plays === 1 ? '' : 's'}` : ''}`;
-    copy.append(title, meta);
+    const plays = playCountFor(rom);
+    meta.textContent = `${rom.system || 'ROM'}${plays ? ` • ${plays} play${plays === 1 ? '' : 's'}` : ''}${rom.completed ? ' • Completed' : ''}`;
+    // Bar length is relative to the most played game, so the ranking reads at a glance.
+    const bar = document.createElement('div');
+    bar.className = 'playtime-bar';
+    bar.setAttribute('aria-hidden', 'true');
+    const fill = document.createElement('span');
+    fill.style.width = `${Math.max(4, Math.round((millis / longest) * 100))}%`;
+    bar.appendChild(fill);
+    copy.append(title, meta, bar);
 
     const time = document.createElement('div');
     time.className = 'playtime-time';
     time.textContent = formatPlaytimeDuration(millis);
 
-    left.append(coverWrap, copy);
+    left.append(rank, coverWrap, copy);
     row.append(left, time);
     list.appendChild(row);
 
-    if (!cover) hydratePlaytimeCover(row, rom, true);
+    if (!cover) hydratePlaytimeCover(row, rom);
   });
 }
 
@@ -400,6 +467,9 @@ function updateStatistics(){
   const startedCount = [...startedIds].filter(id => currentLibraryIds.has(id)).length;
   const favoriteCount = libraryRoms.filter(rom => Boolean(rom.favorite)).length;
   const completedCount = libraryRoms.filter(rom => Boolean(rom.completed)).length;
+  const playCount = playHistory
+    .filter(entry => currentLibraryIds.has(String(entry?.romId || '')))
+    .reduce((total, entry) => total + Math.max(0, Number(entry?.playCount) || 0), 0);
   const recentCutoff = Date.now() - (30 * 24 * 60 * 60 * 1000);
   const recentCount = new Set(
     playHistory
@@ -409,14 +479,17 @@ function updateStatistics(){
 
   setStatisticValue('statTotalPlaytime', formatPlaytimeDuration(totalPlaytime));
   setStatisticValue('statCompletedGames', completedCount);
+  const completionBar = document.getElementById('statCompletionBar');
+  if (completionBar) completionBar.style.width = `${libraryRoms.length ? Math.round((completedCount / libraryRoms.length) * 100) : 0}%`;
   setStatisticValue('statStartedCount', startedCount);
+  setStatisticValue('statPlayCount', playCount);
   setStatisticValue('statFavoritesCount', favoriteCount);
   setStatisticValue('statRecentCount', recentCount);
   setStatisticValue('statSaveStateCount', Math.max(0, Number(nativeStats.saveStates) || 0));
   setStatisticValue('statBatterySaveCount', Math.max(0, Number(nativeStats.batterySaves) || 0));
   setStatisticValue('statBackupCount', Math.max(0, Number(nativeStats.backups) || 0));
 
-  renderPlaytimeByRom(playtimeByRom);
+  renderPlaytimeByRom(playtimeByRom, totalPlaytime);
 }
 
 let libraryRenderInitialized = false;

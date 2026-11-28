@@ -11,9 +11,9 @@ test('controller haptics are a felt pulse from the vibrator, not a mutable UI ti
   // The view haptic constants were the faintest effects Android has and many phones skipped
   // them, so presses were not felt. One short light pulse plays on the vibrator instead.
   assert.match(manifest, /android\.permission\.VIBRATE/);
-  assert.match(feedback, /VibrationEffect\.createOneShot\(TICK_MS, amplitude\)/);
-  assert.match(feedback, /TICK_MS = 14L/);
-  assert.match(feedback, /TICK_AMPLITUDE = 140/);
+  // Its strength is the player's: amplitude (and, on motors without amplitude control, length).
+  assert.match(feedback, /VibrationEffect\.createOneShot\(tickDurationMs\(strength, amplitudeControl\), amplitude\)/);
+  assert.match(feedback, /HAPTIC_STRENGTH_DEFAULT = 55/);
   // Game/media usage, so the system touch-feedback setting and a silent ringer do not mute it.
   assert.match(feedback, /VibrationAttributes\.USAGE_MEDIA/);
   assert.match(feedback, /AudioAttributes\.USAGE_GAME/);
@@ -42,5 +42,25 @@ test('controller sound and haptics remain independently configurable', () => {
   assert.match(html, /id="controllerHapticsToggle"/);
   assert.match(settings, /controllerSound/);
   assert.match(settings, /controllerHaptics/);
-  assert.match(html, /<h2>Sound<\/h2>/);
+  assert.match(html, /<h2>Sound &amp; haptics<\/h2>/);
+});
+
+test('only the D-pad vibrates, with an adjustable strength', () => {
+  const feedback = read('app/src/main/java/com/retra/emulator/ControllerFeedbackManager.kt');
+  const settings = read('app/src/main/java/com/retra/emulator/SettingsController.kt');
+  const html = read('app/src/main/assets/retra/index.html');
+  const js = read('app/src/main/assets/retra/settings-ui.js');
+  const prefs = read('app/src/main/java/com/retra/emulator/RetraPreferences.kt');
+  // Buttons click but never vibrate.
+  const perform = feedback.match(/fun perform\(([\s\S]*?)\n    \}/)[1];
+  assert.doesNotMatch(perform, /tick\(/);
+  assert.match(perform, /click\(/);
+  // Strength slider: saved, portable, previewed with a sample tick while dragging.
+  assert.match(html, /id="controllerHapticStrengthRange"[^>]*max="100" min="10"/);
+  assert.match(js, /createNativeRangeDispatcher\('controllerHapticStrength', 48\)/);
+  assert.match(js, /controllerHapticStrengthRow\?\.classList\.toggle\('disabled-row', !enabled\)/);
+  assert.match(settings, /put\(\s*"controllerHapticStrength"/);
+  assert.match(settings, /"controllerHapticStrength" -> prefs\.edit\(\)\.putInt\(CONTROLLER_HAPTIC_STRENGTH_PREF, value\)/);
+  assert.match(settings, /controllerFeedback\.previewHaptic\(binding\.webView, value\)/);
+  assert.match(prefs, /"controller_haptic_strength_v1"/);
 });

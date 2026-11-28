@@ -98,7 +98,9 @@ test('explicit Google Drive restore is remote-first and backup upload is immutab
   assert.match(drive, /findBackupFolder\(accessToken\) \?: return emptyList\(\)/);
   assert.match(drive, /BACKUP_FOLDER_NAME = "Retra Backups"/);
   assert.match(drive, /parents", JSONArray\(\)\.put\("root"\)/);
-  assert.match(drive, /requestMultipart\(endpoint/);
+  // Resumable, chunked upload: large save-state backups survive flaky connections.
+  assert.match(drive, /createdId = resumableUpload\(accessToken, metadata, source, onProgress\)/);
+  assert.match(drive, /uploadType=resumable/);
   assert.doesNotMatch(drive, /X-HTTP-Method-Override|existingId/);
   assert.match(cloud, /val cloudBackups = driveApi\.listBackups\(token\)[\s\S]*hasMeaningfulUserData/);
   assert.match(backup, /fun validate\(file: File\): Result/);

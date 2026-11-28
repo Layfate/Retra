@@ -70,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         internal const val CONFIRM_CLOSE_RESET_PREF = "confirm_close_reset_v1"
         internal const val CONTROLLER_SOUND_PREF = "controller_sound_v1"
         internal const val CONTROLLER_HAPTICS_PREF = "controller_haptics_v1"
+        internal const val CONTROLLER_HAPTIC_STRENGTH_PREF = "controller_haptic_strength_v1"
         internal const val FULLSCREEN_PREF = "fullscreen_mode_v1"
         internal const val IMMERSIVE_PREF = "immersive_mode_v1"
         internal const val STRETCH_TO_FIT_PREF = "stretch_to_fit_v1"
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         internal const val SPEED_OPTIMIZATION_PREF = "speed_optimization_v1"
         internal const val MOSAIC_EFFECT_PREF = "mosaic_effect_v1"
         internal const val FAST_FORWARD_BUTTON_MODE_PREF = "fast_forward_button_mode_v1"
+        internal const val MUTE_FAST_FORWARD_PREF = "mute_fast_forward_v1"
         internal const val BIOS_GBA_PATH_PREF = "bios_gba_path_v1"
         internal const val BIOS_GB_PATH_PREF = "bios_gb_path_v1"
         internal const val BIOS_GBC_PATH_PREF = "bios_gbc_path_v1"
@@ -223,7 +225,8 @@ class MainActivity : AppCompatActivity() {
         ControllerFeedbackManager(
             context = this,
             soundEnabled = { prefs.getBoolean(CONTROLLER_SOUND_PREF, true) },
-            hapticsEnabled = { prefs.getBoolean(CONTROLLER_HAPTICS_PREF, true) }
+            hapticsEnabled = { prefs.getBoolean(CONTROLLER_HAPTICS_PREF, true) },
+            hapticStrength = { prefs.getInt(CONTROLLER_HAPTIC_STRENGTH_PREF, ControllerFeedbackManager.HAPTIC_STRENGTH_DEFAULT) }
         )
     }
     internal val controllerFeedback: ControllerFeedbackManager by controllerFeedbackDelegate
@@ -231,7 +234,8 @@ class MainActivity : AppCompatActivity() {
     internal val audioController: AudioController by lazy {
         AudioController(
             isEnabled = { prefs.getBoolean(ENABLE_SOUND_PREF, true) },
-            sampleRate = { prefs.getInt(SOUND_FREQUENCY_PREF, 44100) },
+            sampleRate = { RetiredSettings.SAMPLE_RATE },
+            muteWhenFast = { prefs.getBoolean(MUTE_FAST_FORWARD_PREF, false) },
             volume = { prefs.getInt(VOLUME_PREF, 100).coerceIn(0, 100) / 100f },
             readSamples = { buffer -> readAudioSamples(buffer) },
             readSamplesAtSpeed = { buffer, speed -> readAudioSamplesAtSpeed(buffer, speed) },

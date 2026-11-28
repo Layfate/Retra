@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -111,8 +112,12 @@
                 android:gravity="center"
                 android:fontFamily="sans-serif-medium"
                 android:text="L"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textColor="#FF767D85"
+                android:shadowColor="#CCFFFFFF"
+                android:shadowDy="1"
+                android:shadowRadius="0.01"
+                android:paddingBottom="2.5dp"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -126,8 +131,12 @@
                 android:gravity="center"
                 android:fontFamily="sans-serif-medium"
                 android:text="R"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textColor="#FF767D85"
+                android:shadowColor="#CCFFFFFF"
+                android:shadowDy="1"
+                android:shadowRadius="0.01"
+                android:paddingBottom="2.5dp"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <!-- Actual gameplay uses one Menu button centered at the top.
@@ -149,6 +158,7 @@
                     android:contentDescription="Menu"
                     android:padding="6dp"
                     android:scaleType="centerInside"
+                    app:tint="#FF767D85"
                     android:src="@drawable/ic_controller_menu" />
 
             </FrameLayout>
@@ -164,6 +174,7 @@
                 android:contentDescription="Quick load"
                 android:padding="4dp"
                 android:scaleType="centerInside"
+                app:tint="#FF767D85"
                 android:src="@drawable/ic_controller_quick_load"
                 android:visibility="gone" />
 
@@ -175,6 +186,7 @@
                 android:contentDescription="Quick save"
                 android:padding="4dp"
                 android:scaleType="centerInside"
+                app:tint="#FF767D85"
                 android:src="@drawable/ic_controller_quick_save"
                 android:visibility="gone" />
 
@@ -186,6 +198,7 @@
                 android:contentDescription="Fast forward"
                 android:padding="7dp"
                 android:scaleType="centerInside"
+                app:tint="#FF767D85"
                 android:src="@drawable/ic_controller_fast_forward"
                 android:visibility="gone" />
 
@@ -216,53 +229,69 @@
 
                 <ImageButton
                     android:id="@+id/buttonUp"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="top|center_horizontal"
-                    android:background="@drawable/bg_controller_square"
+                    android:background="@drawable/bg_controller_dpad_up"
                     android:contentDescription="Up"
-                    android:padding="10dp"
+                    android:paddingStart="18dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="28dp"
+                    app:tint="#FF767D85"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
 
                 <ImageButton
                     android:id="@+id/buttonLeft"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical|start"
-                    android:background="@drawable/bg_controller_square"
+                    android:background="@drawable/bg_controller_dpad_left"
                     android:contentDescription="Left"
-                    android:padding="10dp"
+                    android:paddingStart="18dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="28dp"
+                    app:tint="#FF767D85"
                     android:rotation="-90"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
 
                 <ImageButton
                     android:id="@+id/buttonRight"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="center_vertical|end"
-                    android:background="@drawable/bg_controller_square"
+                    android:background="@drawable/bg_controller_dpad_right"
                     android:contentDescription="Right"
-                    android:padding="10dp"
+                    android:paddingStart="18dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="28dp"
+                    app:tint="#FF767D85"
                     android:rotation="90"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
 
                 <ImageButton
                     android:id="@+id/buttonDown"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_gravity="bottom|center_horizontal"
-                    android:background="@drawable/bg_controller_square"
+                    android:background="@drawable/bg_controller_dpad_down"
                     android:contentDescription="Down"
-                    android:padding="10dp"
+                    android:paddingStart="18dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="28dp"
+                    app:tint="#FF767D85"
                     android:rotation="180"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_controller_dpad_up" />
             </FrameLayout>
 
-            <!-- Start / Select are intentionally subtle and centered along the bottom. -->
+            <!-- Start / Select are small labelled pills centered along the bottom. -->
             <LinearLayout
                 android:id="@+id/startSelectContainer"
                 android:layout_width="116dp"
@@ -279,7 +308,17 @@
                     android:background="@drawable/bg_controller_pill"
                     android:gravity="center"
                     android:contentDescription="Select"
-                    android:text="" />
+                    android:text="SELECT"
+                    android:textColor="#FF767D85"
+                    android:shadowColor="#CCFFFFFF"
+                    android:shadowDy="1"
+                    android:shadowRadius="0.01"
+                    android:paddingBottom="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
+                    android:textSize="8.5sp"
+                    android:letterSpacing="0.06"
+                    android:includeFontPadding="false" />
 
                 <Space
                     android:layout_width="8dp"
@@ -292,7 +331,17 @@
                     android:background="@drawable/bg_controller_pill"
                     android:gravity="center"
                     android:contentDescription="Start"
-                    android:text="" />
+                    android:text="START"
+                    android:textColor="#FF767D85"
+                    android:shadowColor="#CCFFFFFF"
+                    android:shadowDy="1"
+                    android:shadowRadius="0.01"
+                    android:paddingBottom="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textStyle="bold"
+                    android:textSize="8.5sp"
+                    android:letterSpacing="0.06"
+                    android:includeFontPadding="false" />
             </LinearLayout>
 
             <!-- A/B group: A and B share the same vertical centerline. -->
@@ -314,8 +363,12 @@
                     android:gravity="center"
                     android:fontFamily="sans-serif-medium"
                     android:text="B"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
+                    android:textColor="#FF767D85"
+                    android:shadowColor="#CCFFFFFF"
+                    android:shadowDy="1"
+                    android:shadowRadius="0.01"
+                    android:paddingBottom="2.5dp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -327,8 +380,12 @@
                     android:gravity="center"
                     android:fontFamily="sans-serif-medium"
                     android:text="A"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
+                    android:textColor="#FF767D85"
+                    android:shadowColor="#CCFFFFFF"
+                    android:shadowDy="1"
+                    android:shadowRadius="0.01"
+                    android:paddingBottom="2.5dp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
             </FrameLayout>
 
