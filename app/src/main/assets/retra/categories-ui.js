@@ -31,6 +31,8 @@ function updateDeviceSafeInsets(){
   root.style.setProperty('--device-right-ui', `${nativeSafeInsets.right}px`);
   root.style.setProperty('--device-bottom-ui', `${nativeSafeInsets.bottom}px`);
   root.style.setProperty('--device-left-ui', `${nativeSafeInsets.left}px`);
+  // Pinned headers that size themselves from these insets listen for this.
+  window.dispatchEvent(new Event('retra:insets'));
 }
 
 previewScaleHandle?.addEventListener('pointerdown', event => {

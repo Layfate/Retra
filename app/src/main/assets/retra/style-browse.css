@@ -438,6 +438,18 @@ html[data-retra-runtime="android"] #catalogTop{
   padding-left:max(var(--content-gutter), var(--device-safe-left));
   padding-right:max(var(--content-gutter), var(--device-safe-right));
 }
+/* Backstop above the pinned header: if the status-bar inset changes before the padding above
+   is re-synced, games scrolling past still never show through behind the status bar. */
+#catalogTop::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:100%;
+  height:calc(var(--device-safe-top, 0px) + 64px);
+  background:inherit;
+  pointer-events:none;
+}
 #catalogTop .browse-chips{margin-bottom:0}
 #catalogTop.scrolled{box-shadow:0 1px 0 var(--line)}
 /* Download progress: the fill moves with transform only (compositor-driven), so the bar keeps

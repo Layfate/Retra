@@ -606,7 +606,11 @@
   catalogScroller()?.addEventListener('scroll', () => {
     if (activePageId() === 'catalogPage') $('catalogTop').classList.toggle('scrolled', catalogScroller().scrollTop > 4);
   }, {passive:true});
-  root.addEventListener?.('resize', () => { if (activePageId() === 'catalogPage') syncCatalogTop(); });
+  // Re-read main's padding whenever it can change: window resize, and native status/navigation
+  // bar insets arriving or changing after the page opened (no resize event fires for those).
+  const resyncCatalogTop = () => { if (activePageId() === 'catalogPage') syncCatalogTop(); };
+  root.addEventListener?.('resize', resyncCatalogTop);
+  root.addEventListener?.('retra:insets', () => (root.requestAnimationFrame || setTimeout)(resyncCatalogTop));
   let suppressFilterReset = false;
   function openSource(row, mode = 'popular', query = ''){
     source = row; rememberSource(row.key);
@@ -618,6 +622,8 @@
     syncCatalogColumns();
     openSubPage('catalogPage');
     syncCatalogTop();
+    // Once more after the page's classes and styles have settled for this frame.
+    (root.requestAnimationFrame || setTimeout)(resyncCatalogTop);
     renderSources();
     return loadCatalog(true, false, mode);
   }

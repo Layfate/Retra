@@ -11,6 +11,7 @@
 - Controller: a light controller face with embossed gray labels and new D-pad artwork for each direction. Vibration belongs to the D-pad only (a tick on press and on each direction change) with an adjustable strength; buttons click.
 - Dialogs: every dialog shares one Material card, title, body text and flat text buttons (Cancel / OK on the right, secondary actions on the left). Option lists are plain radio and checkbox rows. Dialogs use a solid scrim instead of a live blur and scroll in a single area with a fixed title and action bar.
 - Text fields: no glow ring outside a focused field; the field's own border shows focus.
+- Browse: the pinned source header always covers the status bar. It re-reads the page padding when Android's insets change after the page opens, and a strip above it hides games scrolling past.
 - Docs: the `docs/` folder is one developer guide (`docs/README.md`); release notes live in this changelog and on GitHub Releases. README and Troubleshooting rewritten for the current app.
 - `versionName 1.0.5`, `versionCode 456`.
 
