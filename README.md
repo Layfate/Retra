@@ -82,7 +82,7 @@ In Retra, open **Browse → Extensions → ⋮ → Extension repos → Add** and
 https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 ```
 
-Install **Retra Sources**, then open **Sources**. Search games across every source with the search icon, and find what you download in the **Downloads** tab and in Library. See the [source guide](tools/extension-repo/README.md) for the included websites and how downloads work.
+Each website (Operation iDroid, PokéHarbor, Roms Games, …) is its own extension: install the ones you want, then open **Sources**. Search games across every source with the search icon, and find what you download in the **Downloads** tab and in Library. See the [source guide](tools/extension-repo/README.md) for the included websites and how downloads work.
 
 </div>
 

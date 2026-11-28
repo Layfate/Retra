@@ -8,11 +8,24 @@ https://raw.githubusercontent.com/Layfate/Retra/main/extensions/index.json
 
 ## Extensions
 
-- **Retra Sources**: Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald, Operation iDroid, GameBrew, FE Universe, Romhacking.net, Hackdex, RHDI and PokéCommunity: searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.
+Each website is its own extension. Install the ones you want under **Browse → Extensions**; their GB, GBC and GBA sources then appear in **Sources**, where you can open and search them.
 
-Retra Sources replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.
+- **FE Universe**: GBA: 251 ROM hacks with cover art, plus website search and downloads into Library
+- **GameBrew**: GBA: 80 ROM hacks with cover art, plus website search and downloads into Library
+- **Hackdex**: GB, GBC, GBA: website source, searched and downloaded in Retra's in-app browser
+- **Operation iDroid**: GBC, GBA: 109 ROM hacks with cover art, plus website search and downloads into Library
+- **PokéCoders**: GBC, GBA: 170 ROM hacks with cover art, plus website search and downloads into Library
+- **PokéCommunity**: GB, GBC, GBA: website source, searched and downloaded in Retra's in-app browser
+- **PokéHarbor**: GBC, GBA: 1,177 ROM hacks with cover art, plus website search and downloads into Library
+- **PokéMerald**: GBC, GBA: 169 ROM hacks with cover art, plus website search and downloads into Library
+- **PokeMundo**: GBC, GBA: 151 ROM hacks with cover art, plus website search and downloads into Library
+- **RHDI**: GB, GBC, GBA: website source, searched and downloaded in Retra's in-app browser
+- **Romhacking.net**: GB, GBC, GBA: website source, searched and downloaded in Retra's in-app browser
+- **Roms Games**: GB, GBC, GBA: official releases (No-Intro) with box art, 4,641 games; each opens a title search on the website
 
-## Sources
+These extensions replace the former all-in-one Retra Sources extension. Retra removes Retra Sources after the repository refreshes; games you added to Library keep working, and pinned sources stay pinned once you install their website again.
+
+## How the sources work
 
 | Source | Platforms | In Retra |
 |---|---|---|
@@ -31,7 +44,7 @@ Retra Sources replaces the former Romhack Plaza extension and updates it in plac
 
 Romhacking.net, Hackdex and PokéCommunity protect their pages with a bot check, and RHDI has no public listing, so the builder cannot list their games. Open them from the source page; Retra shows the site in its in-app browser, where you can pass the check, search and download.
 
-Search the installed catalogs in Retra. Use Download on website on a game, or Search website in the source menu, to browse the original site inside Retra. Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM. Website downloads require the updated Retra app; older apps can still browse the catalogs.
+Search the installed catalogs in Retra. Use Download on website on a game, or Search website in the source menu, to browse the original site inside Retra. Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM.
 
 Official games come from the No-Intro release lists in libretro-database, with available box art from libretro-thumbnails. Roms Games entries open a title search, so availability depends on the website. Catalogs refresh weekly; the in-app website search can find newer entries. Files are not re-hosted, and commercial downloads are not labeled as openly licensed.
 

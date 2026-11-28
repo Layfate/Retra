@@ -2,8 +2,8 @@
 //
 //   node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir>
 //
-// The default extension, Retra Sources, bundles Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald,
-// Operation iDroid, GameBrew, FE Universe, Romhacking.net, Hackdex, RHDI and PokéCommunity sources.
+// The default index lists one extension per website (Operation iDroid, PokéHarbor, Roms Games, ...), so
+// users install only the sites they want. Each extension holds that site's GB/GBC/GBA sources.
 // Optional --homebrew extensions:
 //   * Retra Homebrew Sample  - the CC0 Retra Pad cartridge (samples/catalog-extension).
 //   * Homebrew Hub           - every GB, GBC and GBA entry of the gbdev Homebrew Hub
@@ -220,7 +220,13 @@ const GAMEBREW = {id:'gamebrew', name:'GameBrew', website:'https://www.gamebrew.
 const FEU = {id:'feuniverse', name:'FE Universe', website:'https://feuniverse.us/c/projects/17',
   list:'https://feuniverse.us/tags/c/projects/17/complete_project.json', searchUrl:'https://feuniverse.us/search?q={query}',
   logo:'feuniverse.png', bases:{fe6_base:'The Binding Blade', fe7_base:'The Blazing Blade', fe8_base:'The Sacred Stones'}};
-const EXTENSION = {id:'org.retra.romhackplaza', name:'Retra Sources', versionCode:6, versionName:'6.0'};
+// One extension per website. Bump together when the package format or a site's sources change.
+const EXTENSION_VERSION = {versionCode:1, versionName:'1.0'};
+const EXTENSION_PREFIX = 'org.retra.';
+// The former all-in-one bundle. It is no longer published; Retra uninstalls it once the repository lists the
+// per-site extensions, and its saved source keys ("org.retra.romhackplaza/<source>") resolve to the same
+// source IDs, which the per-site extensions keep.
+const LEGACY_BUNDLE = 'org.retra.romhackplaza';
 const GAME_PLATFORM = {'game boy advance':'GBA', 'game boy color':'GBC', 'game boy':'GB'};
 function plainText(value){
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|eacute|hellip);/gi, (all, entity) => {
@@ -552,13 +558,23 @@ function officialGames(platform, entries, meta){
   }).sort((a, b) => a.title.localeCompare(b.title, 'en', {sensitivity:'base'}));
 }
 
+function siteSummary(kind, platforms, games){
+  const list = platforms.join(', ');
+  if (kind === 'website') return `${list}: website source, searched and downloaded in Retra's in-app browser`;
+  if (kind === 'official') return `${list}: official releases (No-Intro) with box art, ${games.toLocaleString('en-US')} games; each opens a title search on the website`;
+  return `${list}: ${games.toLocaleString('en-US')} ROM hacks with cover art, plus website search and downloads into Library`;
+}
+
 function readme(base, extensions){
   const url = `${base}index.json`;
   return `# Retra extension repository\n\nCatalog extensions for Retra (extension API 1). Add this URL in Retra under ` +
     `**Browse → Extensions → ⋮ → Extension repos → Add**:\n\n\`\`\`\n${url}\n\`\`\`\n\n## Extensions\n\n` +
+    'Each website is its own extension. Install the ones you want under **Browse → Extensions**; their GB, GBC and GBA ' +
+    'sources then appear in **Sources**, where you can open and search them.\n\n' +
     extensions.map(ext => `- **${ext.name}**: ${ext.summary}`).join('\n') +
-    '\n\nRetra Sources replaces the former Romhack Plaza extension and updates it in place. The default index contains one extension; the two homebrew extensions are omitted.\n\n' +
-    '## Sources\n\n' +
+    '\n\nThese extensions replace the former all-in-one Retra Sources extension. Retra removes Retra Sources after the repository refreshes; ' +
+    'games you added to Library keep working, and pinned sources stay pinned once you install their website again.\n\n' +
+    '## How the sources work\n\n' +
     '| Source | Platforms | In Retra |\n|---|---|---|\n' +
     '| Roms Games | GB, GBC, GBA | Official releases (No-Intro) with box art; each game opens a Roms Games title search |\n' +
     '| PokéHarbor | GBC, GBA | Hack catalog from its public WordPress API, with artwork |\n' +
@@ -575,8 +591,7 @@ function readme(base, extensions){
     'Romhacking.net, Hackdex and PokéCommunity protect their pages with a bot check, and RHDI has no public listing, so the builder cannot list their games. Open them from the source page; ' +
     'Retra shows the site in its in-app browser, where you can pass the check, search and download.\n\n' +
     'Search the installed catalogs in Retra. Use Download on website on a game, or Search website in the source menu, to browse the original site inside Retra. ' +
-    'Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM. ' +
-    'Website downloads require the updated Retra app; older apps can still browse the catalogs.\n\n' +
+    'Supported GB, GBC, GBA, ZIP, IPS, UPS and BPS downloads are imported into Library. Patches require your own compatible base ROM.\n\n' +
     'Official games come from the No-Intro release lists in libretro-database, with available box art from libretro-thumbnails. ' +
     'Roms Games entries open a title search, so availability depends on the website. ' +
     'Catalogs refresh weekly; the in-app website search can find newer entries. Files are not re-hosted, and commercial downloads are not labeled as openly licensed.\n\n' +
@@ -621,72 +636,86 @@ async function build(base, out, {homebrew = false} = {}){
   const summaries = [];
   const boxarts = await boxartIndex();
 
-  // The extension ID stays org.retra.romhackplaza (shown nowhere in the UI) so installed copies update in
-  // place and pinned sources and Library links (keyed "<extension>/<source>") keep working.
+  // Catalog and logo files stay in sources/ (stable URLs); each website's extension package is
+  // packages/<site>.json and lists only that site's sources.
   const folder = 'sources';
   const dir = path.join(out, folder);
   fs.mkdirSync(dir, {recursive:true});
-  const sources = [];
+  const sites = [];
+  const sourceRow = (id, name, platforms, latest, icon, website, searchUrl) => ({id, name, platforms, latest,
+    catalogUrl:base + folder + '/' + id + '.json', icon:base + folder + '/' + icon, website, ...(searchUrl ? {searchUrl} : {})});
+  const siteEntry = (site, kind) => { const entry = {site, kind, sources:[], games:0}; sites.push(entry); return entry; };
+
   for (const site of SITES) {
+    const entry = siteEntry(site, 'catalog');
     fs.writeFileSync(path.join(dir, site.id + '.png'), await logoOrPrevious(site, site.id + '.png'));
     for (const {platform, games} of await catalogsOrPrevious(site.id, site.name, () => websiteCatalogs(site))) {
       const id = site.id + '-' + platform.toLowerCase();
       writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
-      sources.push({id, name:site.name + ' ' + platform, platforms:[platform], latest:true,
-        catalogUrl:base + folder + '/' + id + '.json', icon:base + folder + '/' + site.id + '.png',
-        website:site.website, searchUrl:site.searchUrl});
+      entry.sources.push(sourceRow(id, site.name + ' ' + platform, [platform], true, site.id + '.png', site.website, site.searchUrl));
+      entry.games += games.length;
       console.log(site.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
     }
   }
-  fs.writeFileSync(path.join(dir, IDROID.id + '.png'), await logoOrPrevious(IDROID, IDROID.id + '.png'));
-  for (const {platform, games} of await catalogsOrPrevious(IDROID.id, IDROID.name, idroidCatalogs)) {
-    const id = IDROID.id + '-' + platform.toLowerCase();
-    writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
-    sources.push({id, name:IDROID.name + ' ' + platform, platforms:[platform], latest:true,
-      catalogUrl:base + folder + '/' + id + '.json', icon:base + folder + '/' + IDROID.id + '.png',
-      website:IDROID.website + '?platform=' + platform});
-    console.log(IDROID.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
+  {
+    const entry = siteEntry(IDROID, 'catalog');
+    fs.writeFileSync(path.join(dir, IDROID.id + '.png'), await logoOrPrevious(IDROID, IDROID.id + '.png'));
+    for (const {platform, games} of await catalogsOrPrevious(IDROID.id, IDROID.name, idroidCatalogs)) {
+      const id = IDROID.id + '-' + platform.toLowerCase();
+      writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
+      entry.sources.push(sourceRow(id, IDROID.name + ' ' + platform, [platform], true, IDROID.id + '.png', IDROID.website + '?platform=' + platform));
+      entry.games += games.length;
+      console.log(IDROID.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
+    }
   }
   for (const site of [GAMEBREW, FEU]) {
+    const entry = siteEntry(site, 'catalog');
     fs.writeFileSync(path.join(dir, site.id + '.png'), await siteLogo(site));
     for (const {platform, games} of await catalogsOrPrevious(site.id, site.name, site === GAMEBREW ? gamebrewCatalogs : feuCatalogs)) {
       const id = site.id + '-' + platform.toLowerCase();
       writeJson(path.join(dir, id + '.json'), {apiVersion:1, games});
-      sources.push({id, name:site.name + ' ' + platform, platforms:[platform], latest:true,
-        catalogUrl:base + folder + '/' + id + '.json', icon:base + folder + '/' + site.id + '.png',
-        website:site.website, searchUrl:site.searchUrl});
+      entry.sources.push(sourceRow(id, site.name + ' ' + platform, [platform], true, site.id + '.png', site.website, site.searchUrl));
+      entry.games += games.length;
       console.log(site.name + ' ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
     }
   }
   for (const site of WEB_ONLY) {
+    const entry = siteEntry(site, 'website');
     fs.writeFileSync(path.join(dir, site.id + '.png'), await siteLogo(site));
     writeJson(path.join(dir, site.id + '.json'), {apiVersion:1, games:[]});
-    sources.push({id:site.id, name:site.name, platforms:PLATFORMS, latest:false,
-      catalogUrl:base + folder + '/' + site.id + '.json', icon:base + folder + '/' + site.id + '.png',
-      website:site.website, ...(site.searchUrl ? {searchUrl:site.searchUrl} : {})});
+    entry.sources.push(sourceRow(site.id, site.name, PLATFORMS, false, site.id + '.png', site.website, site.searchUrl));
     console.log(site.name + ': website source');
   }
-  fs.writeFileSync(path.join(dir, 'romsgames.png'), await logoOrPrevious(ROMSGAMES, 'romsgames.png'));
-  for (const platform of PLATFORMS) {
-    const games = officialGames(platform, boxarts[platform] || [], await metadata(platform));
-    assert(games.length > 0 && games.length <= 10000, 'Official catalog size invalid');
-    const file = 'official-' + platform.toLowerCase();
-    for (const game of games) game.website = ROMSGAMES.searchUrl.replace('{query}', encodeURIComponent(game.title));
-    writeJson(path.join(dir, file + '.json'), {apiVersion:1, games});
-    sources.push({id:file, name:ROMSGAMES.name + ' ' + platform, platforms:[platform], latest:true,
-      catalogUrl:base + folder + '/' + file + '.json', icon:base + folder + '/romsgames.png',
-      website:ROMSGAMES.website + 'roms/' + ({GB:'gameboy', GBC:'gameboy-color', GBA:'gameboy-advance'})[platform] + '/',
-      searchUrl:ROMSGAMES.searchUrl});
-    console.log('Official ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
+  {
+    const entry = siteEntry({id:'romsgames', ...ROMSGAMES}, 'official');
+    fs.writeFileSync(path.join(dir, 'romsgames.png'), await logoOrPrevious(ROMSGAMES, 'romsgames.png'));
+    for (const platform of PLATFORMS) {
+      const games = officialGames(platform, boxarts[platform] || [], await metadata(platform));
+      assert(games.length > 0 && games.length <= 10000, 'Official catalog size invalid');
+      const file = 'official-' + platform.toLowerCase();
+      for (const game of games) game.website = ROMSGAMES.searchUrl.replace('{query}', encodeURIComponent(game.title));
+      writeJson(path.join(dir, file + '.json'), {apiVersion:1, games});
+      entry.sources.push(sourceRow(file, ROMSGAMES.name + ' ' + platform, [platform], true, 'romsgames.png',
+        ROMSGAMES.website + 'roms/' + ({GB:'gameboy', GBC:'gameboy-color', GBA:'gameboy-advance'})[platform] + '/', ROMSGAMES.searchUrl));
+      entry.games += games.length;
+      console.log('Official ' + platform + ': ' + games.length + ' games, ' + games.filter(game => game.cover).length + ' covers');
+    }
   }
-  const sha256 = writeJson(path.join(dir, 'extension.json'), {apiVersion:1, id:EXTENSION.id, versionCode:EXTENSION.versionCode, sources});
-  extensions.push({id:EXTENSION.id, name:EXTENSION.name,
-    publisher:'Retra contributors (independent website catalogs)', versionCode:EXTENSION.versionCode, versionName:EXTENSION.versionName,
-    format:'retra.catalog', apiMin:1, apiMax:1, platforms:PLATFORMS,
-    packageUrl:base + folder + '/extension.json', sha256, icon:base + folder + '/pokeharbor.png'});
-  summaries.push({name:EXTENSION.name, summary:'Roms Games, PokéHarbor, PokeMundo, PokéCoders, PokéMerald, Operation iDroid, GameBrew, FE Universe, ' +
-    'Romhacking.net, Hackdex, RHDI and PokéCommunity: ' +
-    'searchable GB/GBC/GBA catalogs with cover art, plus in-app website search and downloads into Library.'});
+
+  for (const entry of sites.sort((a, b) => a.site.name.localeCompare(b.site.name, 'en', {sensitivity:'base'}))) {
+    const {site, kind, sources} = entry;
+    if (!sources.length) continue;
+    const id = EXTENSION_PREFIX + site.id;
+    const platforms = PLATFORMS.filter(platform => sources.some(source => source.platforms.includes(platform)));
+    const sha256 = writeJson(path.join(out, 'packages', site.id + '.json'),
+      {apiVersion:1, id, versionCode:EXTENSION_VERSION.versionCode, sources});
+    const host = new URL(site.website).host.replace(/^www\./, '');
+    extensions.push({id, name:site.name, publisher:`Retra contributors (catalog of ${host})`,
+      versionCode:EXTENSION_VERSION.versionCode, versionName:EXTENSION_VERSION.versionName,
+      format:'retra.catalog', apiMin:1, apiMax:1, platforms,
+      packageUrl:base + 'packages/' + site.id + '.json', sha256, icon:base + folder + '/' + site.id + '.png'});
+    summaries.push({name:site.name, summary:siteSummary(kind, platforms, entry.games)});
+  }
 
   if (homebrew) await buildHomebrew(base, out, cache, extensions, summaries);
   if (Object.keys(cache).length) fs.writeFileSync(cacheFile, JSON.stringify(Object.fromEntries(Object.entries(cache).sort()), null, 1) + '\n');
@@ -736,5 +765,5 @@ if (require.main === module) {
   if (!base || !out) { console.error('Usage: node tools/extension-repo/build-repo.cjs <https-base-url/> <output-dir> [--homebrew]'); process.exit(2); }
   build(base, path.resolve(out), {homebrew}).catch(error => { console.error(error); process.exit(1); });
 }
-module.exports = {build, normalizeLicense, toGame, acceptedUrl, SITES, ROMSGAMES, IDROID, GAMEBREW, FEU, WEB_ONLY, EXTENSION, plainText, websiteGame,
+module.exports = {build, normalizeLicense, toGame, acceptedUrl, SITES, ROMSGAMES, IDROID, GAMEBREW, FEU, WEB_ONLY, EXTENSION_VERSION, EXTENSION_PREFIX, LEGACY_BUNDLE, siteSummary, readme, plainText, websiteGame,
   websiteCatalogs, idroidGame, gamebrewGame, gamebrewCatalogs, feuGame, feuCatalogs, infobox, wikiText, siteDate, displayTitle, officialGames, LICENSE};

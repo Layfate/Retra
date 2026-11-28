@@ -3,11 +3,43 @@
   "name": "Retra extensions",
   "extensions": [
     {
-      "id": "org.retra.romhackplaza",
-      "name": "Retra Sources",
-      "publisher": "Retra contributors (independent website catalogs)",
-      "versionCode": 6,
-      "versionName": "6.0",
+      "id": "org.retra.feuniverse",
+      "name": "FE Universe",
+      "publisher": "Retra contributors (catalog of feuniverse.us)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/feuniverse.json",
+      "sha256": "e023010d16b3f9e92468835e18c08d2c334260d4b6329815500f46e472bce487",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/feuniverse.png"
+    },
+    {
+      "id": "org.retra.gamebrew",
+      "name": "GameBrew",
+      "publisher": "Retra contributors (catalog of gamebrew.org)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/gamebrew.json",
+      "sha256": "c811597a9453f8946b1f7dd3982699648ea5e1024fb44eb7268c5ff772a410af",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/gamebrew.png"
+    },
+    {
+      "id": "org.retra.hackdex",
+      "name": "Hackdex",
+      "publisher": "Retra contributors (catalog of hackdex.app)",
+      "versionCode": 1,
+      "versionName": "1.0",
       "format": "retra.catalog",
       "apiMin": 1,
       "apiMax": 1,
@@ -16,9 +48,166 @@
         "GBC",
         "GBA"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/extension.json",
-      "sha256": "5f57bec8f79398303d645423ac2a2fc209fd93c28b9326f3a075812cff8b15df",
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/hackdex.json",
+      "sha256": "bdd914d21e7c53b55026d265205006d4f38e1df22e0210afef288f0c7a37da20",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/hackdex.png"
+    },
+    {
+      "id": "org.retra.operationidroid",
+      "name": "Operation iDroid",
+      "publisher": "Retra contributors (catalog of operationidroid.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/operationidroid.json",
+      "sha256": "6d9a16e5dfdfdb2b0500ff10415fde90b0916a7a5623ea0f0a5ffddb13c6829e",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid.png"
+    },
+    {
+      "id": "org.retra.pokecoders",
+      "name": "PokéCoders",
+      "publisher": "Retra contributors (catalog of pokemoncoders.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/pokecoders.json",
+      "sha256": "a3c2a5ae383a21abed7292ac4bd7db876091314f181d233e3a7617f14c9d1bbf",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokecoders.png"
+    },
+    {
+      "id": "org.retra.pokecommunity",
+      "name": "PokéCommunity",
+      "publisher": "Retra contributors (catalog of pokecommunity.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/pokecommunity.json",
+      "sha256": "5d2e5fa1a998b203a71fef5e29a849135da8853c49a214f49a31dca4ad15bc72",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokecommunity.png"
+    },
+    {
+      "id": "org.retra.pokeharbor",
+      "name": "PokéHarbor",
+      "publisher": "Retra contributors (catalog of pokeharbor.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/pokeharbor.json",
+      "sha256": "9e782aef6bd18248fb5928569a717080dc337d3dfc6c084b714f4eeb348e7d5d",
       "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokeharbor.png"
+    },
+    {
+      "id": "org.retra.pokemerald",
+      "name": "PokéMerald",
+      "publisher": "Retra contributors (catalog of pokemerald.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/pokemerald.json",
+      "sha256": "2782d7524be3940474ff5d52bd93676f6516f10132fc7946a49953834197315a",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemerald.png"
+    },
+    {
+      "id": "org.retra.pokemundo",
+      "name": "PokeMundo",
+      "publisher": "Retra contributors (catalog of pokemundo.com)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/pokemundo.json",
+      "sha256": "f5e119140066572319b2678687570815583d97b6e4b5ecf5449947f45df2e7c4",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/pokemundo.png"
+    },
+    {
+      "id": "org.retra.rhdi",
+      "name": "RHDI",
+      "publisher": "Retra contributors (catalog of romhack.ing)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/rhdi.json",
+      "sha256": "307d2d3b36c8ba863dd11e46a4c5bca292bdd15aa3aa2128dd4d3e84242c5e32",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/rhdi.png"
+    },
+    {
+      "id": "org.retra.romhacking",
+      "name": "Romhacking.net",
+      "publisher": "Retra contributors (catalog of romhacking.net)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/romhacking.json",
+      "sha256": "36a10aece34edd6c68a0d2137961c43eee6056f9eee8c82cde680d95fb45de6c",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/romhacking.png"
+    },
+    {
+      "id": "org.retra.romsgames",
+      "name": "Roms Games",
+      "publisher": "Retra contributors (catalog of romsgames.net)",
+      "versionCode": 1,
+      "versionName": "1.0",
+      "format": "retra.catalog",
+      "apiMin": 1,
+      "apiMax": 1,
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/packages/romsgames.json",
+      "sha256": "138c497f6be00d4cad5391f68103abd12989661e232e6a3aac17b55c7da177ee",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/romsgames.png"
     }
   ]
 }

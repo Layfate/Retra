@@ -1,0 +1,21 @@
+{
+  "apiVersion": 1,
+  "id": "org.retra.romhacking",
+  "versionCode": 1,
+  "sources": [
+    {
+      "id": "romhacking",
+      "name": "Romhacking.net",
+      "platforms": [
+        "GB",
+        "GBC",
+        "GBA"
+      ],
+      "latest": false,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/romhacking.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/romhacking.png",
+      "website": "https://www.romhacking.net/hacks/",
+      "searchUrl": "https://www.romhacking.net/?page=hacks&title={query}&hacksearch=Go"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 # Retra website sources
 
-The default index contains one extension, **Retra Sources** (6.0). It replaces the former Romhack Plaza package and keeps its extension ID (`org.retra.romhackplaza`), so installed copies update in place and saved Library links keep working. The Homebrew Hub and sample extensions are omitted from the default index.
+The default index lists **one extension per website** (`org.retra.<site>`, for example `org.retra.operationidroid`). Each extension holds that website's GB, GBC and GBA sources, so people install only the sites they want under **Browse → Extensions**, and the installed sites then appear in **Sources**. Packages are published as `packages/<site>.json`; catalogs and logos stay in `sources/`.
+
+These extensions replace the former all-in-one **Retra Sources** bundle (`org.retra.romhackplaza`). The source IDs did not change, so the app maps saved Library links and pins from the bundle (`org.retra.romhackplaza/<source>`) to the same source in the per-site extension. Once a refreshed repository no longer lists the bundle, Retra uninstalls it and points the user to Extensions. The Homebrew Hub and sample extensions are omitted from the default index.
 
 | Source | Platforms | How it is built |
 |---|---|---|

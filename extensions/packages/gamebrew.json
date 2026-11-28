@@ -1,0 +1,19 @@
+{
+  "apiVersion": 1,
+  "id": "org.retra.gamebrew",
+  "versionCode": 1,
+  "sources": [
+    {
+      "id": "gamebrew-gba",
+      "name": "GameBrew GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/gamebrew-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/gamebrew.png",
+      "website": "https://www.gamebrew.org/wiki/List_of_all_GBA_Rom_Hacks",
+      "searchUrl": "https://www.gamebrew.org/index.php?search={query}"
+    }
+  ]
+}

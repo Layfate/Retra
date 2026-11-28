@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {createHash} = require('node:crypto');
-const {build, SITES, WEB_ONLY, websiteGame, idroidGame, gamebrewGame, feuGame, siteDate, plainText, officialGames} = require('../tools/extension-repo/build-repo.cjs');
+const {build, SITES, WEB_ONLY, websiteGame, idroidGame, gamebrewGame, feuGame, siteDate, plainText, officialGames, EXTENSION_VERSION, LEGACY_BUNDLE} = require('../tools/extension-repo/build-repo.cjs');
 const {gameDownloadAction, filterSources, extensionSections, emptyCatalogAction} = require('../app/src/main/assets/retra/browse-ui.js');
 
 const idroidPage = (name, platform, image = '/images/cover.jpg') => '<meta property="og:title" content="' + name +
@@ -118,7 +118,7 @@ test('official release lists include games missing box art and regional releases
   assert.equal(games[0].cover, undefined);
 });
 
-test('default repository publishes Retra Sources with the requested websites and no Romhack Plaza', async () => {
+test('default repository publishes one extension per website and no all-in-one bundle', async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'retra-sites-'));
   const originalFetch = global.fetch;
   const png = require('../samples/catalog-extension/build-fixture.cjs').png(8, 8, () => [20, 100, 140]);
@@ -163,18 +163,38 @@ test('default repository publishes Retra Sources with the requested websites and
     fs.writeFileSync(path.join(dir, 'romhackplaza/gb.json'), '{}');
     await build('https://example.org/repo/', dir);
     const index = JSON.parse(read('index.json'));
-    assert.equal(index.extensions.length, 1);
-    const ext = index.extensions[0];
-    // Same extension ID, so installed copies update in place and saved source keys keep working.
-    assert.equal(ext.id, 'org.retra.romhackplaza');
-    assert.equal(ext.versionCode, 6);
-    assert.equal(ext.name, 'Retra Sources');
-    assert.doesNotMatch([ext.name, ext.publisher, ext.packageUrl, ext.icon].join(' '), /romhack ?plaza/i);
-    assert.equal(ext.sha256, createHash('sha256').update(read('sources/extension.json')).digest('hex'));
-    const sources = JSON.parse(read('sources/extension.json')).sources;
-    assert.deepEqual(sources.map(source => source.id), ['pokeharbor-gba', 'pokeharbor-gbc', 'pokemundo-gba', 'pokemundo-gbc',
+    // One extension per website, sorted by name; the Retra Sources bundle is gone.
+    assert.deepEqual(index.extensions.map(ext => ext.name), ['FE Universe', 'GameBrew', 'Hackdex', 'Operation iDroid', 'PokéCoders',
+      'PokéCommunity', 'PokéHarbor', 'PokéMerald', 'PokeMundo', 'RHDI', 'Romhacking.net', 'Roms Games']);
+    assert.ok(!index.extensions.some(ext => ext.id === LEGACY_BUNDLE || ext.name === 'Retra Sources'));
+    assert.equal(fs.existsSync(path.join(dir, 'sources/extension.json')), false);
+    const manifests = new Map();
+    for (const ext of index.extensions) {
+      assert.ok(ext.id.startsWith('org.retra.'), ext.id);
+      assert.equal(ext.versionCode, EXTENSION_VERSION.versionCode);
+      assert.doesNotMatch([ext.name, ext.publisher, ext.packageUrl, ext.icon].join(' '), /romhack ?plaza/i);
+      const file = ext.packageUrl.replace('https://example.org/repo/', '');
+      assert.match(file, /^packages\/[a-z]+\.json$/);
+      assert.equal(ext.sha256, createHash('sha256').update(read(file)).digest('hex'));
+      const manifest = JSON.parse(read(file));
+      assert.equal(manifest.id, ext.id);
+      // Extension platforms are exactly the platforms of its sources (the app requires sources to fit).
+      assert.deepEqual(ext.platforms, ['GB', 'GBC', 'GBA'].filter(p => manifest.sources.some(source => source.platforms.includes(p))));
+      manifests.set(ext.id, manifest.sources.map(source => source.id));
+    }
+    // Source IDs are unchanged, so Library games and pins saved from the bundle resolve to the per-site source.
+    assert.deepEqual(manifests.get('org.retra.operationidroid'), ['operationidroid-gba', 'operationidroid-gbc']);
+    assert.deepEqual(manifests.get('org.retra.pokeharbor'), ['pokeharbor-gba', 'pokeharbor-gbc']);
+    assert.deepEqual(manifests.get('org.retra.romsgames'), ['official-gb', 'official-gbc', 'official-gba']);
+    assert.deepEqual(manifests.get('org.retra.hackdex'), ['hackdex']);
+    assert.equal(index.extensions.find(ext => ext.id === 'org.retra.operationidroid').icon, 'https://example.org/repo/sources/operationidroid.png');
+    const sources = index.extensions.flatMap(ext => JSON.parse(read(ext.packageUrl.replace('https://example.org/repo/', ''))).sources);
+    assert.deepEqual(sources.map(source => source.id).sort(), ['pokeharbor-gba', 'pokeharbor-gbc', 'pokemundo-gba', 'pokemundo-gbc',
       'pokecoders-gba', 'pokecoders-gbc', 'pokemerald-gba', 'pokemerald-gbc', 'operationidroid-gba', 'operationidroid-gbc',
-      'gamebrew-gba', 'feuniverse-gba', 'romhacking', 'hackdex', 'rhdi', 'pokecommunity', 'official-gb', 'official-gbc', 'official-gba']);
+      'gamebrew-gba', 'feuniverse-gba', 'romhacking', 'hackdex', 'rhdi', 'pokecommunity', 'official-gb', 'official-gbc', 'official-gba'].sort());
+    const readme = read('README.md').toString();
+    assert.match(readme, /Each website is its own extension/);
+    assert.match(readme, /\*\*Operation iDroid\*\*: GBC, GBA: /);
     assert.ok(sources.every(source => !/romhack ?plaza/i.test(source.name + source.catalogUrl + source.icon)));
     assert.equal(fs.existsSync(path.join(dir, 'homebrewhub')), false);
     assert.equal(fs.existsSync(path.join(dir, 'romhackplaza')), false);
@@ -235,11 +255,13 @@ test('a site that is down during a rebuild keeps its last published catalog', as
   };
   try {
     await build('https://example.org/repo/', dir);
-    const sources = JSON.parse(fs.readFileSync(path.join(dir, 'sources/extension.json'), 'utf8')).sources.map(source => source.id);
+    const sources = JSON.parse(fs.readFileSync(path.join(dir, 'packages/pokemundo.json'), 'utf8')).sources.map(source => source.id);
     assert.ok(sources.includes('pokemundo-gba'), 'the down site is still listed');
     assert.ok(!sources.includes('pokemundo-gbc'), 'a platform with no previous catalog is skipped');
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'sources/pokemundo-gba.json'), 'utf8')).games.map(game => game.id), ['7']);
-    assert.ok(sources.includes('gamebrew-gba') && sources.includes('feuniverse-gba'));
+    const listed = fs.readdirSync(path.join(dir, 'packages'))
+      .flatMap(file => JSON.parse(fs.readFileSync(path.join(dir, 'packages', file), 'utf8')).sources.map(source => source.id));
+    assert.ok(listed.includes('gamebrew-gba') && listed.includes('feuniverse-gba'), 'other sites still publish');
   } finally {
     global.fetch = originalFetch;
     fs.rmSync(dir, {recursive:true, force:true});

@@ -1,0 +1,29 @@
+{
+  "apiVersion": 1,
+  "id": "org.retra.operationidroid",
+  "versionCode": 1,
+  "sources": [
+    {
+      "id": "operationidroid-gba",
+      "name": "Operation iDroid GBA",
+      "platforms": [
+        "GBA"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid-gba.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid.png",
+      "website": "https://operationidroid.com/?platform=GBA"
+    },
+    {
+      "id": "operationidroid-gbc",
+      "name": "Operation iDroid GBC",
+      "platforms": [
+        "GBC"
+      ],
+      "latest": true,
+      "catalogUrl": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid-gbc.json",
+      "icon": "https://raw.githubusercontent.com/Layfate/Retra/main/extensions/sources/operationidroid.png",
+      "website": "https://operationidroid.com/?platform=GBC"
+    }
+  ]
+}
